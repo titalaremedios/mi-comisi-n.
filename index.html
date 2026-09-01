@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#101828" />
+  <title>Mi Comisión</title>
+  <style>
+    :root{
+      --bg:#f5f7fb;
+      --card:#ffffff;
+      --text:#182230;
+      --muted:#667085;
+      --line:#e4e7ec;
+      --primary:#7c3aed;
+      --primary-2:#ec4899;
+      --accent:#14b8a6;
+      --good:#138a5b;
+      --warn:#c57a00;
+      --bad:#c43a3a;
+      --soft-good:#e9f8f0;
+      --soft-warn:#fff5df;
+      --soft-bad:#fdecec;
+      --shadow:0 12px 32px rgba(16,24,40,.08);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top right, rgba(100,116,243,.13), transparent 30%),
+        linear-gradient(180deg,#f8faff 0%,var(--bg) 30%);
+      color:var(--text);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button,input,select{font:inherit}
+    .app{max-width:980px;margin:0 auto;padding:18px 14px 100px}
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:12px;margin:4px 2px 18px
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:46px;height:46px;border-radius:15px;
+      display:grid;place-items:center;color:white;font-weight:900;font-size:21px;
+      background:linear-gradient(135deg,var(--primary),var(--primary-2));
+      box-shadow:0 8px 20px rgba(52,72,216,.26)
+    }
+    .brand h1{font-size:20px;margin:0;line-height:1.05}
+    .brand small{display:block;color:var(--muted);margin-top:4px}
+    .icon-btn{
+      width:44px;height:44px;border:1px solid var(--line);background:#fff;border-radius:14px;
+      cursor:pointer;font-size:20px
+    }
+    .welcome{
+      margin:16px 2px 12px;padding:18px 20px;border-radius:22px;
+      background:linear-gradient(135deg,#fff 0%,#fff7fb 45%,#f5f3ff 100%);
+      border:1px solid #eadcff;box-shadow:var(--shadow)
+    }
+    .welcome h2{margin:0;font-size:24px;letter-spacing:-.02em}
+    .welcome p{margin:8px 0 0;color:var(--muted);font-weight:650;line-height:1.45}
+    .quote-chip{
+      display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:9px 12px;border-radius:999px;
+      background:linear-gradient(135deg,#ede9fe,#fce7f3);color:#6d28d9;font-size:13px;font-weight:800
+    }
+
+    .hero{
+      background:linear-gradient(135deg,#5b21b6 0%,#7c3aed 48%,#ec4899 100%);
+      color:white;border-radius:28px;padding:24px;box-shadow:var(--shadow);position:relative;overflow:hidden
+    }
+    .hero:after{
+      content:"";position:absolute;width:220px;height:220px;border-radius:50%;
+      background:rgba(255,255,255,.08);right:-80px;top:-100px
+    }
+    .eyebrow{font-size:13px;opacity:.78;text-transform:uppercase;letter-spacing:.08em}
+    .hero-title{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:10px}
+    .money{font-size:clamp(34px,7vw,54px);font-weight:850;letter-spacing:-.04em}
+    .subtle{font-size:14px;opacity:.78}
+    .grid{display:grid;gap:14px;margin-top:14px}
+    .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .card{
+      background:var(--card);border:1px solid rgba(228,231,236,.8);
+      border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)
+    }
+    .card h2,.card h3{margin:0}
+    .card h2{font-size:18px}
+    .card h3{font-size:15px;color:var(--muted);font-weight:700}
+    .big{font-size:29px;font-weight:850;margin-top:8px;letter-spacing:-.025em}
+    .mini{font-size:13px;color:var(--muted);margin-top:5px}
+    .progress-wrap{margin-top:14px}
+    .progress-label{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:var(--muted);margin-bottom:7px}
+    .bar{height:12px;background:#edf0f5;border-radius:999px;overflow:hidden}
+    .fill{height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--primary),var(--primary-2));transition:.3s}
+    .fill.gold{background:linear-gradient(90deg,#d68b00,#f0b33b)}
+    .tramo-card{margin-top:14px}
+    .tramo-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;margin-bottom:12px}
+    .tramo-current{font-size:30px;font-weight:900;letter-spacing:-.03em}
+    .tramo-next{text-align:right;color:var(--muted);font-size:13px;font-weight:700}
+    .tramo-strip{display:flex;gap:7px;overflow-x:auto;padding:2px 1px 6px;scrollbar-width:none}
+    .tramo-strip::-webkit-scrollbar{display:none}
+    .tramo-chip{flex:0 0 auto;border-radius:999px;padding:8px 11px;background:#f0f2f6;color:var(--muted);font-size:12px;font-weight:850;border:1px solid transparent}
+    .tramo-chip.done{background:rgba(19,138,91,.12);color:var(--good);border-color:rgba(19,138,91,.18)}
+    .tramo-chip.current{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;box-shadow:0 6px 16px rgba(52,72,216,.18)}
+    .tramo-chip.projected{background:#fff2df;color:#9a6100;border-color:#ffd9a3}
+    .celebrate{font-size:15px;font-weight:850;margin-top:10px;color:var(--primary)}
+
+    .road-card{margin-top:14px}
+    .road-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}
+    .road-head h2{margin:0;font-size:18px}
+    .road-badge{
+      min-width:64px;text-align:center;padding:10px 12px;border-radius:999px;
+      background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;font-weight:850
+    }
+    .road-track{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:4px 2px 8px;scrollbar-width:none}
+    .road-track::-webkit-scrollbar{display:none}
+    .road-step{flex:0 0 auto;width:92px;text-align:center;position:relative}
+    .road-node{
+      width:38px;height:38px;border-radius:50%;margin:0 auto 8px;background:#eef1ff;color:#6b7280;
+      display:grid;place-items:center;font-weight:900;border:2px solid #e6e8ef;position:relative;z-index:2
+    }
+    .road-line{
+      flex:0 0 26px;height:4px;background:#e8ebf2;border-radius:999px;margin-top:18px;position:relative
+    }
+    .road-step.done .road-node{background:rgba(19,138,91,.12);border-color:rgba(19,138,91,.22);color:var(--good)}
+    .road-step.current .road-node{background:linear-gradient(135deg,var(--primary),var(--primary-2));border-color:transparent;color:#fff;box-shadow:0 8px 20px rgba(124,58,237,.22)}
+    .road-step.projected .road-node{background:#fff4e5;border-color:#ffd9a3;color:#b46900}
+    .road-step.future .road-node{background:#f6f7fb;color:#98a2b3}
+    .road-line.done{background:linear-gradient(90deg,var(--accent),var(--primary))}
+    .road-line.projected{background:linear-gradient(90deg,#ffd08a,var(--primary-2))}
+    .road-label{font-size:13px;font-weight:850;line-height:1.1}
+    .road-goal{font-size:11px;color:var(--muted);margin-top:4px}
+    .history-road{display:flex;align-items:center;gap:4px;margin-top:8px;flex-wrap:wrap}
+    .history-dot{width:10px;height:10px;border-radius:50%;background:#e5e7eb}
+    .history-dot.done{background:var(--primary)}
+    .history-dot.projected{background:#ffbe55}
+    .compare-wrap{overflow-x:auto;margin-top:10px;border-radius:18px;border:1px solid var(--line)}
+    .compare-table{width:100%;border-collapse:collapse;min-width:620px;background:#fff}
+    .compare-table th,.compare-table td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}
+    .compare-table th{background:#faf9ff;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+    .compare-table tr:last-child td{border-bottom:0}
+    .compare-table strong{font-size:14px}
+    .tramo-badge{display:inline-flex;align-items:center;padding:6px 9px;border-radius:999px;background:#f3e8ff;color:#7c3aed;font-weight:850}
+    .tramo-badge.max{background:#fff4e5;color:#a15c00}
+    .extra-list{display:grid;gap:10px;margin-top:10px}
+    .extra-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:var(--shadow)}
+    .extra-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .extra-title{font-weight:850;font-size:16px}
+    .extra-meta{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.45}
+    .extra-earned{font-weight:900;font-size:22px;color:#7c3aed;white-space:nowrap}
+    .extra-earned small{display:block;font-size:11px;color:var(--muted);font-weight:700;text-align:right;margin-top:3px}
+    .extra-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+    .extra-stat{background:#faf9ff;border-radius:14px;padding:10px}
+    .extra-stat span{display:block;font-size:11px;color:var(--muted)}
+    .extra-stat strong{display:block;margin-top:4px;font-size:14px}
+    .summary-banner{margin-top:14px;padding:16px;border-radius:18px;background:linear-gradient(135deg,#fff1f7,#f3e8ff);border:1px solid #f0d9ff}
+    .summary-banner strong{font-size:17px}
+    .road-milestones{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .milestone-chip{
+      display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:999px;
+      background:#f7f7fb;border:1px solid #ebe9fe;font-size:12px;font-weight:800;color:#5b4b8a
+    }
+    .milestone-chip.done{background:#eefcf5;border-color:#cdeedb;color:var(--good)}
+    .milestone-chip.current{background:#f3e8ff;border-color:#e9d5ff;color:#7c3aed}
+    .milestone-chip.projected{background:#fff4e5;border-color:#ffd9a3;color:#b46900}
+    .milestone-chip.neutral{background:#f5f7fb;border-color:#e4e7ec;color:var(--muted)}
+
+    .account-list,.incident-list{display:grid;gap:10px;margin-top:10px}
+    .record-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:var(--shadow)}
+    .record-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .record-title{font-weight:850;font-size:15px}
+    .record-meta{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.45}
+    .record-amount{font-size:20px;font-weight:900;color:var(--primary);white-space:nowrap}
+    .record-note{margin-top:10px;background:#f7f7fb;border-radius:12px;padding:10px 12px;font-size:13px;color:#475467;line-height:1.45}
+    .incident-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:999px;background:#fff4e5;color:#9a5b00;font-size:12px;font-weight:800}
+    .month-admin-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}
+    .admin-stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px}
+    .admin-stat span{display:block;font-size:12px;color:var(--muted)}
+    .admin-stat strong{display:block;margin-top:5px;font-size:20px}
+    .scratch-box{grid-column:1/-1;background:#faf7ff;border:1px solid #eadcff;border-radius:18px;padding:14px}
+    .scratch-add-row{display:grid;grid-template-columns:1fr 92px auto;gap:8px;align-items:end;margin-top:10px}
+    .scratch-selected{display:grid;gap:8px;margin-top:12px}
+    .scratch-item{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+    .scratch-item-main{min-width:0}
+    .scratch-item-name{font-weight:800;font-size:13px}
+    .scratch-item-meta{font-size:12px;color:var(--muted);margin-top:3px}
+    .scratch-remove{border:0;background:#fff0f0;color:var(--bad);border-radius:10px;padding:7px 9px;cursor:pointer;font-weight:800}
+    .scratch-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    .scratch-stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px}
+    .scratch-stat span{display:block;color:var(--muted);font-size:12px;font-weight:700}
+    .scratch-stat strong{display:block;margin-top:5px;font-size:20px}
+    .status{
+      margin-top:14px;padding:16px;border-radius:18px;font-weight:700;line-height:1.4
+    }
+    .status.good{background:var(--soft-good);color:var(--good)}
+    .status.warn{background:var(--soft-warn);color:#8c5c00}
+    .status.bad{background:var(--soft-bad);color:var(--bad)}
+    .metric-row{
+      display:grid;grid-template-columns:1fr auto;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)
+    }
+    .metric-row:last-child{border-bottom:0}
+    .metric-row span:first-child{color:var(--muted)}
+    .metric-row strong{text-align:right}
+    .btn{
+      border:0;border-radius:16px;padding:14px 18px;font-weight:800;cursor:pointer;
+      transition:transform .12s ease, opacity .12s ease
+    }
+    .btn:active{transform:scale(.98)}
+    .btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:white;box-shadow:0 8px 20px rgba(52,72,216,.22)}
+    .btn.secondary{background:#f3e8ff;color:#7c3aed}
+    .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--text)}
+    .btn.danger{background:#fff0f0;color:var(--bad)}
+    .btn.full{width:100%}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 2px 10px}
+    .section-title h2{font-size:18px;margin:0}
+    .day-list{display:grid;gap:10px}
+    .day-card{
+      background:#fff;border:1px solid var(--line);border-radius:20px;padding:14px 15px;box-shadow:var(--shadow)
+    }
+    .day-summary{display:grid;grid-template-columns:68px 1fr auto;gap:12px;align-items:center}
+    .date-badge{
+      width:58px;height:58px;border-radius:16px;background:linear-gradient(135deg,#f3e8ff,#fce7f3);
+      color:#7c3aed;display:grid;place-items:center;text-align:center;font-weight:900;line-height:1.05;font-size:15px
+    }
+    .day-info{min-width:0}
+    .day-info strong{display:block;font-size:14px}
+    .day-sub{font-size:12px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .day-sale{font-weight:900;font-size:23px;text-align:right;letter-spacing:-.03em}
+    .day-sale-label{font-size:11px;color:var(--muted);text-align:right;margin-top:2px}
+    .details-btn{
+      margin-top:10px;width:100%;border:0;background:#faf5ff;color:#7c3aed;border-radius:12px;padding:9px 12px;
+      font-weight:800;cursor:pointer
+    }
+    .day-details{display:none;padding-top:12px;margin-top:10px;border-top:1px solid var(--line)}
+    .day-card.open .day-details{display:block}
+    .day-main{display:flex;gap:8px;flex-wrap:wrap}
+    .pill{
+      background:#f7f7fb;border-radius:999px;padding:7px 10px;font-size:12px;color:var(--muted);font-weight:700
+    }
+    .day-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+    .small-btn{
+      border:1px solid var(--line);background:#fff;color:var(--muted);cursor:pointer;padding:8px 12px;border-radius:12px;font-weight:800
+    }
+    .small-btn.danger{background:#fff5f5;color:var(--bad);border-color:#ffd6d6}
+    .empty{text-align:center;color:var(--muted);padding:28px 10px}
+    dialog{
+      border:0;padding:0;border-radius:26px;max-width:620px;width:calc(100% - 24px);
+      box-shadow:0 30px 80px rgba(16,24,40,.25)
+    }
+    dialog::backdrop{background:rgba(16,24,40,.55);backdrop-filter:blur(4px)}
+    .modal{padding:22px}
+    .modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+    .modal-head h2{margin:0;font-size:20px}
+    .close{border:0;background:#f2f4f7;width:38px;height:38px;border-radius:12px;cursor:pointer;font-size:20px}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .field label{display:block;font-size:13px;font-weight:750;margin-bottom:6px;color:#475467}
+    .field input,.field select{
+      width:100%;padding:13px 14px;border:1px solid #d0d5dd;border-radius:14px;background:#fff;color:var(--text);outline:none
+    }
+    .field input:focus,.field select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(52,72,216,.10)}
+    .calc-preview{
+      background:#f7f8fc;border-radius:16px;padding:14px;margin-top:14px;display:grid;gap:8px
+    }
+    .preview-line{display:flex;justify-content:space-between;gap:12px}
+    .preview-line strong{font-size:18px}
+    .tabs{display:flex;gap:8px;background:#edf0f5;padding:5px;border-radius:15px}
+    .tab{flex:1;border:0;background:transparent;border-radius:11px;padding:9px 10px;font-weight:750;color:var(--muted);cursor:pointer}
+    .tab.active{background:#fff;color:var(--text);box-shadow:0 2px 8px rgba(16,24,40,.08)}
+    .history-card{display:flex;justify-content:space-between;gap:14px;align-items:center}
+    .history-card + .history-card{margin-top:10px}
+    .history-meta{color:var(--muted);font-size:13px;margin-top:4px}
+    .hidden{display:none!important}
+    .bottom-fab{
+      position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+      width:min(620px,calc(100% - 28px));z-index:20
+    }
+    .toast{
+      position:fixed;left:50%;bottom:86px;transform:translate(-50%,20px);
+      background:#111827;color:#fff;padding:12px 16px;border-radius:14px;opacity:0;pointer-events:none;
+      transition:.25s;z-index:50;font-weight:700;box-shadow:var(--shadow)
+    }
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    @media(max-width:700px){
+      .grid.two,.grid.three{grid-template-columns:1fr}
+      .hero{padding:20px}
+      .day-summary{grid-template-columns:58px 1fr auto;gap:10px}
+      .date-badge{width:52px;height:52px;font-size:13px}
+      .day-sale{font-size:20px}
+      .day-sub{white-space:normal}
+      .road-step{width:82px}
+      .road-node{width:34px;height:34px}
+      .road-line{flex-basis:18px}
+      .extra-summary{grid-template-columns:1fr 1fr}
+      .scratch-add-row{grid-template-columns:1fr}
+      .scratch-summary-grid{grid-template-columns:1fr}
+      .form-grid{grid-template-columns:1fr}
+      .month-admin-grid{grid-template-columns:1fr}
+      .topbar{align-items:flex-start}
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">€</div>
+        <div>
+          <h1>Mi Comisión</h1>
+          <small>Control de ventas y objetivos</small>
+        </div>
+      </div>
+      <button class="icon-btn" id="settingsBtn" title="Opciones">⚙️</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-view="dashboard">Mi mes</button>
+      <button class="tab" data-view="history">Histórico</button>
+    </div>
+
+    <div class="welcome" id="welcomeBox">
+      <h2 id="greetingText">Hola 👋</h2>
+      <p id="dailyPhrase">Hoy también cuenta.</p>
+      <div class="quote-chip">✨ Un día, una venta, un paso más</div>
+    </div>
+
+    <section id="dashboardView">
+      <div id="noMonth" class="card" style="margin-top:14px;text-align:center">
+        <div style="font-size:42px">📈</div>
+        <h2 style="margin-top:8px">Empieza tu mes</h2>
+        <p class="mini" style="font-size:14px;line-height:1.5">Indica cuántas jornadas vas a trabajar y la app calculará automáticamente tus objetivos del 16 % y 17,5 %.</p>
+        <button class="btn primary" id="newMonthBtn">Crear mes</button>
+      </div>
+
+      <div id="monthContent" class="hidden">
+        <div class="hero" style="margin-top:14px">
+          <div class="eyebrow" id="heroMonth">MES</div>
+          <div class="hero-title">
+            <div>
+              <div class="subtle">Venta acumulada</div>
+              <div class="money" id="totalSales">0 €</div>
+            </div>
+            <div class="subtle" id="daysInfo">0 de 0 jornadas</div>
+          </div>
+        </div>
+
+        <div class="card tramo-card">
+          <div class="tramo-head">
+            <div>
+              <h3>Tu tramo actual</h3>
+              <div class="tramo-current" id="currentTramo">—</div>
+            </div>
+            <div class="tramo-next" id="nextTramoText">Empieza a vender para calcularlo</div>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-label"><span id="tramoProgressLabel">Próximo tramo</span><span id="tramoProgressAmount">—</span></div>
+            <div class="bar"><div class="fill" id="tramoProgressBar" style="width:0%"></div></div>
+          </div>
+          <div class="tramo-strip" id="tramoStrip"></div>
+          <div class="celebrate" id="projectionTramo"></div>
+        </div>
+
+        <div class="card road-card">
+          <div class="road-head">
+            <div>
+              <h2>Camino del mes</h2>
+              <div class="mini" id="roadSummary">Aquí se irá iluminando tu camino de tramos del mes.</div>
+            </div>
+            <div class="road-badge" id="roadBadge">0/8</div>
+          </div>
+          <div class="road-track" id="roadTrack"></div>
+          <div class="road-milestones" id="roadMilestones"></div>
+        </div>
+
+        <div id="statusBox" class="status warn">Añade tu primera jornada para empezar a calcular tu ritmo.</div>
+
+        <div class="grid two">
+          <div class="card">
+            <h2>Tu ritmo</h2>
+            <div class="metric-row"><span>Media diaria</span><strong id="avgDaily">0 €</strong></div>
+            <div class="metric-row"><span>Jornadas restantes</span><strong id="remainingDays">0</strong></div>
+            <div class="metric-row"><span>Necesitas para 16 %</span><strong id="need16">0 €/día</strong></div>
+            <div class="metric-row"><span>Necesitas para 17,5 %</span><strong id="need175">0 €/día</strong></div>
+          </div>
+          <div class="card">
+            <h2>Proyección</h2>
+            <div class="big" id="projection">0 €</div>
+            <div class="mini">Estimación al final del mes si mantienes tu media actual.</div>
+            <div class="metric-row" style="margin-top:10px"><span>Total a liquidar</span><strong id="totalLiquidate">0 €</strong></div>
+            <div class="metric-row"><span>Pagos acumulados</span><strong id="totalPayments">0 €</strong></div>
+            <div class="metric-row"><span>Tarjeta acumulada</span><strong id="totalCard">0 €</strong></div>
+          </div>
+        </div>
+
+        <div class="section-title">
+          <h2>Rascas</h2>
+        </div>
+        <div class="scratch-summary-grid">
+          <div class="scratch-stat"><span>Paquetes cargados</span><strong id="scratchPackCount">0</strong></div>
+          <div class="scratch-stat"><span>Venta en rascas</span><strong id="scratchSalesMonth">0 €</strong></div>
+          <div class="scratch-stat"><span>Rasca más cargado</span><strong id="scratchTopProduct">—</strong></div>
+        </div>
+        <div class="card" style="margin-top:10px">
+          <h2 style="margin-bottom:6px">Desglose de rascas para comisión</h2>
+          <div class="mini">La app ya clasifica automáticamente cada rasca según su porcentaje de premios.</div>
+          <div class="metric-row"><span>Resto de productos</span><strong id="scratchRestSales">0 €</strong></div>
+          <div class="metric-row"><span>Alto % de premios</span><strong id="scratchHighSales">0 €</strong></div>
+          <div class="metric-row"><span>Muy alto % de premios</span><strong id="scratchVeryHighSales">0 €</strong></div>
+        </div>
+
+        <div class="section-title">
+          <h2>Extras</h2>
+          <button class="btn secondary" id="addExtraBtn">＋ Añadir extra</button>
+        </div>
+        <div class="card" id="extrasSummaryCard">
+          <div class="metric-row"><span>Extras vendidos</span><strong id="extraUnitsTotal">0</strong></div>
+          <div class="metric-row"><span>Venta en extras</span><strong id="extraSalesTotal">0 €</strong></div>
+          <div class="metric-row"><span>Comisión estimada extras</span><strong id="extraCommissionTotal">0 €</strong></div>
+        </div>
+        <div id="extrasList" class="extra-list"></div>
+
+        <div class="section-title">
+          <h2>Ingresos a cuenta</h2>
+          <button class="btn secondary" id="addAccountBtn">＋ Añadir ingreso</button>
+        </div>
+        <div class="month-admin-grid">
+          <div class="admin-stat"><span>Total ingresado a cuenta</span><strong id="accountTotal">0 €</strong></div>
+          <div class="admin-stat"><span>Nº de ingresos</span><strong id="accountCount">0</strong></div>
+          <div class="admin-stat"><span>Último ingreso</span><strong id="lastAccountDate">—</strong></div>
+        </div>
+        <div id="accountList" class="account-list"></div>
+
+        <div class="section-title">
+          <h2>Incidencias del mes</h2>
+          <button class="btn secondary" id="addIncidentBtn">＋ Añadir incidencia</button>
+        </div>
+        <div class="card" id="incidenceSummaryCard">
+          <div class="metric-row"><span>Incidencias apuntadas</span><strong id="incidentCount">0</strong></div>
+          <div class="metric-row"><span>Días marcados como ausencia</span><strong id="absenceCount">0</strong></div>
+        </div>
+        <div id="incidentList" class="incident-list"></div>
+
+        <div class="section-title">
+          <h2>Jornadas</h2>
+          <button class="btn ghost" id="editMonthBtn">Editar mes</button>
+        </div>
+        <div id="daysList" class="day-list"></div>
+      </div>
+    </section>
+
+    <section id="historyView" class="hidden">
+      <div class="section-title"><h2>Comparativa de tramos</h2></div>
+      <div class="card">
+        <div class="mini">Compara de un vistazo hasta qué tramo llegaste cada mes.</div>
+        <div class="compare-wrap"><table class="compare-table">
+          <thead><tr><th>Mes</th><th>Venta</th><th>Tramo alcanzado</th><th>Tramos superados</th><th>Extras ganados</th><th>Ingresos a cuenta</th><th>Incidencias</th></tr></thead>
+          <tbody id="compareBody"></tbody>
+        </table></div>
+      </div>
+      <div class="section-title"><h2>Histórico de meses</h2></div>
+      <div id="historyList"></div>
+    </section>
+  </main>
+
+  <div class="bottom-fab hidden" id="fabWrap">
+    <button class="btn primary full" id="addDayBtn">＋ Añadir jornada</button>
+  </div>
+
+  <dialog id="monthDialog">
+    <form method="dialog" class="modal" id="monthForm">
+      <div class="modal-head">
+        <h2 id="monthDialogTitle">Nuevo mes</h2>
+        <button class="close" value="cancel" type="button" onclick="monthDialog.close()">×</button>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Mes</label>
+          <input type="month" id="monthKey" required>
+        </div>
+        <div class="field">
+          <label>Jornadas previstas</label>
+          <input type="number" id="workDays" min="1" max="31" inputmode="numeric" required>
+        </div>
+      </div>
+      <div class="calc-preview">
+        <div class="preview-line"><span>Objetivo 16 %</span><strong id="preview16">0 €</strong></div>
+        <div class="preview-line"><span>Objetivo 17,5 %</span><strong id="preview175">0 €</strong></div>
+      </div>
+      <div class="actions" style="margin-top:16px">
+        <button class="btn primary full" type="submit">Guardar mes</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dayDialog">
+    <form method="dialog" class="modal" id="dayForm">
+      <div class="modal-head">
+        <h2 id="dayDialogTitle">Añadir jornada</h2>
+        <button class="close" value="cancel" type="button" onclick="dayDialog.close()">×</button>
+      </div>
+      <input type="hidden" id="editingDayId">
+      <div class="form-grid">
+        <div class="field">
+          <label>Fecha</label>
+          <input type="date" id="dayDate" required>
+        </div>
+        <div class="field">
+          <label>Pasivo (€)</label>
+          <input type="number" id="pasivo" min="0" step="0.01" inputmode="decimal" value="0">
+        </div>
+        <div class="field">
+          <label>Activo (€)</label>
+          <input type="number" id="activo" min="0" step="0.01" inputmode="decimal" value="0">
+        </div>
+        <div class="scratch-box">
+          <label style="font-size:13px;font-weight:800;color:#475467">Rascas por paquetes</label>
+          <div class="mini" style="margin-top:4px">Elige el rasca y cuántos paquetes completos has cargado. La venta se calcula sola.</div>
+          <div class="scratch-add-row">
+            <div class="field">
+              <label>Rasca</label>
+              <select id="scratchProduct"></select>
+            </div>
+            <div class="field">
+              <label>Paquetes</label>
+              <input type="number" id="scratchQty" min="1" step="1" inputmode="numeric" value="1">
+            </div>
+            <button class="btn secondary" type="button" id="addScratchBtn">＋ Añadir</button>
+          </div>
+          <div class="scratch-selected" id="scratchSelected"></div>
+          <div class="field" style="margin-top:12px">
+            <label>Total rascas (€)</label>
+            <input type="number" id="rascas" readonly value="0">
+          </div>
+        </div>
+        <div class="field">
+          <label>Pagos (€)</label>
+          <input type="number" id="pagos" min="0" step="0.01" inputmode="decimal" value="0">
+        </div>
+        <div class="field">
+          <label>Tarjeta (€)</label>
+          <input type="number" id="tarjeta" min="0" step="0.01" inputmode="decimal" value="0">
+        </div>
+      </div>
+      <div class="calc-preview">
+        <div class="preview-line"><span>Venta del día</span><strong id="previewSale">0 €</strong></div>
+        <div class="preview-line"><span>A liquidar</span><strong id="previewLiq">0 €</strong></div>
+      </div>
+      <div class="actions" style="margin-top:16px">
+        <button class="btn primary full" type="submit">Guardar jornada</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="extraDialog">
+    <form method="dialog" class="modal" id="extraForm">
+      <div class="modal-head">
+        <h2 id="extraDialogTitle">Añadir extra</h2>
+        <button class="close" value="cancel" type="button" onclick="extraDialog.close()">×</button>
+      </div>
+      <input type="hidden" id="editingExtraId">
+      <div class="form-grid">
+        <div class="field">
+          <label>Nombre del extra</label>
+          <input type="text" id="extraName" placeholder="Navidad, Madre, Padre, Verano, 11/11…" required>
+        </div>
+        <div class="field">
+          <label>Cupones vendidos</label>
+          <input type="number" id="extraUnits" min="0" step="1" inputmode="numeric" value="0" required>
+        </div>
+        <div class="field">
+          <label>Precio de cada cupón (€)</label>
+          <input type="number" id="extraUnitPrice" min="0" step="0.01" inputmode="decimal" value="0" required>
+        </div>
+        <div class="field">
+          <label>Porcentaje manual (opcional)</label>
+          <input type="number" id="extraManualPct" min="0" max="100" step="0.1" inputmode="decimal" placeholder="Vacío = automático">
+        </div>
+      </div>
+      <div class="calc-preview">
+        <div class="preview-line"><span>Tramo de comisión</span><strong id="extraPreviewPct">12 %</strong></div>
+        <div class="preview-line"><span>Venta total del extra</span><strong id="extraPreviewSales">0 €</strong></div>
+        <div class="preview-line"><span>Comisión estimada</span><strong id="extraPreviewCommission">0 €</strong></div>
+      </div>
+      <p class="mini" style="line-height:1.5;margin-top:12px">Escala automática de extraordinarios: hasta 199 = 12 %, 200–299 = 13 %, 300–399 = 14 %, 400–499 = 15 %, 500–599 = 16,5 %, 600 o más = 17,5 %. Si un extra usa otra escala, escribe el porcentaje manual.</p>
+      <div class="actions" style="margin-top:16px">
+        <button class="btn primary full" type="submit">Guardar extra</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="accountDialog">
+    <form method="dialog" class="modal" id="accountForm">
+      <div class="modal-head">
+        <h2 id="accountDialogTitle">Añadir ingreso a cuenta</h2>
+        <button class="close" value="cancel" type="button" onclick="accountDialog.close()">×</button>
+      </div>
+      <input type="hidden" id="editingAccountId">
+      <div class="form-grid">
+        <div class="field"><label>Fecha</label><input type="date" id="accountDate" required></div>
+        <div class="field"><label>Importe ingresado (€)</label><input type="number" id="accountAmount" min="0" step="0.01" inputmode="decimal" required></div>
+        <div class="field"><label>¿A qué extra corresponde?</label><select id="accountExtra"><option value="">General / sin asociar</option></select></div>
+        <div class="field"><label>Referencia (opcional)</label><input type="text" id="accountReference" placeholder="Ej. ingreso 1 Navidad"></div>
+      </div>
+      <div class="field" style="margin-top:12px"><label>Nota (opcional)</label><input type="text" id="accountNote" placeholder="Cualquier detalle que quieras recordar"></div>
+      <div class="actions" style="margin-top:16px"><button class="btn primary full" type="submit">Guardar ingreso</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="incidentDialog">
+    <form method="dialog" class="modal" id="incidentForm">
+      <div class="modal-head">
+        <h2 id="incidentDialogTitle">Añadir incidencia</h2>
+        <button class="close" value="cancel" type="button" onclick="incidentDialog.close()">×</button>
+      </div>
+      <input type="hidden" id="editingIncidentId">
+      <div class="form-grid">
+        <div class="field"><label>Fecha</label><input type="date" id="incidentDate" required></div>
+        <div class="field"><label>Tipo</label>
+          <select id="incidentType">
+            <option value="Médico">Médico</option>
+            <option value="Ausencia">Ausencia</option>
+            <option value="Vacaciones / permiso">Vacaciones / permiso</option>
+            <option value="Avería / problema técnico">Avería / problema técnico</option>
+            <option value="Cambio de jornada">Cambio de jornada</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+      </div>
+      <div class="field" style="margin-top:12px"><label>Qué ocurrió</label><input type="text" id="incidentNote" placeholder="Ej. Fui al médico y no trabajé por la mañana" required></div>
+      <label style="display:flex;align-items:center;gap:10px;margin-top:14px;font-weight:750;color:#475467"><input type="checkbox" id="incidentAbsent" style="width:20px;height:20px"> Ese día falté / no trabajé</label>
+      <div class="mini" style="margin-top:8px">Esto queda como registro. No modifica automáticamente tus jornadas previstas ni los objetivos.</div>
+      <div class="actions" style="margin-top:16px"><button class="btn primary full" type="submit">Guardar incidencia</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="settingsDialog">
+    <div class="modal">
+      <div class="modal-head">
+        <h2>Opciones</h2>
+        <button class="close" onclick="settingsDialog.close()">×</button>
+      </div>
+      <div class="field" style="margin-bottom:14px">
+        <label>Tu nombre</label>
+        <input type="text" id="userName" placeholder="Escribe tu nombre">
+      </div>
+      <div class="actions">
+        <button class="btn primary full" id="saveNameBtn">Guardar nombre</button>
+        <button class="btn secondary full" id="exportBtn">Exportar copia de seguridad</button>
+        <label class="btn ghost full" style="text-align:center;cursor:pointer">
+          Importar copia
+          <input type="file" id="importInput" accept="application/json" hidden>
+        </label>
+        <button class="btn danger full" id="clearBtn">Borrar todos los datos</button>
+      </div>
+      <p class="mini" style="line-height:1.5;margin-top:14px">
+        Los datos se guardan únicamente en este dispositivo y navegador.
+      </p>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+const TRAMOS = [
+  {pct:2.5, rate:210},
+  {pct:6, rate:296},
+  {pct:10, rate:353},
+  {pct:13, rate:410},
+  {pct:14, rate:466},
+  {pct:15, rate:523},
+  {pct:16, rate:580},
+  {pct:17.5, rate:694}
+];
+const SCRATCH_CATALOG = [
+  {name:"Siete y Media 2026", price:1, prizePct:59, group:"resto", status:"obligatorio"},
+  {name:"X10 2026", price:2, prizePct:64, group:"alto", status:"obligatorio"},
+  {name:"Las Mil y Una Noches", price:2, prizePct:64, group:"alto", status:"obligatorio"},
+  {name:"X20 2026", price:5, prizePct:69.59, group:"muy_alto", status:"obligatorio", voluntaryFrom:"2026-09-15"},
+  {name:"5 años para ti", price:5, prizePct:69.59, group:"muy_alto", status:"obligatorio"},
+  {name:"X50 2026", price:10, prizePct:74, group:"muy_alto", status:"obligatorio", voluntaryFrom:"2026-09-15"},
+  {name:"7 de la Suerte 2025", price:0.50, prizePct:55, group:"resto", status:"voluntario", endDate:"2026-09-23"},
+  {name:"El Gato de la Fortuna", price:1, prizePct:59, group:"resto", status:"voluntario"},
+  {name:"Rasca Abeja Reina", price:2, prizePct:64, group:"alto", status:"voluntario"},
+  {name:"Rasca Flower Power", price:2, prizePct:64, group:"alto", status:"voluntario"},
+  {name:"Galleta de la Fortuna 2025", price:2, prizePct:64, group:"alto", status:"voluntario"},
+  {name:"Palabras Ganadoras", price:3, prizePct:65.5, group:"alto", status:"voluntario"},
+  {name:"Rasca de Verano 2026", price:3, prizePct:65.5, group:"alto", status:"voluntario", endDate:"2026-09-23"},
+  {name:"Millonario 2024", price:5, prizePct:69.5, group:"muy_alto", status:"voluntario", endDate:"2026-09-23"},
+  {name:"Rasca Platinum 2026", price:10, prizePct:74, group:"muy_alto", status:"voluntario"},
+  {name:"Mega Millonario 2026", price:10, prizePct:74, group:"muy_alto", status:"voluntario"}
+];
+const scratchGroupLabel = group => ({
+  resto:"Resto de productos",
+  alto:"Alto % de premios",
+  muy_alto:"Muy alto % de premios"
+}[group] || "Sin clasificar");
+const scratchCatalogItem = name => SCRATCH_CATALOG.find(x=>x.name===name) || null;
+const scratchPackValue = price => Number(price) <= 2 ? 100 : 150;
+let tempScratchPacks = [];
+
+const EXTRA_TIERS = [
+  {max:199,pct:12},
+  {max:299,pct:13},
+  {max:399,pct:14},
+  {max:499,pct:15},
+  {max:599,pct:16.5},
+  {max:Infinity,pct:17.5}
+];
+const extraPctForUnits = units => EXTRA_TIERS.find(t => Number(units||0) <= t.max)?.pct ?? 12;
+const RATE_16 = 580;
+const RATE_175 = 694;
+const tramoGoal = (workDays,t) => workDays * t.rate;
+const tramoIndexFor = (sale,workDays) => {
+  let idx=-1;
+  TRAMOS.forEach((t,i)=>{ if(sale >= tramoGoal(workDays,t)) idx=i; });
+  return idx;
+};
+const STORAGE_KEY = "miComision_v1";
+
+const $ = id => document.getElementById(id);
+const fmt = n => new Intl.NumberFormat("es-ES",{style:"currency",currency:"EUR",minimumFractionDigits:0,maximumFractionDigits:2}).format(Number(n||0));
+const pct = n => `${Math.max(0,n).toFixed(0)} %`;
+const num = id => Number($(id).value || 0);
+
+let data = loadData();
+if(!data.profile) data.profile={name:"Azucena"};
+let currentMonth = data.currentMonth || null;
+
+function loadData(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {months:{},currentMonth:null,profile:{name:"Azucena"}}; }
+  catch { return {months:{},currentMonth:null,profile:{name:"Azucena"}}; }
+}
+function saveData(){
+  data.currentMonth = currentMonth;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+function monthLabel(key){
+  const [y,m] = key.split("-");
+  const d = new Date(Number(y), Number(m)-1, 1);
+  return d.toLocaleDateString("es-ES",{month:"long",year:"numeric"}).replace(/^./,c=>c.toUpperCase());
+}
+function toast(msg){
+  $("toast").textContent = msg;
+  $("toast").classList.add("show");
+  setTimeout(()=>$("toast").classList.remove("show"),1800);
+}
+function getMonth(){
+  return currentMonth ? data.months[currentMonth] : null;
+}
+function ensureMonthCollections(month){
+  if(!month) return;
+  if(!month.extras) month.extras=[];
+  if(!month.accountDeposits) month.accountDeposits=[];
+  if(!month.incidents) month.incidents=[];
+}
+function sumAccountDeposits(month){
+  return (month.accountDeposits||[]).reduce((a,x)=>a+Number(x.amount||0),0);
+}
+
+const DAILY_PHRASES = [
+  "Hoy no tienes que hacerlo perfecto, solo avanzar un poquito.",
+  "Cada jornada suma. La constancia hace el resto.",
+  "Una buena venta puede cambiar el ritmo de todo el mes.",
+  "Mira lo que llevas, no solo lo que te falta.",
+  "Paso a paso también se llega a los objetivos grandes.",
+  "Hoy puede ser uno de esos días que sorprenden para bien.",
+  "Tu objetivo no se alcanza de golpe: se construye jornada a jornada.",
+  "Sigue sumando. Lo importante es mantener el movimiento.",
+  "Cada euro cuenta, pero tu constancia cuenta todavía más.",
+  "Vamos a por el día de hoy. Mañana ya veremos el siguiente."
+];
+function renderGreeting(){
+  const now = new Date();
+  const h = now.getHours();
+  const sal = h < 12 ? "Buenos días" : h < 20 ? "Buenas tardes" : "Buenas noches";
+  const name = (data.profile?.name || "").trim();
+  $("greetingText").textContent = `${sal}${name ? ", "+name : ""} 👋`;
+  const stamp = Number(`${now.getFullYear()}${String(now.getMonth()+1).padStart(2,"0")}${String(now.getDate()).padStart(2,"0")}`);
+  $("dailyPhrase").textContent = DAILY_PHRASES[stamp % DAILY_PHRASES.length];
+  $("userName").value = name;
+}
+function sumDays(month){
+  return month.days.reduce((a,d)=>({
+    sale:a.sale+d.sale,
+    liq:a.liq+d.liq,
+    pagos:a.pagos+d.pagos,
+    tarjeta:a.tarjeta+d.tarjeta
+  }),{sale:0,liq:0,pagos:0,tarjeta:0});
+}
+function scratchMonthStats(month){
+  let packs=0, sales=0;
+  const byProduct={};
+  const groupSales={resto:0,alto:0,muy_alto:0};
+  (month.days||[]).forEach(d=>{
+    sales += Number(d.rascas||0);
+    (d.scratchPacks||[]).forEach(x=>{
+      if(x.legacy) return;
+      const q=Number(x.qty||0);
+      const packValue=Number(x.packValue||scratchPackValue(x.price||0));
+      const value=q*packValue;
+      packs+=q;
+      byProduct[x.product]=(byProduct[x.product]||0)+q;
+      const meta=scratchCatalogItem(x.product);
+      const group=x.group || meta?.group;
+      if(groupSales[group] !== undefined) groupSales[group]+=value;
+    });
+  });
+  const top=Object.entries(byProduct).sort((a,b)=>b[1]-a[1])[0];
+  return {packs,sales,top:top?`${top[0]} (${top[1]})`:"—",groupSales};
+}
+
+function sumExtras(month){
+  const extras = month.extras || [];
+  return extras.reduce((a,e)=>({
+    units:a.units+Number(e.units||0),
+    sales:a.sales+Number(e.sales||0),
+    commission:a.commission+Number(e.commission||0)
+  }),{units:0,sales:0,commission:0});
+}
+function extraDerived(units,unitPrice,manualPct){
+  const u=Number(units||0), p=Number(unitPrice||0);
+  const pct = manualPct === '' || manualPct === null || manualPct === undefined ? extraPctForUnits(u) : Number(manualPct);
+  const sales=u*p;
+  return {pct,sales,commission:sales*pct/100};
+}
+function reachedMapForMonth(month){
+  const reached = {};
+  const sorted = [...month.days].sort((a,b)=>a.date.localeCompare(b.date));
+  let cumulative = 0;
+  sorted.forEach(d => {
+    cumulative += d.sale;
+    TRAMOS.forEach((t,i) => {
+      if(reached[i]) return;
+      if(cumulative >= tramoGoal(month.workDays, t)) reached[i] = d.date;
+    });
+  });
+  return reached;
+}
+
+function render(){
+  renderGreeting();
+  const month = getMonth();
+  $("noMonth").classList.toggle("hidden", !!month);
+  $("monthContent").classList.toggle("hidden", !month);
+  $("fabWrap").classList.toggle("hidden", !month || !$("dashboardView").classList.contains("hidden")===false);
+  if(!month){ renderHistory(); return; }
+  ensureMonthCollections(month);
+
+  $("fabWrap").classList.remove("hidden");
+  $("heroMonth").textContent = monthLabel(currentMonth);
+  const sums = sumDays(month);
+  const worked = month.days.length;
+  const remaining = Math.max(0, month.workDays-worked);
+  const avg = worked ? sums.sale/worked : 0;
+  const projection = avg * month.workDays;
+  const currentIdx = tramoIndexFor(sums.sale, month.workDays);
+  const projectedIdx = worked ? tramoIndexFor(projection, month.workDays) : -1;
+  const current = currentIdx >= 0 ? TRAMOS[currentIdx] : null;
+  const next = currentIdx < TRAMOS.length-1 ? TRAMOS[currentIdx+1] : null;
+  const projected = projectedIdx >= 0 ? TRAMOS[projectedIdx] : null;
+
+  $("totalSales").textContent = fmt(sums.sale);
+  $("daysInfo").textContent = `${worked} de ${month.workDays} jornadas`;
+  $("avgDaily").textContent = `${fmt(avg)}/día`;
+  $("remainingDays").textContent = remaining;
+  $("projection").textContent = worked ? fmt(projection) : "—";
+  $("totalLiquidate").textContent = fmt(sums.liq);
+  $("totalPayments").textContent = fmt(sums.pagos);
+  $("totalCard").textContent = fmt(sums.tarjeta);
+  const scratchStats = scratchMonthStats(month);
+  $("scratchPackCount").textContent = scratchStats.packs;
+  $("scratchSalesMonth").textContent = fmt(scratchStats.sales);
+  $("scratchTopProduct").textContent = scratchStats.top;
+  $("scratchRestSales").textContent = fmt(scratchStats.groupSales.resto);
+  $("scratchHighSales").textContent = fmt(scratchStats.groupSales.alto);
+  $("scratchVeryHighSales").textContent = fmt(scratchStats.groupSales.muy_alto);
+
+  $("currentTramo").textContent = current ? `${String(current.pct).replace('.',',')} %` : "A por el 2,5 %";
+  if(next){
+    const nextGoal = tramoGoal(month.workDays,next);
+    const prevGoal = current ? tramoGoal(month.workDays,current) : 0;
+    const within = Math.max(0, sums.sale-prevGoal);
+    const span = Math.max(1, nextGoal-prevGoal);
+    const progress = Math.min(100,within/span*100);
+    $("tramoProgressLabel").textContent = `Próximo: ${String(next.pct).replace('.',',')} %`;
+    $("tramoProgressAmount").textContent = `Faltan ${fmt(Math.max(0,nextGoal-sums.sale))}`;
+    $("tramoProgressBar").style.width = `${progress}%`;
+    const needNext = remaining ? Math.max(0,nextGoal-sums.sale)/remaining : Math.max(0,nextGoal-sums.sale);
+    $("nextTramoText").textContent = remaining ? `${fmt(needNext)}/día para el ${String(next.pct).replace('.',',')} %` : `Objetivo ${String(next.pct).replace('.',',')} %`;
+  } else {
+    $("tramoProgressLabel").textContent = "Tramo máximo";
+    $("tramoProgressAmount").textContent = "¡Conseguido!";
+    $("tramoProgressBar").style.width = "100%";
+    $("nextTramoText").textContent = "Has llegado al tramo máximo";
+  }
+
+  $("tramoStrip").innerHTML = TRAMOS.map((t,i)=>{
+    let cls="tramo-chip";
+    if(i < currentIdx) cls += " done";
+    if(i === currentIdx) cls += " current";
+    if(i === projectedIdx && i > currentIdx) cls += " projected";
+    return `<span class="${cls}">${String(t.pct).replace('.',',')} %</span>`;
+  }).join("");
+
+  if(!worked){
+    $("projectionTramo").textContent = "Añade tu primera jornada y te diré a qué tramo vas encaminada.";
+  } else if(projected){
+    if(projectedIdx > currentIdx) $("projectionTramo").textContent = `✨ A este ritmo puedes terminar alrededor del ${String(projected.pct).replace('.',',')} %.`;
+    else if(current) $("projectionTramo").textContent = `💪 Tu proyección mantiene el ${String(current.pct).replace('.',',')} %. El siguiente reto es el ${next ? String(next.pct).replace('.',',')+' %' : 'tramo máximo'}.`;
+    else $("projectionTramo").textContent = `💪 A este ritmo tu primer tramo alcanzable es el ${String(projected.pct).replace('.',',')} %.`;
+  } else {
+    $("projectionTramo").textContent = "💪 Sigue sumando: todavía hay jornadas por delante para alcanzar tu primer tramo.";
+  }
+
+  const reachedCount = Math.max(0, currentIdx + 1);
+  $("roadBadge").textContent = `${reachedCount}/${TRAMOS.length} tramos`;
+  if(!worked){
+    $("roadSummary").textContent = "Todavía no has empezado este mes. Tu camino se irá iluminando tramo a tramo.";
+  } else if(currentIdx >= TRAMOS.length-1) {
+    $("roadSummary").textContent = "Camino completo: has alcanzado todos los tramos de este mes. ¡Menudo mesazo!";
+  } else if(current){
+    $("roadSummary").textContent = `Ya has llegado al ${String(current.pct).replace('.',',')} % y tu siguiente parada es el ${next ? String(next.pct).replace('.',',') : '17,5'} %.`;
+  } else {
+    $("roadSummary").textContent = `Aún no has alcanzado el primer tramo, pero tu objetivo inmediato es el 2,5 %.`;
+  }
+  $("roadTrack").innerHTML = TRAMOS.map((t,i)=>{
+    let stepClass = 'road-step future';
+    if(i < currentIdx) stepClass = 'road-step done';
+    if(i === currentIdx) stepClass = 'road-step current';
+    if(i > currentIdx && i === projectedIdx) stepClass = 'road-step projected';
+    const icon = i < currentIdx ? '✓' : i === currentIdx ? '●' : (i > currentIdx && i === projectedIdx ? '↗' : '•');
+    const lineClass = i < currentIdx ? 'road-line done' : (i === currentIdx && projectedIdx > currentIdx ? 'road-line projected' : 'road-line');
+    return `<div class="${stepClass}">
+      <div class="road-node">${icon}</div>
+      <div class="road-label">${String(t.pct).replace('.',',')} %</div>
+      <div class="road-goal">${fmt(tramoGoal(month.workDays,t))}</div>
+    </div>${i < TRAMOS.length-1 ? `<div class="${lineClass}"></div>` : ''}`;
+  }).join('');
+
+  const reachedDates = reachedMapForMonth(month);
+  const reachedItems = TRAMOS
+    .map((t,i)=> reachedDates[i] ? `<span class="milestone-chip done">✅ ${String(t.pct).replace('.',',')} % · ${new Date(reachedDates[i]+"T12:00:00").toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit"})}</span>` : '')
+    .filter(Boolean);
+  const milestoneExtras = [];
+  if(next){
+    milestoneExtras.push(`<span class="milestone-chip current">🎯 Siguiente: ${String(next.pct).replace('.',',')} %</span>`);
+  }
+  if(projected && projectedIdx > currentIdx){
+    milestoneExtras.push(`<span class="milestone-chip projected">↗ Proyección final: ${String(projected.pct).replace('.',',')} %</span>`);
+  }
+  if(!worked){
+    $("roadMilestones").innerHTML = `<span class="milestone-chip neutral">Tu camino se irá llenando aquí según vayas alcanzando tramos.</span>`;
+  } else {
+    const chips = [...reachedItems, ...milestoneExtras];
+    $("roadMilestones").innerHTML = chips.length
+      ? chips.join('')
+      : `<span class="milestone-chip neutral">Primer reto del mes: alcanzar el 2,5 %.</span>`;
+  }
+
+  // Compatibilidad de los indicadores de ritmo: muestran ahora el tramo siguiente y el máximo.
+  const targetNext = next || TRAMOS[TRAMOS.length-1];
+  const needNextDaily = remaining ? Math.max(0,tramoGoal(month.workDays,targetNext)-sums.sale)/remaining : 0;
+  const maxT = TRAMOS[TRAMOS.length-1];
+  const needMaxDaily = remaining ? Math.max(0,tramoGoal(month.workDays,maxT)-sums.sale)/remaining : 0;
+  const metricLabels = document.querySelectorAll('.metric-row span:first-child');
+  if(metricLabels.length >= 4){
+    metricLabels[2].textContent = `Necesitas para ${String(targetNext.pct).replace('.',',')} %`;
+    metricLabels[3].textContent = "Necesitas para 17,5 %";
+  }
+  $("need16").textContent = currentIdx >= TRAMOS.length-1 ? "Conseguido" : `${fmt(needNextDaily)}/día`;
+  $("need175").textContent = sums.sale >= tramoGoal(month.workDays,maxT) ? "Conseguido" : `${fmt(needMaxDaily)}/día`;
+
+  const status = $("statusBox");
+  let cls="warn", msg="Añade tu primera jornada para empezar a calcular tu ritmo.";
+  if(worked){
+    if(currentIdx === TRAMOS.length-1){
+      cls="good"; msg="🏆 ¡17,5 % conseguido! Has alcanzado el tramo máximo de la tabla.";
+    } else if(current){
+      const nextGoal=tramoGoal(month.workDays,next);
+      const need=remaining ? Math.max(0,nextGoal-sums.sale)/remaining : 0;
+      if(projectedIdx > currentIdx){
+        cls="good"; msg=`🟢 Ya tienes el ${String(current.pct).replace('.',',')} % y, manteniendo tu ritmo, puedes llegar al ${String(TRAMOS[projectedIdx].pct).replace('.',',')} %.`;
+      } else {
+        cls="warn"; msg=`🟡 Ya has asegurado el ${String(current.pct).replace('.',',')} %. Para subir al ${String(next.pct).replace('.',',')} % necesitas ${fmt(need)} de media en las ${remaining} jornadas que quedan.`;
+      }
+    } else {
+      const first=TRAMOS[0];
+      const need=remaining ? Math.max(0,tramoGoal(month.workDays,first)-sums.sale)/remaining : 0;
+      cls = projectedIdx>=0 ? "good" : "warn";
+      msg = projectedIdx>=0
+        ? `🟢 Vas encaminada a alcanzar al menos el ${String(TRAMOS[projectedIdx].pct).replace('.',',')} % si mantienes tu ritmo.`
+        : `🟡 Primer objetivo: 2,5 %. Necesitas ${fmt(need)} de media en las ${remaining} jornadas que quedan.`;
+    }
+  }
+  status.className = `status ${cls}`;
+  status.textContent = msg;
+
+  renderExtras(month);
+  renderAccountDeposits(month);
+  renderIncidents(month);
+  renderDays(month);
+  renderHistory();
+}
+
+function renderExtras(month){
+  if(!month.extras) month.extras=[];
+  const sums=sumExtras(month);
+  $("extraUnitsTotal").textContent = sums.units;
+  $("extraSalesTotal").textContent = fmt(sums.sales);
+  $("extraCommissionTotal").textContent = fmt(sums.commission);
+  const list=$("extrasList");
+  if(!month.extras.length){
+    list.innerHTML = `<div class="card empty">Todavía no has añadido ningún sorteo extra este mes.</div>`;
+    return;
+  }
+  list.innerHTML = month.extras.map(e=>`<div class="extra-card">
+    <div class="extra-top">
+      <div>
+        <div class="extra-title">🎟️ ${e.name}</div>
+        <div class="extra-meta">${e.units} cupones · ${fmt(e.unitPrice)} cada uno · comisión ${String(e.pct).replace('.',',')} %${e.manualPct!=='' && e.manualPct!==null && e.manualPct!==undefined ? ' (manual)' : ''}</div>
+      </div>
+      <div class="extra-earned">${fmt(e.commission)}<small>ganancia estimada</small></div>
+    </div>
+    <div class="extra-summary">
+      <div class="extra-stat"><span>Vendidos</span><strong>${e.units}</strong></div>
+      <div class="extra-stat"><span>Venta total</span><strong>${fmt(e.sales)}</strong></div>
+      <div class="extra-stat"><span>Porcentaje</span><strong>${String(e.pct).replace('.',',')} %</strong></div>
+    </div>
+    <div class="day-actions">
+      <button class="small-btn" onclick="editExtra('${e.id}')">✏️ Editar</button>
+      <button class="small-btn danger" onclick="deleteExtra('${e.id}')">🗑️ Borrar</button>
+    </div>
+  </div>`).join('');
+}
+
+function renderAccountDeposits(month){
+  ensureMonthCollections(month);
+  const list=$("accountList");
+  const total=sumAccountDeposits(month);
+  const sorted=[...month.accountDeposits].sort((a,b)=>b.date.localeCompare(a.date));
+  $("accountTotal").textContent=fmt(total);
+  $("accountCount").textContent=month.accountDeposits.length;
+  $("lastAccountDate").textContent=sorted.length ? new Date(sorted[0].date+"T12:00:00").toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit"}) : "—";
+  if(!sorted.length){
+    list.innerHTML=`<div class="card empty">No tienes ningún ingreso a cuenta apuntado este mes.</div>`;
+    return;
+  }
+  list.innerHTML=sorted.map(x=>{
+    const extra=(month.extras||[]).find(e=>e.id===x.extraId);
+    return `<div class="record-card"><div class="record-top"><div><div class="record-title">🏦 ${new Date(x.date+"T12:00:00").toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit",year:"numeric"})}</div><div class="record-meta">${extra?`Extra: ${extra.name}`:'Ingreso general'}${x.reference?` · ${x.reference}`:''}</div></div><div class="record-amount">${fmt(x.amount)}</div></div>${x.note?`<div class="record-note">${x.note}</div>`:''}<div class="day-actions"><button class="small-btn" onclick="editAccount('${x.id}')">✏️ Editar</button><button class="small-btn danger" onclick="deleteAccount('${x.id}')">🗑️ Borrar</button></div></div>`;
+  }).join('');
+}
+
+function renderIncidents(month){
+  ensureMonthCollections(month);
+  const list=$("incidentList");
+  const sorted=[...month.incidents].sort((a,b)=>b.date.localeCompare(a.date));
+  $("incidentCount").textContent=month.incidents.length;
+  $("absenceCount").textContent=month.incidents.filter(x=>x.absent).length;
+  if(!sorted.length){
+    list.innerHTML=`<div class="card empty">No tienes ninguna incidencia apuntada este mes.</div>`;
+    return;
+  }
+  list.innerHTML=sorted.map(x=>`<div class="record-card"><div class="record-top"><div><div class="record-title">📌 ${new Date(x.date+"T12:00:00").toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit",year:"numeric"})}</div><div class="record-meta"><span class="incident-chip">${x.type}</span>${x.absent?' · Día marcado como ausencia':''}</div></div></div><div class="record-note">${x.note}</div><div class="day-actions"><button class="small-btn" onclick="editIncident('${x.id}')">✏️ Editar</button><button class="small-btn danger" onclick="deleteIncident('${x.id}')">🗑️ Borrar</button></div></div>`).join('');
+}
+
+function renderDays(month){
+  const list = $("daysList");
+  if(!month.days.length){
+    list.innerHTML = `<div class="card empty">Todavía no has añadido ninguna jornada.</div>`;
+    return;
+  }
+  const sorted = [...month.days].sort((a,b)=>a.date.localeCompare(b.date));
+  let cumulative = 0;
+  list.innerHTML = sorted.map(d=>{
+    cumulative += d.sale;
+    const dt = new Date(d.date+"T12:00:00");
+    const date = dt.toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit"});
+    const weekday = dt.toLocaleDateString("es-ES",{weekday:"short"}).replace('.', '');
+    return `<div class="day-card" id="card-${d.id}">
+      <div class="day-summary">
+        <div class="date-badge"><div>${date}</div></div>
+        <div class="day-info">
+          <strong>${weekday.charAt(0).toUpperCase()+weekday.slice(1)} · Liquidar ${fmt(d.liq)}</strong>
+          <div class="day-sub">Total acumulado ${fmt(cumulative)}</div>
+        </div>
+        <div>
+          <div class="day-sale">${fmt(d.sale)}</div>
+          <div class="day-sale-label">Venta del día</div>
+        </div>
+      </div>
+      <button class="details-btn" onclick="toggleDayDetails('${d.id}', this)">Ver detalles</button>
+      <div class="day-details">
+        <div class="day-main">
+          <span class="pill">Pasivo ${fmt(d.pasivo)}</span>
+          <span class="pill">Activo ${fmt(d.activo)}</span>
+          <span class="pill">Rascas ${fmt(d.rascas)}</span>
+          ${(d.scratchPacks||[]).filter(x=>!x.legacy).map(x=>{ const m=scratchCatalogItem(x.product); return `<span class="pill">🎟️ ${x.product}: ${x.qty} paq. · ${scratchGroupLabel(x.group||m?.group)}</span>`; }).join('')}
+          <span class="pill">Pagos ${fmt(d.pagos)}</span>
+          <span class="pill">Tarjeta ${fmt(d.tarjeta)}</span>
+          <span class="pill">Liquidar ${fmt(d.liq)}</span>
+          <span class="pill">Total ${fmt(cumulative)}</span>
+        </div>
+        ${(d.scratchPacks||[]).length ? `<div class="mini" style="margin-top:10px"><strong>Rascas:</strong> ${(d.scratchPacks||[]).map(x=>x.legacy?`${x.product} ${fmt(Number(x.packValue||0)*Number(x.qty||0))}`:`${x.product} × ${x.qty}`).join(' · ')}</div>` : ''}
+        <div class="day-actions">
+          <button class="small-btn" onclick="editDay('${d.id}')">✏️ Editar</button>
+          <button class="small-btn danger" onclick="deleteDay('${d.id}')">🗑️ Borrar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+window.toggleDayDetails = (id, btn) => {
+  const card = document.getElementById(`card-${id}`);
+  if(!card) return;
+  card.classList.toggle('open');
+  btn.textContent = card.classList.contains('open') ? 'Ocultar detalles' : 'Ver detalles';
+};
+
+function openAccountDialog(item=null){
+  const month=getMonth(); if(!month) return; ensureMonthCollections(month);
+  $("accountDialogTitle").textContent=item?"Editar ingreso a cuenta":"Añadir ingreso a cuenta";
+  $("editingAccountId").value=item?.id||"";
+  $("accountDate").value=item?.date||new Date().toISOString().slice(0,10);
+  $("accountAmount").value=item?.amount??"";
+  $("accountReference").value=item?.reference||"";
+  $("accountNote").value=item?.note||"";
+  $("accountExtra").innerHTML='<option value="">General / sin asociar</option>'+month.extras.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+  $("accountExtra").value=item?.extraId||"";
+  $("accountDialog").showModal();
+}
+function openIncidentDialog(item=null){
+  $("incidentDialogTitle").textContent=item?"Editar incidencia":"Añadir incidencia";
+  $("editingIncidentId").value=item?.id||"";
+  $("incidentDate").value=item?.date||new Date().toISOString().slice(0,10);
+  $("incidentType").value=item?.type||"Médico";
+  $("incidentNote").value=item?.note||"";
+  $("incidentAbsent").checked=!!item?.absent;
+  $("incidentDialog").showModal();
+}
+
+function renderHistory(){
+  const list = $("historyList");
+  const compare = $("compareBody");
+  const entries = Object.entries(data.months).sort((a,b)=>b[0].localeCompare(a[0]));
+  if(!entries.length){
+    list.innerHTML = `<div class="card empty">Aquí aparecerán tus meses anteriores.</div>`;
+    compare.innerHTML = `<tr><td colspan="7" style="color:var(--muted)">Todavía no hay meses para comparar.</td></tr>`;
+    return;
+  }
+  compare.innerHTML = entries.map(([key,m])=>{
+    ensureMonthCollections(m);
+    const sums=sumDays(m), extras=sumExtras(m);
+    const idx=tramoIndexFor(sums.sale,m.workDays);
+    const label=idx>=0 ? `${String(TRAMOS[idx].pct).replace('.',',')} %` : 'Sin tramo';
+    const klass=idx===TRAMOS.length-1?'tramo-badge max':'tramo-badge';
+    return `<tr>
+      <td><strong>${monthLabel(key)}</strong></td>
+      <td>${fmt(sums.sale)}</td>
+      <td><span class="${klass}">${idx===TRAMOS.length-1?'🏆 ':''}${label}</span></td>
+      <td>${Math.max(0,idx+1)} de ${TRAMOS.length}</td>
+      <td>${fmt(extras.commission)}</td>
+      <td>${fmt(sumAccountDeposits(m))}</td>
+      <td>${m.incidents.length}${m.incidents.some(x=>x.absent)?` (${m.incidents.filter(x=>x.absent).length} ausencia${m.incidents.filter(x=>x.absent).length===1?'':'s'})`:``}</td>
+    </tr>`;
+  }).join('');
+
+  list.innerHTML = entries.map(([key,m])=>{
+    ensureMonthCollections(m);
+    const sums=sumDays(m), extras=sumExtras(m);
+    const idx=tramoIndexFor(sums.sale,m.workDays);
+    const worked = m.days.length;
+    const projection = worked ? (sums.sale/worked) * m.workDays : 0;
+    const projectedIdx = worked ? tramoIndexFor(projection,m.workDays) : -1;
+    let badge = idx>=0 ? `${idx===TRAMOS.length-1?'🏆':'✅'} ${String(TRAMOS[idx].pct).replace('.',',')} %` : "En progreso";
+    const road = TRAMOS.map((t,i)=>{
+      let cls='history-dot';
+      if(i <= idx) cls += ' done';
+      else if(i === projectedIdx) cls += ' projected';
+      return `<span class="${cls}" title="${String(t.pct).replace('.',',')} %"></span>`;
+    }).join('');
+    const completed = worked >= m.workDays;
+    const summary = completed
+      ? `<div class="summary-banner"><strong>📊 Resumen final</strong><div class="mini" style="margin-top:5px">Cerraste el mes en ${fmt(sums.sale)}, alcanzaste el ${idx>=0?String(TRAMOS[idx].pct).replace('.',',')+' %':'primer tramo pendiente'} y generaste ${fmt(extras.commission)} estimados en extras. Ingresos a cuenta registrados: ${fmt(sumAccountDeposits(m))}. Incidencias: ${m.incidents.length}.</div></div>`
+      : '';
+    return `<div class="card history-card">
+      <div style="min-width:0;flex:1">
+        <strong>${monthLabel(key)}</strong>
+        <div class="history-meta">${m.days.length}/${m.workDays} jornadas · ${badge}${m.extras.length?` · ${m.extras.length} extra${m.extras.length===1?'':'s'}`:''}</div>
+        <div class="history-road">${road}</div>
+        ${summary}
+      </div>
+      <div style="text-align:right">
+        <strong>${fmt(sums.sale)}</strong>
+        <div><button class="small-btn" onclick="openMonth('${key}')">Abrir</button></div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function updateMonthPreview(){
+  const d = Number($("workDays").value||0);
+  $("preview16").textContent = fmt(d*RATE_16);
+  $("preview175").textContent = fmt(d*RATE_175);
+}
+function openMonthDialog(edit=false){
+  const today = new Date();
+  const defaultKey = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}`;
+  const m = getMonth();
+  $("monthDialogTitle").textContent = edit ? "Editar mes" : "Nuevo mes";
+  $("monthKey").value = edit && currentMonth ? currentMonth : defaultKey;
+  $("monthKey").disabled = edit;
+  $("workDays").value = edit && m ? m.workDays : 21;
+  updateMonthPreview();
+  $("monthDialog").showModal();
+}
+function populateScratchCatalog(){
+  $("scratchProduct").innerHTML = SCRATCH_CATALOG.map((x,i)=>`<option value="${i}">${x.name} · ${String(x.price).replace('.',',')} € · ${scratchGroupLabel(x.group)} · paquete ${fmt(scratchPackValue(x.price))}</option>`).join("");
+}
+function scratchTempTotal(){
+  return tempScratchPacks.reduce((a,x)=>a + Number(x.packValue||0)*Number(x.qty||0),0);
+}
+function renderScratchSelected(){
+  const box=$("scratchSelected");
+  if(!tempScratchPacks.length){
+    box.innerHTML=`<div class="mini">No has añadido ningún paquete de rasca.</div>`;
+  } else {
+    box.innerHTML=tempScratchPacks.map((x,i)=>`<div class="scratch-item">
+      <div class="scratch-item-main">
+        <div class="scratch-item-name">${x.product}</div>
+        <div class="scratch-item-meta">${x.legacy ? 'Registro anterior sin desglose' : (()=>{ const m=scratchCatalogItem(x.product); const gp=x.group||m?.group; const pp=x.prizePct??m?.prizePct; return `${x.qty} paquete${Number(x.qty)===1?'':'s'} × ${fmt(x.packValue)} = ${fmt(Number(x.qty)*Number(x.packValue))} · ${scratchGroupLabel(gp)}${pp!=null ? ` · Premios ${String(pp).replace('.',',')} %` : ''}`; })()}</div>
+      </div>
+      <button type="button" class="scratch-remove" onclick="removeScratchTemp(${i})">Quitar</button>
+    </div>`).join('');
+  }
+  $("rascas").value=scratchTempTotal();
+  updateDayPreview();
+}
+window.removeScratchTemp = i => { tempScratchPacks.splice(i,1); renderScratchSelected(); };
+function addScratchTemp(){
+  const item=SCRATCH_CATALOG[Number($("scratchProduct").value||0)];
+  const qty=Math.max(1,Number($("scratchQty").value||1));
+  if(!item) return;
+  const existing=tempScratchPacks.find(x=>!x.legacy && x.product===item.name);
+  if(existing) existing.qty=Number(existing.qty||0)+qty;
+  else tempScratchPacks.push({product:item.name,price:item.price,packValue:scratchPackValue(item.price),qty,group:item.group,prizePct:item.prizePct,status:item.status});
+  $("scratchQty").value=1; renderScratchSelected();
+}
+function openDayDialog(day=null){
+  $("dayDialogTitle").textContent = day ? "Editar jornada" : "Añadir jornada";
+  $("editingDayId").value = day ? day.id : "";
+  const today = new Date().toISOString().slice(0,10);
+  $("dayDate").value = day ? day.date : today;
+  ["pasivo","pagos","tarjeta"].forEach(id=>$(id).value = day ? day[id] : 0);
+  $("activo").value = day ? day.activo : 0;
+  populateScratchCatalog();
+  if(day && Array.isArray(day.scratchPacks) && day.scratchPacks.length){
+    tempScratchPacks = day.scratchPacks.map(x=>({...x}));
+  } else if(day && Number(day.rascas||0)>0){
+    tempScratchPacks = [{product:"Rascas anteriores",packValue:Number(day.rascas||0),qty:1,legacy:true}];
+  } else tempScratchPacks=[];
+  renderScratchSelected();
+  updateDayPreview();
+  $("dayDialog").showModal();
+}
+function updateDayPreview(){
+  const sale = num("pasivo")+num("activo")+num("rascas");
+  const liq = sale-num("pagos")-num("tarjeta");
+  $("previewSale").textContent = fmt(sale);
+  $("previewLiq").textContent = fmt(liq);
+}
+function updateExtraPreview(){
+  const units=Number($("extraUnits").value||0);
+  const price=Number($("extraUnitPrice").value||0);
+  const manual=$("extraManualPct").value;
+  const d=extraDerived(units,price,manual);
+  $("extraPreviewPct").textContent = `${String(d.pct).replace('.',',')} %`;
+  $("extraPreviewSales").textContent = fmt(d.sales);
+  $("extraPreviewCommission").textContent = fmt(d.commission);
+}
+function openExtraDialog(extra=null){
+  $("extraDialogTitle").textContent = extra ? "Editar extra" : "Añadir extra";
+  $("editingExtraId").value = extra ? extra.id : "";
+  $("extraName").value = extra ? extra.name : "";
+  $("extraUnits").value = extra ? extra.units : 0;
+  $("extraUnitPrice").value = extra ? extra.unitPrice : 0;
+  $("extraManualPct").value = extra && extra.manualPct!==null && extra.manualPct!==undefined ? extra.manualPct : "";
+  updateExtraPreview();
+  $("extraDialog").showModal();
+}
+
+$("newMonthBtn").addEventListener("click",()=>openMonthDialog(false));
+$("editMonthBtn").addEventListener("click",()=>openMonthDialog(true));
+$("workDays").addEventListener("input",updateMonthPreview);
+$("addDayBtn").addEventListener("click",()=>openDayDialog());
+$("addScratchBtn").addEventListener("click",addScratchTemp);
+$("addExtraBtn").addEventListener("click",()=>openExtraDialog());
+["extraUnits","extraUnitPrice","extraManualPct"].forEach(id=>$(id).addEventListener("input",updateExtraPreview));
+["pasivo","activo","pagos","tarjeta"].forEach(id=>$(id).addEventListener("input",updateDayPreview));
+
+$("monthForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const key = $("monthKey").value;
+  const workDays = Number($("workDays").value);
+  if(!key || !workDays) return;
+  if(!data.months[key]) data.months[key] = {workDays,days:[],extras:[]};
+  else data.months[key].workDays = workDays;
+  currentMonth = key;
+  saveData(); $("monthDialog").close(); render(); toast("Mes guardado");
+});
+
+function celebrateCrossing(oldSale,newSale,workDays){
+  const oldIdx = tramoIndexFor(oldSale,workDays);
+  const newIdx = tramoIndexFor(newSale,workDays);
+  if(newIdx > oldIdx){
+    const reached = TRAMOS[newIdx];
+    const skipped = newIdx-oldIdx;
+    const extra = skipped>1 ? ` Has saltado ${skipped} tramos de golpe.` : "";
+    setTimeout(()=>toast(`🎉 ¡Nuevo tramo: ${String(reached.pct).replace('.',',')} %!${extra}`),180);
+  }
+}
+
+$("extraForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const month=getMonth(); if(!month) return;
+  if(!month.extras) month.extras=[];
+  const editingId=$("editingExtraId").value;
+  const units=Number($("extraUnits").value||0);
+  const unitPrice=Number($("extraUnitPrice").value||0);
+  const manualPct=$("extraManualPct").value;
+  const derived=extraDerived(units,unitPrice,manualPct);
+  const entry={
+    id: editingId || ("x"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)),
+    name: $("extraName").value.trim(), units, unitPrice,
+    manualPct: manualPct === "" ? "" : Number(manualPct),
+    pct:derived.pct, sales:derived.sales, commission:derived.commission
+  };
+  if(editingId){
+    const idx=month.extras.findIndex(x=>x.id===editingId); if(idx>=0) month.extras[idx]=entry;
+  } else month.extras.push(entry);
+  saveData(); $("extraDialog").close(); render(); toast("Extra guardado");
+});
+
+$("addAccountBtn").addEventListener("click",()=>openAccountDialog());
+$("addIncidentBtn").addEventListener("click",()=>openIncidentDialog());
+
+$("accountForm").addEventListener("submit",e=>{
+  e.preventDefault(); const month=getMonth(); if(!month) return; ensureMonthCollections(month);
+  const id=$("editingAccountId").value;
+  const entry={id:id||("a"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)),date:$("accountDate").value,amount:Number($("accountAmount").value||0),extraId:$("accountExtra").value,reference:$("accountReference").value.trim(),note:$("accountNote").value.trim()};
+  if(id){const i=month.accountDeposits.findIndex(x=>x.id===id); if(i>=0) month.accountDeposits[i]=entry;} else month.accountDeposits.push(entry);
+  saveData(); $("accountDialog").close(); render(); toast("Ingreso a cuenta guardado");
+});
+$("incidentForm").addEventListener("submit",e=>{
+  e.preventDefault(); const month=getMonth(); if(!month) return; ensureMonthCollections(month);
+  const id=$("editingIncidentId").value;
+  const entry={id:id||("i"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)),date:$("incidentDate").value,type:$("incidentType").value,note:$("incidentNote").value.trim(),absent:$("incidentAbsent").checked};
+  if(id){const i=month.incidents.findIndex(x=>x.id===id); if(i>=0) month.incidents[i]=entry;} else month.incidents.push(entry);
+  saveData(); $("incidentDialog").close(); render(); toast("Incidencia guardada");
+});
+window.editAccount=id=>{const m=getMonth(); ensureMonthCollections(m); const x=m.accountDeposits.find(x=>x.id===id); if(x) openAccountDialog(x);};
+window.deleteAccount=id=>{if(!confirm("¿Borrar este ingreso a cuenta?"))return;const m=getMonth();ensureMonthCollections(m);m.accountDeposits=m.accountDeposits.filter(x=>x.id!==id);saveData();render();toast("Ingreso borrado");};
+window.editIncident=id=>{const m=getMonth(); ensureMonthCollections(m); const x=m.incidents.find(x=>x.id===id); if(x) openIncidentDialog(x);};
+window.deleteIncident=id=>{if(!confirm("¿Borrar esta incidencia?"))return;const m=getMonth();ensureMonthCollections(m);m.incidents=m.incidents.filter(x=>x.id!==id);saveData();render();toast("Incidencia borrada");};
+
+$("dayForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const month = getMonth();
+  if(!month) return;
+  const oldTotalSale = sumDays(month).sale;
+  const editingId = $("editingDayId").value;
+  const date = $("dayDate").value;
+  const entry = {
+    id: editingId || (Date.now().toString(36)+Math.random().toString(36).slice(2,7)),
+    date,
+    pasivo:num("pasivo"), activo:num("activo"), rascas:num("rascas"),
+    scratchPacks: tempScratchPacks.map(x=>({...x})),
+    pagos:num("pagos"), tarjeta:num("tarjeta")
+  };
+  entry.sale = entry.pasivo+entry.activo+entry.rascas;
+  entry.liq = entry.sale-entry.pagos-entry.tarjeta;
+
+  if(editingId){
+    const idx = month.days.findIndex(d=>d.id===editingId);
+    if(idx>=0) month.days[idx]=entry;
+  } else {
+    const sameDate = month.days.find(d=>d.date===date);
+    if(sameDate && !confirm("Ya existe una jornada con esa fecha. ¿Quieres añadir otra igualmente?")) return;
+    month.days.push(entry);
+  }
+  const newTotalSale = sumDays(month).sale;
+  saveData(); $("dayDialog").close(); render();
+  celebrateCrossing(oldTotalSale,newTotalSale,month.workDays);
+  setTimeout(()=>toast("Jornada guardada"),1100);
+});
+
+window.editExtra = id => {
+  const m=getMonth(); if(!m || !m.extras) return;
+  const e=m.extras.find(x=>x.id===id); if(e) openExtraDialog(e);
+};
+window.deleteExtra = id => {
+  if(!confirm("¿Borrar este extra?")) return;
+  const m=getMonth(); if(!m) return;
+  m.extras=(m.extras||[]).filter(x=>x.id!==id);
+  saveData(); render(); toast("Extra borrado");
+};
+
+window.editDay = id => {
+  const d = getMonth().days.find(x=>x.id===id);
+  if(d) openDayDialog(d);
+};
+window.deleteDay = id => {
+  if(!confirm("¿Borrar esta jornada?")) return;
+  const month=getMonth();
+  month.days = month.days.filter(d=>d.id!==id);
+  saveData(); render(); toast("Jornada borrada");
+};
+window.openMonth = key => {
+  currentMonth=key; saveData();
+  switchView("dashboard");
+  render();
+};
+
+function switchView(view){
+  const dash = view==="dashboard";
+  $("dashboardView").classList.toggle("hidden",!dash);
+  $("historyView").classList.toggle("hidden",dash);
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.view===view));
+  $("fabWrap").classList.toggle("hidden", !dash || !getMonth());
+}
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>switchView(t.dataset.view)));
+
+$("settingsBtn").addEventListener("click",()=>{ renderGreeting(); $("settingsDialog").showModal(); });
+$("saveNameBtn").addEventListener("click",()=>{
+  data.profile = data.profile || {};
+  data.profile.name = $("userName").value.trim() || "Azucena";
+  saveData(); renderGreeting(); toast("Nombre guardado");
+});
+
+$("exportBtn").addEventListener("click",()=>{
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download="mi-comision-copia.json";a.click();
+  URL.revokeObjectURL(url);
+  toast("Copia exportada");
+});
+$("importInput").addEventListener("change", async e=>{
+  const file=e.target.files[0]; if(!file) return;
+  try{
+    const parsed=JSON.parse(await file.text());
+    if(!parsed.months) throw new Error();
+    data=parsed; currentMonth=parsed.currentMonth || Object.keys(parsed.months).sort().pop() || null;
+    saveData(); $("settingsDialog").close(); render(); toast("Copia importada");
+  }catch{ alert("Ese archivo no parece una copia válida de Mi Comisión."); }
+  e.target.value="";
+});
+$("clearBtn").addEventListener("click",()=>{
+  if(!confirm("Esto borrará todos los meses y jornadas guardados en este dispositivo. ¿Continuar?")) return;
+  data={months:{},currentMonth:null,profile:{name:"Azucena"}}; currentMonth=null; saveData(); $("settingsDialog").close(); render(); toast("Datos borrados");
+});
+
+render();
+</script>
+</body>
+</html>
