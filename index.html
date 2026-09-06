@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-cuadra-version="0.12.0">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -936,6 +936,242 @@
       .bottom-nav-btn{font-size:12px!important}
     }
 
+
+    /* ===== CORRECCIÓN MÓVIL · AÑADIR JORNADA SIN DESBORDES ===== */
+    dialog{
+      box-sizing:border-box;
+      max-width:min(620px,calc(100vw - 16px));
+      width:min(620px,calc(100vw - 16px));
+      max-height:92dvh;
+      overflow-x:hidden;
+      overflow-y:auto;
+      margin:auto;
+    }
+    dialog .modal{
+      box-sizing:border-box;
+      width:100%;
+      max-width:100%;
+      min-width:0;
+      overflow-x:hidden;
+    }
+    dialog .modal *,
+    dialog .form-grid > *,
+    .active-box,.coupon-box,.bono-box,.scratch-box,
+    .active-add-row > *, .coupon-add-grid > *, .scratch-add-row > *{
+      min-width:0;
+      max-width:100%;
+    }
+    dialog input, dialog select, dialog textarea, dialog button{
+      max-width:100%;
+    }
+    .active-box,.coupon-box,.bono-box,.scratch-box{width:100%;}
+
+    @media(max-width:700px){
+      dialog{
+        width:calc(100vw - 16px);
+        max-width:calc(100vw - 16px);
+        border-radius:22px;
+      }
+      dialog .modal{padding:18px 16px 20px;}
+      .form-grid{grid-template-columns:minmax(0,1fr)!important;}
+      .active-add-row{
+        grid-template-columns:minmax(0,1.45fr) minmax(0,.75fr)!important;
+        gap:8px;
+      }
+      .active-add-row .btn{grid-column:1/-1;width:100%;}
+      .coupon-add-grid{
+        grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+      }
+      .coupon-add-grid .field:first-child{grid-column:1/-1;}
+      .scratch-add-row{
+        grid-template-columns:minmax(0,1fr) minmax(76px,.42fr)!important;
+        gap:8px;
+      }
+      .scratch-add-row .btn{grid-column:1/-1;width:100%;}
+      .field input,.field select{width:100%;min-width:0;}
+      .active-item,.scratch-item,.coupon-item-top{min-width:0;}
+      .modal-head h2{font-size:24px;}
+    }
+
+    @media(max-width:390px){
+      dialog{width:calc(100vw - 10px);max-width:calc(100vw - 10px);}
+      dialog .modal{padding:16px 12px 18px;}
+      .active-add-row,.coupon-add-grid,.scratch-add-row{grid-template-columns:minmax(0,1fr)!important;}
+      .coupon-add-grid .field:first-child{grid-column:auto;}
+      .active-add-row .btn,.scratch-add-row .btn{grid-column:auto;}
+    }
+
+
+
+    /* ===== CORRECCIÓN MÓVIL · OBJETIVOS Y TRAMOS ADAPTADOS ===== */
+    html,body{max-width:100%;overflow-x:hidden;}
+    .app,#dashboardView,#monthContent,.smart-section,.smart-section-body,
+    .tramo-card,.road-card,.grid,.card{min-width:0;max-width:100%;}
+    .smart-section-body{overflow:hidden;}
+    .tramo-strip,.road-track{
+      width:100%;max-width:100%;
+      overflow-x:auto;overflow-y:hidden;
+      -webkit-overflow-scrolling:touch;
+      overscroll-behavior-x:contain;
+    }
+    .road-milestones{max-width:100%;overflow:hidden;}
+    .milestone-chip{max-width:100%;white-space:normal;overflow-wrap:anywhere;}
+    .celebrate,.road-summary,.mini{overflow-wrap:anywhere;}
+
+    @media(max-width:700px){
+      #goalsSection .smart-section-body{padding-top:8px;}
+      #goalsSection .card{padding:16px 14px;}
+      #goalsSection .tramo-head,
+      #goalsSection .road-head{
+        display:grid!important;
+        grid-template-columns:minmax(0,1fr)!important;
+        gap:8px!important;
+        align-items:start!important;
+      }
+      #goalsSection .tramo-next{
+        text-align:left!important;
+        font-size:15px!important;
+        line-height:1.35!important;
+        max-width:100%;
+      }
+      #goalsSection .road-badge{
+        justify-self:start;
+        min-width:0;
+        width:auto;
+        padding:8px 11px;
+      }
+      #goalsSection .progress-label{
+        display:grid!important;
+        grid-template-columns:minmax(0,1fr)!important;
+        gap:4px!important;
+      }
+      #goalsSection .progress-label span:last-child{
+        text-align:left;
+      }
+      #goalsSection .tramo-current{font-size:34px!important;}
+      #goalsSection .tramo-strip{padding-bottom:8px;}
+      #goalsSection .tramo-chip{
+        flex:0 0 auto;
+        font-size:14px!important;
+        padding:8px 10px;
+      }
+      #goalsSection .road-step{width:76px!important;}
+      #goalsSection .road-line{flex-basis:14px!important;}
+      #goalsSection .road-node{width:34px!important;height:34px!important;}
+      #goalsSection .road-label{font-size:13px!important;}
+      #goalsSection .road-goal{font-size:12px!important;}
+      #goalsSection .road-milestones{gap:6px;}
+      #goalsSection .milestone-chip{
+        width:100%;
+        border-radius:14px;
+        padding:9px 10px;
+        line-height:1.35;
+      }
+      #goalsSection .grid.two{grid-template-columns:minmax(0,1fr)!important;}
+      #goalsSection .metric-row{
+        grid-template-columns:minmax(0,1fr) auto!important;
+        align-items:start;
+      }
+      #goalsSection .metric-row span,
+      #goalsSection .metric-row strong{min-width:0;overflow-wrap:anywhere;}
+      #goalsSection .metric-row strong{white-space:normal;}
+    }
+
+    @media(max-width:390px){
+      #goalsSection .card{padding:14px 12px;}
+      #goalsSection .road-step{width:70px!important;}
+      #goalsSection .road-line{flex-basis:10px!important;}
+      #goalsSection .metric-row{
+        grid-template-columns:minmax(0,1fr)!important;
+        gap:4px!important;
+      }
+      #goalsSection .metric-row strong{text-align:left!important;}
+    }
+
+    /* ===== ACTUALIZACIONES CUADRA ===== */
+    .update-card{
+      margin-top:10px;padding:14px;border:1px solid var(--line);border-radius:16px;
+      background:#f8fafc;display:grid;gap:10px
+    }
+    .update-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .update-meta{min-width:0}
+    .update-meta strong{display:block;font-size:15px;color:var(--text)}
+    .update-meta span{display:block;margin-top:3px;font-size:13px;color:var(--muted);line-height:1.35}
+    .version-badge{flex:0 0 auto;padding:7px 10px;border-radius:999px;background:#eef4ff;color:#315b9f;font-size:12px;font-weight:700}
+    .update-status{font-size:13px;color:var(--muted);min-height:18px}
+    .update-status.ok{color:var(--good)}
+    .update-status.warn{color:var(--warn)}
+    .update-status.bad{color:var(--bad)}
+    @media(max-width:420px){.update-row{align-items:flex-start}.version-badge{margin-top:1px}}
+
+
+    /* ===== V0.12 · INICIO CLARO + RESUMEN HOY/SEMANA/MES ===== */
+    .home-today-card{
+      background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px;
+      box-shadow:var(--shadow);display:grid;gap:14px;
+    }
+    .home-today-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .home-today-head h2{margin:0;font-size:20px;font-weight:700;color:var(--text)}
+    .home-date{margin-top:4px;color:var(--muted);font-size:14px;font-weight:500}
+    .home-today-badge{padding:7px 10px;border-radius:999px;background:#eef4ff;color:#2f6fed;font-size:12px;font-weight:700;white-space:nowrap}
+    .home-main-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    .home-main-metric{padding:15px 12px;border-radius:18px;background:#f8fafc;border:1px solid #e7ebf0;min-width:0}
+    .home-main-metric.primary{background:#f3f7ff;border-color:#dbe6ff}
+    .home-main-metric.pending{background:#fff9eb;border-color:#f5e5b6}
+    .home-main-metric span{display:block;font-size:13px;color:var(--muted);font-weight:600;line-height:1.25}
+    .home-main-metric strong{display:block;margin-top:6px;font-size:clamp(22px,6vw,31px);line-height:1.05;letter-spacing:-.025em;color:var(--text);font-weight:700;overflow-wrap:anywhere}
+    .home-main-metric.pending strong{color:#8a5c00}
+    .home-main-metric small{display:block;margin-top:6px;color:var(--muted);font-size:11px;line-height:1.25}
+    .home-journey-btn{min-height:54px;border-radius:17px;font-size:16px;font-weight:700}
+    .home-month-legacy,.smart-card#smartControlCard{display:none!important}
+
+    .period-switch{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:5px;background:#eef2f6;border-radius:16px;margin-bottom:12px}
+    .period-btn{border:0;background:transparent;color:#68737f;border-radius:12px;padding:11px 8px;font-size:14px;font-weight:650;cursor:pointer}
+    .period-btn.active{background:#fff;color:#2f6fed;box-shadow:0 2px 8px rgba(16,24,40,.08)}
+    .period-summary-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:var(--shadow)}
+    .period-summary-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+    .period-summary-head h2{margin:0;font-size:20px;font-weight:700}
+    .period-summary-head p{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .period-summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .period-stat{padding:14px;border-radius:16px;background:#f8fafc;border:1px solid #e7ebf0}
+    .period-stat.emphasis{grid-column:1/-1;background:#f3f7ff;border-color:#dbe6ff}
+    .period-stat.pending{background:#fff9eb;border-color:#f5e5b6}
+    .period-stat span{display:block;color:var(--muted);font-size:13px;font-weight:600}
+    .period-stat strong{display:block;margin-top:5px;font-size:23px;font-weight:700;letter-spacing:-.02em;color:var(--text)}
+    .period-stat.pending strong{color:#8a5c00}
+    .period-note{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.4}
+
+    @media(max-width:520px){
+      .home-main-metrics{grid-template-columns:1fr 1fr}
+      .home-main-metric.primary{grid-column:1/-1}
+      .home-main-metric strong{font-size:27px}
+      .home-today-head{align-items:flex-start}
+      .period-summary-grid{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:370px){
+      .home-main-metrics,.period-summary-grid{grid-template-columns:1fr}
+      .home-main-metric.primary,.period-stat.emphasis{grid-column:auto}
+    }
+
+
+    .home-date-note{margin-top:5px;color:var(--muted);font-size:13px;line-height:1.35;max-width:34ch}
+    @media(max-width:700px){.home-date-note{font-size:12.5px;max-width:30ch}}
+
+
+    /* ===== V0.14 · LIQUIDACIÓN CLARA + RESUMEN ADAPTADO ===== */
+    .liquidation-breakdown{margin-top:14px;padding:14px;border-radius:16px;background:#f8fafc;border:1px solid #e6ebf0}
+    .liquidation-breakdown-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:9px}
+    .liquidation-breakdown-list{display:grid;gap:7px}
+    .liquidation-breakdown-row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:9px 0;border-bottom:1px solid #e8edf2}
+    .liquidation-breakdown-row:last-child{border-bottom:0}
+    .liquidation-breakdown-row span{font-size:13px;color:var(--muted);line-height:1.35}
+    .liquidation-breakdown-row strong{font-size:14px;color:var(--text);white-space:nowrap}
+    .liquidation-breakdown-total{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:9px;padding-top:11px;border-top:2px solid #dbe3ea}
+    .liquidation-breakdown-total span{font-size:14px;font-weight:700;color:var(--muted)}
+    .liquidation-breakdown-total strong{font-size:24px;color:#1f5fbf}
+    .period-summary-explainer{margin:0 0 12px;color:var(--muted);font-size:13px;line-height:1.4}
+    @media(max-width:420px){.liquidation-breakdown-row{gap:8px}.liquidation-breakdown-row span{font-size:12.5px}.liquidation-breakdown-row strong{font-size:13.5px}}
+
   </style>
 </head>
 <body>
@@ -972,7 +1208,21 @@
       </div>
 
       <div id="monthContent" class="hidden">
-        <div class="hero" style="margin-top:14px">
+        <div class="home-today-card" id="homeTodayCard">
+          <div class="home-today-head">
+            <div><h2>Tu jornada anterior</h2><div class="home-date" id="homeTodayDate">Última jornada a registrar</div><div class="home-date-note">CUADRA muestra el día anterior porque la jornada se registra al día siguiente.</div></div>
+            <span class="home-today-badge" id="homeWorkBadge">Hoy</span>
+          </div>
+          <div class="home-main-metrics">
+            <div class="home-main-metric primary"><span>Vendido en esa jornada</span><strong id="homeTodaySold">0 €</strong></div>
+            <div class="home-main-metric"><span>Comisión estimada</span><strong id="homeCommissionEstimate">0 €</strong><small id="homeCommissionNote">El porcentaje de cada categoría depende del tramo general alcanzado</small></div>
+            <div class="home-main-metric hidden" id="homeExtraCommissionCard"><span>Comisión por extras</span><strong id="homeExtraCommission">0 €</strong><small>Se calcula aparte y no se suma a la comisión ordinaria</small></div>
+            <div class="home-main-metric pending"><span>Pendiente de liquidar</span><strong id="homePendingLiquidation">0 €</strong></div>
+          </div>
+          <button class="btn primary full home-journey-btn" id="homeJourneyBtn" type="button">＋ Registrar jornada anterior</button>
+        </div>
+
+        <div class="hero home-month-legacy" style="margin-top:14px">
           <div class="eyebrow" id="heroMonth">MES</div>
           <div class="hero-title">
             <div>
@@ -993,11 +1243,16 @@
             <div class="day-state-badge" id="todayStateBadge">Hoy</div>
           </div>
           <div class="liquidation-grid">
-            <div class="liquidation-mini"><span>Resultado de hoy</span><strong id="todayResult">0 €</strong></div>
+            <div class="liquidation-mini"><span>Movimientos de hoy</span><strong id="todayResult">0 €</strong></div>
             <div class="liquidation-mini"><span>Próxima liquidación</span><strong id="nextLiquidationDate">Sin configurar</strong></div>
             <div class="liquidation-mini"><span>Estado</span><strong id="todayLiquidationText">Configura tu calendario</strong></div>
           </div>
           <div class="liquidation-alert-negative hidden" id="negativeCarryoverNote"><div class="negative-carry-title">🔴 Saldo a compensar</div><div id="negativeCarryoverText">Este saldo negativo se arrastrará y se descontará en la siguiente liquidación.</div></div>
+          <div class="liquidation-breakdown hidden" id="liquidationBreakdown">
+            <div class="liquidation-breakdown-title">Qué incluye esta liquidación</div>
+            <div class="liquidation-breakdown-list" id="liquidationBreakdownList"></div>
+            <div class="liquidation-breakdown-total"><span>Total</span><strong id="liquidationBreakdownTotal">0 €</strong></div>
+          </div>
           <button class="btn primary full hidden" style="margin-top:12px" id="confirmLiquidationBtn">✅ Confirmar liquidación</button>
         </div>
 
@@ -1199,6 +1454,24 @@
     </section>
 
     <section id="historyView" class="hidden">
+      <div class="section-title"><h2>Resumen</h2></div>
+      <div class="period-switch" id="periodSwitch" aria-label="Periodo del resumen">
+        <button class="period-btn active" type="button" data-period="today">Hoy</button>
+        <button class="period-btn" type="button" data-period="week">Semana</button>
+        <button class="period-btn" type="button" data-period="month">Mes</button>
+      </div>
+      <div class="period-summary-card">
+        <div class="period-summary-head"><div><h2 id="periodSummaryTitle">Hoy</h2><p id="periodSummaryRange">Resumen de la jornada</p></div></div>
+        <div class="period-summary-grid">
+          <div class="period-stat emphasis"><span>Vendido</span><strong id="periodSold">0 €</strong></div>
+          <div class="period-stat"><span>Devuelto</span><strong id="periodReturned">0 €</strong></div>
+          <div class="period-stat"><span>Comisión estimada</span><strong id="periodCommission">—</strong></div>
+          <div class="period-stat"><span>Liquidado</span><strong id="periodSettled">0 €</strong></div>
+          <div class="period-stat pending"><span>Pendiente</span><strong id="periodPending">0 €</strong></div>
+        </div>
+        <div class="period-note" id="periodCommissionNote">El tramo se calcula con todas las ventas. Normal, alto y muy alto aplican el porcentaje que corresponda a ese mismo tramo. Extras aparte.</div>
+      </div>
+
       <div class="section-title"><h2>Tu evolución</h2></div>
       <div class="card"><div class="mini">Venta total de cada mes. Así ves de un vistazo si tu tendencia sube o baja.</div><div class="history-visual" id="historyVisual"></div></div>
       <div class="section-title"><h2>Comparativa de tramos</h2></div>
@@ -1266,12 +1539,12 @@
         </div>
         <div class="field">
           <label>Pasivo (€)</label>
-          <input type="number" id="pasivo" min="0" step="0.01" inputmode="decimal" value="0">
+          <input type="number" id="pasivo" min="0" step="0.01" inputmode="decimal">
           <div class="mini" id="pasivoAutoHint" style="margin-top:5px">Se rellenará automáticamente cuando añadas cupones.</div>
         </div>
         <div class="field">
           <label>Activo (€)</label>
-          <input type="number" id="activo" min="0" step="0.01" inputmode="decimal" value="0">
+          <input type="number" id="activo" min="0" step="0.01" inputmode="decimal">
           <div class="mini" id="activoAutoHint" style="margin-top:5px">Se rellenará automáticamente cuando añadas apuestas activas.</div>
         </div>
         <div class="active-box">
@@ -1284,7 +1557,7 @@
             </div>
             <div class="field">
               <label id="activeQtyLabel">Apuestas</label>
-              <input type="number" id="activeQty" min="0" step="1" inputmode="decimal" value="1">
+              <input type="number" id="activeQty" min="0" step="1" inputmode="decimal">
               <div class="mini" id="activeQtyHint"></div>
             </div>
             <button class="btn secondary" type="button" id="addActiveBtn">＋ Añadir</button>
@@ -1295,10 +1568,20 @@
           <label style="font-size:13px;font-weight:800;color:#475467">Control de cupones</label>
           <div class="mini" style="margin-top:4px">Puedes registrar varios sorteos en una misma jornada, aunque correspondan a fechas distintas.</div>
           <div class="mini" style="margin-top:5px">El precio se calcula automáticamente según la fecha del sorteo: lunes a jueves 2 €, viernes 3 €, sábado y domingo 2 €.</div>
+          <div class="mini" style="margin-top:5px">Elige el día del cupón; no hace falta escribir el nombre del sorteo.</div>
           <div class="coupon-add-grid">
             <div class="field">
-              <label>Tipo / sorteo</label>
-              <input type="text" id="couponType" placeholder="Ej. Cupón sábado">
+              <label>Día del cupón</label>
+              <select id="couponType">
+                <option value="">Selecciona el cupón</option>
+                <option value="Cupón lunes">Cupón lunes</option>
+                <option value="Cupón martes">Cupón martes</option>
+                <option value="Cupón miércoles">Cupón miércoles</option>
+                <option value="Cupón jueves">Cupón jueves</option>
+                <option value="Cupón viernes">Cupón viernes</option>
+                <option value="Cupón sábado">Cupón sábado</option>
+                <option value="Cupón domingo">Cupón domingo</option>
+              </select>
             </div>
             <div class="field">
               <label>Fecha sorteo</label>
@@ -1306,15 +1589,15 @@
             </div>
             <div class="field">
               <label>Llevados</label>
-              <input type="number" id="couponCarried" min="0" step="1" inputmode="numeric" value="0">
+              <input type="number" id="couponCarried" min="0" step="1" inputmode="numeric">
             </div>
             <div class="field">
               <label>Devueltos</label>
-              <input type="number" id="couponReturned" min="0" step="1" inputmode="numeric" value="0">
+              <input type="number" id="couponReturned" min="0" step="1" inputmode="numeric">
             </div>
             <div class="field">
               <label>TPV vendidos</label>
-              <input type="number" id="couponTpv" min="0" step="1" inputmode="numeric" value="0">
+              <input type="number" id="couponTpv" min="0" step="1" inputmode="numeric">
             </div>
           </div>
           <button class="btn secondary" type="button" id="addCouponBtn" style="margin-top:10px">＋ Añadir sorteo</button>
@@ -1325,7 +1608,7 @@
           <div class="mini" style="margin-top:4px">El bono pertenece siempre al lunes de esa semana. Solo puede registrarse en una jornada de lunes y se suma automáticamente al Pasivo de ese lunes.</div>
           <div class="field" style="margin-top:10px">
             <label>Bonos vendidos</label>
-            <input type="number" id="bonoQty" min="0" step="1" inputmode="numeric" value="0">
+            <input type="number" id="bonoQty" min="0" step="1" inputmode="numeric">
           </div>
           <div class="bono-summary" id="bonoSummary">No has registrado ningún bono.</div>
         </div>
@@ -1339,23 +1622,23 @@
             </div>
             <div class="field">
               <label>Paquetes</label>
-              <input type="number" id="scratchQty" min="1" step="1" inputmode="numeric" value="1">
+              <input type="number" id="scratchQty" min="1" step="1" inputmode="numeric">
             </div>
             <button class="btn secondary" type="button" id="addScratchBtn">＋ Añadir</button>
           </div>
           <div class="scratch-selected" id="scratchSelected"></div>
           <div class="field" style="margin-top:12px">
             <label>Total rascas (€)</label>
-            <input type="number" id="rascas" readonly value="0">
+            <input type="number" id="rascas" readonly>
           </div>
         </div>
         <div class="field">
           <label>Pagos (€)</label>
-          <input type="number" id="pagos" min="0" step="0.01" inputmode="decimal" value="0">
+          <input type="number" id="pagos" min="0" step="0.01" inputmode="decimal">
         </div>
         <div class="field">
           <label>Tarjeta (€)</label>
-          <input type="number" id="tarjeta" min="0" step="0.01" inputmode="decimal" value="0">
+          <input type="number" id="tarjeta" min="0" step="0.01" inputmode="decimal">
         </div>
       </div>
       <div class="calc-preview">
@@ -1382,23 +1665,23 @@
         </div>
         <div class="field">
           <label>Extras físicos con los que empiezas</label>
-          <input type="number" id="extraInitialStock" min="0" step="1" inputmode="numeric" value="0" required>
+          <input type="number" id="extraInitialStock" min="0" step="1" inputmode="numeric" required>
         </div>
         <div class="field">
           <label>Extras físicos pedidos después</label>
-          <input type="number" id="extraAdditionalStock" min="0" step="1" inputmode="numeric" value="0">
+          <input type="number" id="extraAdditionalStock" min="0" step="1" inputmode="numeric">
         </div>
         <div class="field">
           <label>Extras físicos vendidos</label>
-          <input type="number" id="extraPhysicalSold" min="0" step="1" inputmode="numeric" value="0" required>
+          <input type="number" id="extraPhysicalSold" min="0" step="1" inputmode="numeric" required>
         </div>
         <div class="field">
           <label>Extras vendidos por TPV</label>
-          <input type="number" id="extraTpvSold" min="0" step="1" inputmode="numeric" value="0" required>
+          <input type="number" id="extraTpvSold" min="0" step="1" inputmode="numeric" required>
         </div>
         <div class="field">
           <label>Precio de cada cupón (€)</label>
-          <input type="number" id="extraUnitPrice" min="0" step="0.01" inputmode="decimal" value="0" required>
+          <input type="number" id="extraUnitPrice" min="0" step="0.01" inputmode="decimal" required>
         </div>
         <div class="field">
           <label>Porcentaje manual (opcional)</label>
@@ -1517,6 +1800,22 @@
         <div id="overrideList" class="override-list"></div>
       </div>
 
+      <div class="settings-section">
+        <h3>Actualizaciones</h3>
+        <div class="mini">Cuando publiquemos una nueva versión en GitHub/Vercel, no tendrás que volver a instalar CUADRA.</div>
+        <div class="update-card">
+          <div class="update-row">
+            <div class="update-meta">
+              <strong>CUADRA instalada</strong>
+              <span id="updateHelpText">Busca la última versión publicada y recarga la app.</span>
+            </div>
+            <span class="version-badge" id="appVersionBadge">v0.12.0</span>
+          </div>
+          <button class="btn secondary full" id="updateAppBtn" type="button">↻ Actualizar CUADRA</button>
+          <div class="update-status" id="updateStatus" aria-live="polite"></div>
+        </div>
+      </div>
+
       <div class="actions">
         <button class="btn primary full" id="saveSettingsBtn">Guardar configuración</button>
         <button class="btn secondary full" id="exportBtn">Exportar copia de seguridad</button>
@@ -1535,6 +1834,7 @@
   <div class="toast" id="toast"></div>
 
 <script>
+const APP_VERSION = "0.17.0";
 const TRAMOS = [
   {pct:2.5, rate:210},
   {pct:6, rate:296},
@@ -1546,20 +1846,20 @@ const TRAMOS = [
   {pct:17.5, rate:694}
 ];
 const SCRATCH_CATALOG = [
+  {name:"7 de la Suerte 2025", price:0.50, prizePct:55, group:"resto", status:"voluntario", endDate:"2026-09-23"},
   {name:"Siete y Media 2026", price:1, prizePct:59, group:"resto", status:"obligatorio"},
+  {name:"El Gato de la Fortuna", price:1, prizePct:59, group:"resto", status:"voluntario"},
   {name:"X10 2026", price:2, prizePct:64, group:"alto", status:"obligatorio"},
   {name:"Las Mil y Una Noches", price:2, prizePct:64, group:"alto", status:"obligatorio"},
-  {name:"X20 2026", price:5, prizePct:69.59, group:"muy_alto", status:"obligatorio", voluntaryFrom:"2026-09-15"},
-  {name:"5 años para ti", price:5, prizePct:69.59, group:"muy_alto", status:"obligatorio"},
-  {name:"X50 2026", price:10, prizePct:74, group:"muy_alto", status:"obligatorio", voluntaryFrom:"2026-09-15"},
-  {name:"7 de la Suerte 2025", price:0.50, prizePct:55, group:"resto", status:"voluntario", endDate:"2026-09-23"},
-  {name:"El Gato de la Fortuna", price:1, prizePct:59, group:"resto", status:"voluntario"},
   {name:"Rasca Abeja Reina", price:2, prizePct:64, group:"alto", status:"voluntario"},
   {name:"Rasca Flower Power", price:2, prizePct:64, group:"alto", status:"voluntario"},
   {name:"Galleta de la Fortuna 2025", price:2, prizePct:64, group:"alto", status:"voluntario"},
   {name:"Palabras Ganadoras", price:3, prizePct:65.5, group:"alto", status:"voluntario"},
   {name:"Rasca de Verano 2026", price:3, prizePct:65.5, group:"alto", status:"voluntario", endDate:"2026-09-23"},
+  {name:"X20 2026", price:5, prizePct:69.59, group:"muy_alto", status:"obligatorio", voluntaryFrom:"2026-09-15"},
+  {name:"5 años para ti", price:5, prizePct:69.59, group:"muy_alto", status:"obligatorio"},
   {name:"Millonario 2024", price:5, prizePct:69.5, group:"muy_alto", status:"voluntario", endDate:"2026-09-23"},
+  {name:"X50 2026", price:10, prizePct:74, group:"muy_alto", status:"obligatorio", voluntaryFrom:"2026-09-15"},
   {name:"Rasca Platinum 2026", price:10, prizePct:74, group:"muy_alto", status:"voluntario"},
   {name:"Mega Millonario 2026", price:10, prizePct:74, group:"muy_alto", status:"voluntario"}
 ];
@@ -1590,6 +1890,21 @@ const EXTRA_TIERS = [
   {max:599,pct:16.5},
   {max:Infinity,pct:17.5}
 ];
+// Comisión 2026: los tres tipos de comisión avanzan con el MISMO tramo general.
+// El tramo se alcanza con la suma de ventas de TODOS los productos.
+const COMMISSION_BASE_PER_WORKDAY = 142;
+const COMMISSION_PAYOUT_FACTOR = 0.90;
+const COMMISSION_TIER_RATES = [
+  {normal:2.5, high:2.0, veryHigh:1.5},
+  {normal:6.0, high:5.0, veryHigh:4.0},
+  {normal:10.0, high:8.5, veryHigh:7.0},
+  {normal:13.0, high:11.5, veryHigh:8.5},
+  {normal:14.0, high:12.0, veryHigh:9.0},
+  {normal:15.0, high:12.5, veryHigh:9.5},
+  {normal:16.0, high:13.0, veryHigh:10.0},
+  {normal:17.5, high:14.0, veryHigh:10.5}
+];
+
 const extraPctForUnits = units => EXTRA_TIERS.find(t => Number(units||0) <= t.max)?.pct ?? 12;
 const RATE_16 = 580;
 const RATE_175 = 694;
@@ -1605,6 +1920,7 @@ const $ = id => document.getElementById(id);
 const fmt = n => new Intl.NumberFormat("es-ES",{style:"currency",currency:"EUR",minimumFractionDigits:0,maximumFractionDigits:2}).format(Number(n||0));
 const pct = n => `${Math.max(0,n).toFixed(0)} %`;
 const num = id => Number($(id).value || 0);
+const blankIfZero = v => Number(v||0) === 0 ? "" : String(v);
 
 let data = loadData();
 if(!data.profile) data.profile={name:"Azucena"};
@@ -1789,6 +2105,114 @@ const DAILY_PHRASES = [
   "Cada euro cuenta, pero tu constancia cuenta todavía más.",
   "Vamos a por el día de hoy. Mañana ya veremos el siguiente."
 ];
+
+let summaryPeriod = "today";
+function dateKeyLocal(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
+function rangeForSummary(period){
+  const now=new Date();
+  if(period==="today"){
+    const latest=allDays().filter(x=>x.date<=previousIsoDate(isoToday())).sort((a,b)=>b.date.localeCompare(a.date))[0];
+    const k=latest?.date || previousIsoDate(isoToday());
+    const label=new Date(k+"T12:00:00").toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long"}).replace(/^./,c=>c.toUpperCase());
+    return {from:k,to:k,title:"Última jornada",range:label};
+  }
+  if(period==="week"){
+    const day=(now.getDay()+6)%7;
+    const a=new Date(now); a.setDate(now.getDate()-day);
+    const b=new Date(a); b.setDate(a.getDate()+6);
+    return {from:dateKeyLocal(a),to:dateKeyLocal(b),title:"Esta semana",range:`${dateLabelShort(dateKeyLocal(a))} – ${dateLabelShort(dateKeyLocal(b))}`};
+  }
+  const month=getMonth();
+  const key=currentMonth || dateKeyLocal(now).slice(0,7);
+  const [y,m]=key.split("-").map(Number);
+  const a=new Date(y,m-1,1), b=new Date(y,m,0);
+  return {from:dateKeyLocal(a),to:dateKeyLocal(b),title:"Este mes",range:monthLabel(key)};
+}
+function returnedValueForDay(day){
+  return (day?.coupons||[]).reduce((a,c)=>{const d=couponDerived(c);return a+Math.max(0,Number(d.returned||0))*Number(d.unitPrice||0);},0);
+}
+function summaryStats(period){
+  const r=rangeForSummary(period);
+  const days=allDays().filter(x=>x.date>=r.from && x.date<=r.to);
+  const sold=days.reduce((a,x)=>a+Number(x.day.sale||0),0);
+  const returned=days.reduce((a,x)=>a+returnedValueForDay(x.day),0);
+  const settled=(data.settlements||[]).filter(s=>(s.confirmedAt||"")>=r.from && (s.confirmedAt||"")<=r.to).reduce((a,s)=>a+Number(s.amount||0),0);
+  const pendingItems=pendingEntries(r.to).filter(x=>x.date>=r.from && x.date<=r.to);
+  const pending=pendingItems.reduce((a,x)=>a+(x.kind==="deposit"?Number(x.deposit.amount||0):Number(x.day.liq||0)),0);
+  const commission=ordinaryCommissionEstimateForEntries(days);
+  return {...r,sold,returned,settled,pending,commission,dayCount:days.length,pendingCount:pendingItems.length};
+}
+function renderPeriodSummary(){
+  if(!$('periodSummaryTitle')) return;
+  const s=summaryStats(summaryPeriod);
+  $('periodSummaryTitle').textContent=s.title;
+  $('periodSummaryRange').textContent=s.range;
+  setMoneyText('periodSold',s.sold);
+  setMoneyText('periodReturned',s.returned);
+  setMoneyText('periodSettled',s.settled);
+  setMoneyText('periodPending',s.pending);
+  setMoneyText('periodCommission',s.commission?.total||0);
+  if($('periodCommissionNote')){
+    const c=s.commission||{};
+    const currentMonth=getMonth();
+    const tier=commissionTierForMonth(currentMonth);
+    const pctTxt=tier.idx>=0 ? ` (${String(tier.normalPct).replace('.',',')} % / ${String(tier.highPct).replace('.',',')} % / ${String(tier.veryHighPct).replace('.',',')} %)` : '';
+    $('periodCommissionNote').textContent=`Ordinaria estimada${pctTxt}: normal ${fmt(c.normalCommission||0)} · rascas alto ${fmt(c.highCommission||0)} · rascas muy alto ${fmt(c.veryHighCommission||0)}. Extras aparte.`;
+  }
+  document.querySelectorAll('.period-btn').forEach(b=>b.classList.toggle('active',b.dataset.period===summaryPeriod));
+}
+function renderHomeFocus(month){
+  if(!$('homeTodayCard') || !month) return;
+  const targetDate=previousIsoDate(isoToday());
+  const day=(month.days||[]).find(d=>d.date===targetDate);
+  const sold=Number(day?.sale||0);
+  const today=isoToday();
+  const p=pendingLiquidationStats(scheduleForDate(today).liquidation?previousIsoDate(today):null);
+
+  setMoneyText('homeTodaySold',sold);
+  setMoneyText('homePendingLiquidation',p.amount);
+
+  const dayCommission=ordinaryCommissionEstimate(day?[day]:[],month);
+  setMoneyText('homeCommissionEstimate',dayCommission.total);
+  const tramoTxt=dayCommission.normalPct ? `${String(dayCommission.normalPct).replace('.',',')} %` : 'sin tramo alcanzado';
+  const altoTxt=dayCommission.highPct ? `${String(dayCommission.highPct).replace('.',',')} %` : '0 %';
+  const muyAltoTxt=dayCommission.veryHighPct ? `${String(dayCommission.veryHighPct).replace('.',',')} %` : '0 %';
+  $('homeCommissionNote').textContent=`Tramo actual: normal ${tramoTxt} · alto ${altoTxt} · muy alto ${muyAltoTxt}`;
+
+  const extraTotal=sumExtras(month).commission;
+  const extraCard=$('homeExtraCommissionCard');
+  if(extraCard){
+    const hasExtras=(month.extras||[]).length>0;
+    extraCard.classList.toggle('hidden',!hasExtras);
+    if(hasExtras) setMoneyText('homeExtraCommission',extraTotal);
+  }
+
+  $('homeTodayDate').textContent=new Date(targetDate+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'}).replace(/^./,c=>c.toUpperCase());
+  const sched=scheduleForDate(targetDate);
+  $('homeWorkBadge').textContent=sched.work?'Día de trabajo':'Libranza';
+  $('homeJourneyBtn').textContent=day?'Continuar jornada anterior':'＋ Registrar jornada anterior';
+  $('homeJourneyBtn').dataset.targetDate=targetDate;
+}
+
+function renderLiquidationBreakdown(stats){
+  const box=$("liquidationBreakdown");
+  const list=$("liquidationBreakdownList");
+  if(!box || !list) return;
+  if(!stats?.entries?.length){ box.classList.add("hidden"); list.innerHTML=""; return; }
+  list.innerHTML=stats.entries.map(x=>{
+    if(x.kind==="deposit"){
+      const extra=x.month?.extras?.find(e=>e.id===x.deposit.extraId);
+      const label=extra?`Ingreso a cuenta · ${extra.name}`:"Ingreso a cuenta";
+      return `<div class="liquidation-breakdown-row"><span>${dateLabelShort(x.date)} · ${label}</span><strong>${fmt(Number(x.deposit.amount||0))}</strong></div>`;
+    }
+    const d=x.day;
+    const label=`${dateLabelShort(x.date)} · Jornada`;
+    return `<div class="liquidation-breakdown-row"><span>${label}</span><strong>${fmt(Number(d.liq||0))}</strong></div>`;
+  }).join("");
+  setMoneyText("liquidationBreakdownTotal",stats.amount);
+  box.classList.remove("hidden");
+}
+
 function renderGreeting(){
   const now = new Date();
   const h = now.getHours();
@@ -1846,6 +2270,102 @@ function scratchMonthStats(month){
   const top=Object.entries(byProduct).sort((a,b)=>b[1]-a[1])[0];
   return {packs,sales,top:top?`${top[0]} (${top[1]})`:"—",groupSales};
 }
+function commissionSalesForDay(day){
+  const d=day||{};
+  let normal=Number(d.pasivo||0)+Number(d.activo||0);
+  let high=0, veryHigh=0;
+  let detailedScratch=0;
+
+  (d.scratchPacks||[]).forEach(x=>{
+    const q=Number(x.qty||0);
+    const packValue=Number(x.packValue||scratchPackValue(x.price||0));
+    const value=q*packValue;
+    detailedScratch+=value;
+    if(x.legacy){
+      normal+=value;
+      return;
+    }
+    const meta=scratchCatalogItem(x.product);
+    const group=x.group || meta?.group || "resto";
+    if(group==="alto") high+=value;
+    else if(group==="muy_alto") veryHigh+=value;
+    else normal+=value;
+  });
+
+  // Compatibilidad con jornadas antiguas que solo guardaban el total de rascas.
+  const scratchTotal=Number(d.rascas||0);
+  if(scratchTotal>detailedScratch) normal+=(scratchTotal-detailedScratch);
+
+  return {normal,high,veryHigh,total:normal+high+veryHigh};
+}
+
+function commissionSalesForDays(days){
+  return (days||[]).reduce((a,d)=>{
+    const x=commissionSalesForDay(d);
+    a.normal+=x.normal; a.high+=x.high; a.veryHigh+=x.veryHigh; a.total+=x.total;
+    return a;
+  },{normal:0,high:0,veryHigh:0,total:0});
+}
+
+function actualWorkdayCount(days){
+  return (days||[]).filter(d=>scheduleForDate(d.date).work).length;
+}
+
+function commissionTierForMonth(month){
+  if(!month) return {idx:-1, normalPct:0, highPct:0, veryHighPct:0, totalSales:0, workdays:0};
+  const recorded=(month.days||[]).filter(d=>scheduleForDate(d.date).work);
+  const workdays=recorded.length;
+  const sales=commissionSalesForDays(month.days||[]);
+  const idx=workdays>0 ? tramoIndexFor(sales.total, workdays) : -1;
+  const rates=idx>=0 ? COMMISSION_TIER_RATES[idx] : {normal:0,high:0,veryHigh:0};
+  return {idx,normalPct:rates.normal,highPct:rates.high,veryHighPct:rates.veryHigh,totalSales:sales.total,workdays};
+}
+
+function ordinaryCommissionEstimate(days, month){
+  const list=days||[];
+  if(!month || !list.length){
+    return {total:0,normalCommission:0,highCommission:0,veryHighCommission:0,
+      normalSales:0,highSales:0,veryHighSales:0,normalPct:0,highPct:0,veryHighPct:0,workdays:0,base:0};
+  }
+
+  const sales=commissionSalesForDays(list);
+  // El porcentaje aplicable es el del tramo general alcanzado en el mes con TODAS las ventas.
+  const tier=commissionTierForMonth(month);
+  const workdays=actualWorkdayCount(list);
+  const base=COMMISSION_BASE_PER_WORKDAY*workdays;
+  const commissionableNormal=Math.max(0,sales.normal-base);
+
+  // Solo Resto de productos descuenta el umbral. Alto y Muy alto no descuentan umbral.
+  const normalCommission=commissionableNormal*(tier.normalPct/100)*COMMISSION_PAYOUT_FACTOR;
+  const highCommission=sales.high*(tier.highPct/100)*COMMISSION_PAYOUT_FACTOR;
+  const veryHighCommission=sales.veryHigh*(tier.veryHighPct/100)*COMMISSION_PAYOUT_FACTOR;
+
+  return {
+    total:normalCommission+highCommission+veryHighCommission,
+    normalCommission,highCommission,veryHighCommission,
+    normalSales:sales.normal,highSales:sales.high,veryHighSales:sales.veryHigh,
+    normalPct:tier.normalPct,highPct:tier.highPct,veryHighPct:tier.veryHighPct,
+    tierIndex:tier.idx,tierTotalSales:tier.totalSales,workdays,base,commissionableNormal
+  };
+}
+
+function ordinaryCommissionEstimateForEntries(entries){
+  const groups={};
+  (entries||[]).forEach(x=>{
+    const key=x.monthKey || x.date?.slice(0,7);
+    if(!groups[key]) groups[key]={month:x.month,days:[]};
+    groups[key].days.push(x.day||x);
+  });
+  return Object.values(groups).reduce((a,g)=>{
+    const c=ordinaryCommissionEstimate(g.days,g.month);
+    a.total+=c.total;
+    a.normalCommission+=c.normalCommission;
+    a.highCommission+=c.highCommission;
+    a.veryHighCommission+=c.veryHighCommission;
+    return a;
+  },{total:0,normalCommission:0,highCommission:0,veryHighCommission:0});
+}
+
 
 function normalizeExtra(e){
   // Compatibilidad con extras creados antes de añadir el control de existencias y TPV.
@@ -1964,9 +2484,11 @@ function render(){
   $("noMonth").classList.toggle("hidden", !!month);
   $("monthContent").classList.toggle("hidden", !month);
   $("fabWrap").classList.toggle("hidden", !month || !$("dashboardView").classList.contains("hidden")===false);
-  if(!month){ renderHistory(); return; }
+  if(!month){ renderHistory(); renderPeriodSummary(); return; }
   ensureMonthCollections(month);
   renderSmartControl(month);
+  renderHomeFocus(month);
+  renderPeriodSummary();
 
   const today=isoToday();
   const todaySchedule=scheduleForDate(today);
@@ -1991,6 +2513,7 @@ function render(){
   } else {
     $("pendingPeriod").textContent=todaySchedule.liquidation?"No hay movimientos anteriores pendientes":"Sin movimientos pendientes";
   }
+  renderLiquidationBreakdown(pstats);
   setMoneyText("todayResult", todayResult);
   const nextLiq=nextLiquidationFrom(today);
   $("nextLiquidationDate").textContent=nextLiq?dateLabelShort(nextLiq):"Sin configurar";
@@ -2318,7 +2841,8 @@ function confirmCurrentLiquidation(){
     return;
   }
   const detail=`${stats.dayCount} jornada${stats.dayCount===1?'':'s'}${stats.depositCount?` y ${stats.depositCount} ingreso${stats.depositCount===1?'':'s'} a cuenta`:''}`;
-  if(!confirm(`Vas a cerrar una liquidación de ${fmt(stats.amount)} correspondiente a ${detail}. ¿Confirmar?`)) return;
+  const periodo=stats.from&&stats.to?`${dateLabelShort(stats.from)}–${dateLabelShort(stats.to)}`:"periodo pendiente";
+  if(!confirm(`Liquidación: ${fmt(stats.amount)}\nPeriodo: ${periodo}\nIncluye: ${detail}\n\n¿Confirmar liquidación?`)) return;
   const id="liq"+Date.now().toString(36);
   stats.entries.forEach(x=>{
     if(x.kind==='deposit') x.deposit.settlementId=id;
@@ -2394,7 +2918,7 @@ function openAccountDialog(item=null){
   $("accountDialogTitle").textContent=item?"Editar ingreso a cuenta":"Añadir ingreso a cuenta";
   $("editingAccountId").value=item?.id||"";
   $("accountDate").value=item?.date||new Date().toISOString().slice(0,10);
-  $("accountAmount").value=item?.amount??"";
+  $("accountAmount").value=(item && Number(item.amount||0)!==0)?item.amount:"";
   $("accountReference").value=item?.reference||"";
   $("accountNote").value=item?.note||"";
   $("accountExtra").innerHTML='<option value="">General / sin asociar</option>'+month.extras.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
@@ -2505,7 +3029,7 @@ function updateActiveInputMode(){
     label.textContent="Importe vendido (€)"; input.step="0.01"; input.min="0"; input.value="";
     if(hint) hint.textContent="Introduce el total que aparece en el TPV. La app lo acumulará directamente.";
   } else {
-    label.textContent="Apuestas"; input.step="1"; input.min="1"; if(!Number(input.value)) input.value="1";
+    label.textContent="Apuestas"; input.step="1"; input.min="1"; if(Number(input.value)<0) input.value="";
     if(hint) hint.textContent="";
   }
 }
@@ -2531,7 +3055,7 @@ function syncActivoFromActive(resetWhenEmpty=false){
     input.value=value; input.readOnly=true;
     if(hint) hint.textContent=`Automático por juegos activos: ${fmt(value)}.`;
   } else {
-    input.readOnly=false; if(resetWhenEmpty) input.value=0;
+    input.readOnly=false; if(resetWhenEmpty) input.value="";
     if(hint) hint.textContent="Se rellenará automáticamente cuando añadas apuestas activas.";
   }
   updateDayPreview();
@@ -2552,14 +3076,14 @@ function addActiveTemp(){
     const existing=tempActiveBets.find(x=>x.name===name && x.mode!=="amount");
     if(existing) existing.qty=Number(existing.qty||0)+qty;
     else tempActiveBets.push({name:item.name,price:item.price,qty});
-    $("activeQty").value=1;
+    $("activeQty").value="";
   }
   renderActiveSelected();
 }
 window.removeActiveTemp=i=>{tempActiveBets.splice(i,1);renderActiveSelected();};
 
 function populateScratchCatalog(){
-  $("scratchProduct").innerHTML = SCRATCH_CATALOG.map((x,i)=>`<option value="${i}">${x.name} · ${String(x.price).replace('.',',')} € · ${scratchGroupLabel(x.group)} · paquete ${fmt(scratchPackValue(x.price))}</option>`).join("");
+  $("scratchProduct").innerHTML = SCRATCH_CATALOG.map((x,i)=>`<option value="${i}">${x.name} · ${String(x.price).replace('.',',')} €</option>`).join("");
 }
 function scratchTempTotal(){
   return tempScratchPacks.reduce((a,x)=>a + Number(x.packValue||0)*Number(x.qty||0),0);
@@ -2572,23 +3096,25 @@ function renderScratchSelected(){
     box.innerHTML=tempScratchPacks.map((x,i)=>`<div class="scratch-item">
       <div class="scratch-item-main">
         <div class="scratch-item-name">${x.product}</div>
-        <div class="scratch-item-meta">${x.legacy ? 'Registro anterior sin desglose' : (()=>{ const m=scratchCatalogItem(x.product); const gp=x.group||m?.group; const pp=x.prizePct??m?.prizePct; return `${x.qty} paquete${Number(x.qty)===1?'':'s'} × ${fmt(x.packValue)} = ${fmt(Number(x.qty)*Number(x.packValue))} · ${scratchGroupLabel(gp)}${pp!=null ? ` · Premios ${String(pp).replace('.',',')} %` : ''}`; })()}</div>
+        <div class="scratch-item-meta">${x.legacy ? 'Registro anterior sin desglose' : `${x.qty} paquete${Number(x.qty)===1?'':'s'} · ${fmt(Number(x.qty)*Number(x.packValue))}`}</div>
       </div>
       <button type="button" class="scratch-remove" onclick="removeScratchTemp(${i})">Quitar</button>
     </div>`).join('');
   }
-  $("rascas").value=scratchTempTotal();
+  const scratchTotal=scratchTempTotal();
+  $("rascas").value=scratchTotal?scratchTotal:"";
   updateDayPreview();
 }
 window.removeScratchTemp = i => { tempScratchPacks.splice(i,1); renderScratchSelected(); };
 function addScratchTemp(){
   const item=SCRATCH_CATALOG[Number($("scratchProduct").value||0)];
-  const qty=Math.max(1,Number($("scratchQty").value||1));
+  const qty=Math.max(0,Number($("scratchQty").value||0));
   if(!item) return;
+  if(qty<=0){alert("Indica al menos 1 paquete.");return;}
   const existing=tempScratchPacks.find(x=>!x.legacy && x.product===item.name);
   if(existing) existing.qty=Number(existing.qty||0)+qty;
   else tempScratchPacks.push({product:item.name,price:item.price,packValue:scratchPackValue(item.price),qty,group:item.group,prizePct:item.prizePct,status:item.status});
-  $("scratchQty").value=1; renderScratchSelected();
+  $("scratchQty").value=""; renderScratchSelected();
 }
 function couponDraftValue(){
   return tempCoupons.reduce((sum,c)=>sum+couponDerived(c).totalValue,0);
@@ -2612,7 +3138,7 @@ function updateBonoAvailability(){
   const allowed=bonoAllowedForCurrentDay();
   qty.disabled=!allowed;
   box.style.opacity=allowed?"1":"0.58";
-  if(!allowed) qty.value=0;
+  if(!allowed) qty.value="";
   updateBonoSummary();
 }
 function updateBonoSummary(){
@@ -2679,7 +3205,7 @@ function renderCouponSelected(){
 }
 window.removeCouponTemp=i=>{tempCoupons.splice(i,1);renderCouponSelected();syncPasivoFromCoupons(true);};
 function addCouponTemp(){
-  const type=$("couponType").value.trim()||"Cupón";
+  const type=$("couponType").value||"Cupón";
   const drawDate=$("couponDrawDate").value||"";
   const carried=Math.max(0,Number($("couponCarried").value||0));
   const returned=Math.max(0,Number($("couponReturned").value||0));
@@ -2688,9 +3214,9 @@ function addCouponTemp(){
   tempCoupons.push({id:"c"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),type,drawDate,carried,returned,tpv});
   $("couponType").value="";
   $("couponDrawDate").value="";
-  $("couponCarried").value=0;
-  $("couponReturned").value=0;
-  $("couponTpv").value=0;
+  $("couponCarried").value="";
+  $("couponReturned").value="";
+  $("couponTpv").value="";
   renderCouponSelected();
   syncPasivoFromCoupons();
 }
@@ -2699,10 +3225,10 @@ function openDayDialog(day=null){
   $("editingDayId").value = day ? day.id : "";
   const today = new Date().toISOString().slice(0,10);
   $("dayDate").value = day ? day.date : today;
-  ["pagos","tarjeta"].forEach(id=>$(id).value = day ? day[id] : 0);
-  $("pasivo").value = day ? day.pasivo : 0;
+  ["pagos","tarjeta"].forEach(id=>$(id).value = day ? blankIfZero(day[id]) : "");
+  $("pasivo").value = day ? blankIfZero(day.pasivo) : "";
   $("pasivo").readOnly = false;
-  $("activo").value = day ? day.activo : 0;
+  $("activo").value = day ? blankIfZero(day.activo) : "";
   $("activo").readOnly = false;
   populateActiveCatalog();
   if(day && Array.isArray(day.activeBets) && day.activeBets.length){
@@ -2711,7 +3237,7 @@ function openDayDialog(day=null){
     tempActiveBets = [];
   } else tempActiveBets=[];
   renderActiveSelected();
-  $("bonoQty").value = day && isMondayDate(day.date) ? Number(day.bonoQty||0) : 0;
+  $("bonoQty").value = day && isMondayDate(day.date) ? blankIfZero(Number(day.bonoQty||0)) : "";
   updateBonoAvailability();
   populateScratchCatalog();
   if(day && Array.isArray(day.scratchPacks) && day.scratchPacks.length){
@@ -2725,6 +3251,7 @@ function openDayDialog(day=null){
   if(tempCoupons.length || (bonoAllowedForCurrentDay() && Number($("bonoQty").value||0)>0)) syncPasivoFromCoupons();
   else {
     $("pasivo").readOnly=false;
+    $("pasivo").value = day ? blankIfZero(day.pasivo) : "";
     const hint=$("pasivoAutoHint");
     if(hint) hint.textContent=bonoAllowedForCurrentDay()?"Se rellenará automáticamente cuando añadas cupones o bono semanal.":"Se rellenará automáticamente cuando añadas cupones. El bono semanal solo corresponde al lunes.";
     updateBonoSummary();
@@ -2759,11 +3286,11 @@ function openExtraDialog(extra=null){
   $("extraDialogTitle").textContent = e ? "Actualizar extra" : "Añadir extra";
   $("editingExtraId").value = e ? e.id : "";
   $("extraName").value = e ? e.name : "";
-  $("extraInitialStock").value = e ? e.initialStock : 0;
-  $("extraAdditionalStock").value = e ? e.additionalStock : 0;
-  $("extraPhysicalSold").value = e ? e.physicalSold : 0;
-  $("extraTpvSold").value = e ? e.tpvSold : 0;
-  $("extraUnitPrice").value = e ? e.unitPrice : 0;
+  $("extraInitialStock").value = e ? blankIfZero(e.initialStock) : "";
+  $("extraAdditionalStock").value = e ? blankIfZero(e.additionalStock) : "";
+  $("extraPhysicalSold").value = e ? blankIfZero(e.physicalSold) : "";
+  $("extraTpvSold").value = e ? blankIfZero(e.tpvSold) : "";
+  $("extraUnitPrice").value = e ? blankIfZero(e.unitPrice) : "";
   $("extraManualPct").value = e && e.manualPct!==null && e.manualPct!==undefined ? e.manualPct : "";
   updateExtraPreview();
   $("extraDialog").showModal();
@@ -2976,8 +3503,70 @@ if(bottomSettingsBtn){bottomSettingsBtn.addEventListener("click",()=>$("settings
 $('quickBackupBtn')?.addEventListener('click',()=>$('exportBtn').click());
 $('quickRestoreBtn')?.addEventListener('click',()=>$('importInput').click());
 
+function setUpdateStatus(message,type=""){
+  const el=$("updateStatus");
+  if(!el) return;
+  el.textContent=message||"";
+  el.className="update-status"+(type?` ${type}`:"");
+}
+
+async function forceCuadraUpdate(){
+  const btn=$("updateAppBtn");
+  if(!btn) return;
+  if(!navigator.onLine){
+    setUpdateStatus("No hay conexión. Conéctate a internet para buscar una actualización.","bad");
+    return;
+  }
+  const oldText=btn.textContent;
+  btn.disabled=true;
+  btn.textContent="Buscando actualización…";
+  setUpdateStatus("Comprobando la versión publicada…");
+  try{
+    const baseUrl=new URL("./index.html",window.location.href);
+    baseUrl.searchParams.set("cuadra_update",Date.now().toString());
+    const response=await fetch(baseUrl.toString(),{cache:"no-store",headers:{"Cache-Control":"no-cache"}});
+    if(!response.ok) throw new Error(`HTTP ${response.status}`);
+    const html=await response.text();
+    const match=html.match(/data-cuadra-version=["']([^"']+)["']/i);
+    const remoteVersion=match?match[1]:null;
+    if(remoteVersion && remoteVersion!==APP_VERSION){
+      setUpdateStatus(`Nueva versión ${remoteVersion} encontrada. Actualizando…`,"ok");
+    }else{
+      setUpdateStatus("CUADRA está al día. Recargando la versión publicada…","ok");
+    }
+    try{
+      if("caches" in window){
+        const names=await caches.keys();
+        await Promise.all(names.map(name=>caches.delete(name)));
+      }
+    }catch(e){}
+    setTimeout(()=>{
+      const next=new URL(window.location.href);
+      next.searchParams.set("cuadra_refresh",Date.now().toString());
+      window.location.replace(next.toString());
+    },450);
+  }catch(err){
+    setUpdateStatus("No se pudo comprobar la actualización. Inténtalo de nuevo cuando tengas conexión.","bad");
+    btn.disabled=false;
+    btn.textContent=oldText;
+  }
+}
+
+
+$("updateAppBtn")?.addEventListener("click",forceCuadraUpdate);
+document.querySelectorAll('.period-btn').forEach(btn=>btn.addEventListener('click',()=>{summaryPeriod=btn.dataset.period;renderPeriodSummary();}));
+$("homeJourneyBtn")?.addEventListener("click",()=>{
+  const m=getMonth(); if(!m) return;
+  const targetDate=$("homeJourneyBtn")?.dataset.targetDate || previousIsoDate(isoToday());
+  const found=(m.days||[]).find(d=>d.date===targetDate);
+  if(found) openDayDialog(found);
+  else { openDayDialog(); $("dayDate").value=targetDate; syncBonoAvailability(); }
+});
+
 $("settingsBtn").addEventListener("click",()=>{
   renderGreeting();
+  if($("appVersionBadge")) $("appVersionBadge").textContent=`v${APP_VERSION}`;
+  setUpdateStatus("");
   const s=data.profile?.schedule || {workDays:[],liquidationDays:[]};
   renderWeekdaySelector("workWeekdays",s.workDays||[]);
   renderWeekdaySelector("liquidationWeekdays",s.liquidationDays||[]);
