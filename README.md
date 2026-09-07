@@ -16,4 +16,4 @@ Aplicación web móvil para vendedores de la ONCE orientada al control personal 
 Los datos se guardan localmente en el navegador del dispositivo.
 
 ## Versión
-v0.17
+v0.18

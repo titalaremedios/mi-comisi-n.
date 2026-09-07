@@ -1172,6 +1172,135 @@
     .period-summary-explainer{margin:0 0 12px;color:var(--muted);font-size:13px;line-height:1.4}
     @media(max-width:420px){.liquidation-breakdown-row{gap:8px}.liquidation-breakdown-row span{font-size:12.5px}.liquidation-breakdown-row strong{font-size:13.5px}}
 
+
+    /* ===== CUADRA v0.18 · PRIORIDAD: MI TOTAL DEL MES ===== */
+    .month-focus-card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:22px;
+      box-shadow:0 8px 24px rgba(20,35,60,.08);
+      margin-top:14px;
+      min-width:0;
+      overflow:hidden;
+    }
+    .month-focus-top{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:14px;
+    }
+    .month-focus-kicker{
+      color:#2f6fed;
+      font-size:14px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+    }
+    .month-focus-label{
+      margin-top:9px;
+      color:var(--muted);
+      font-size:18px;
+      font-weight:500;
+    }
+    .month-focus-money{
+      margin-top:4px;
+      color:#1e293b;
+      font-size:52px;
+      line-height:1;
+      font-weight:750;
+      letter-spacing:-.035em;
+    }
+    .month-focus-days{
+      color:var(--muted);
+      font-size:15px;
+      font-weight:600;
+      text-align:right;
+      white-space:nowrap;
+      padding-bottom:5px;
+    }
+    .month-focus-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:20px;
+    }
+    .month-focus-stat{
+      background:#f6f8fc;
+      border:1px solid #e6eaf0;
+      border-radius:17px;
+      padding:14px;
+      min-width:0;
+    }
+    .month-focus-stat span{
+      display:block;
+      color:var(--muted);
+      font-size:14px;
+      font-weight:550;
+    }
+    .month-focus-stat strong{
+      display:block;
+      color:#1f2937;
+      font-size:23px;
+      font-weight:700;
+      margin-top:5px;
+      overflow-wrap:anywhere;
+    }
+    .month-focus-progress{
+      margin-top:16px;
+    }
+    .month-focus-progress-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      color:var(--muted);
+      font-size:14px;
+    }
+    .month-focus-progress-head strong{
+      color:#1f2937;
+      font-weight:650;
+      text-align:right;
+    }
+    .month-focus-bar{
+      height:11px;
+      background:#e9edf3;
+      border-radius:999px;
+      overflow:hidden;
+      margin-top:8px;
+    }
+    .month-focus-bar-fill{
+      height:100%;
+      border-radius:inherit;
+      background:#2f6fed;
+      transition:width .25s ease;
+    }
+    .month-focus-message{
+      margin-top:13px;
+      padding:11px 13px;
+      background:#eef4ff;
+      color:#315caa;
+      border-radius:14px;
+      font-size:14px;
+      font-weight:600;
+      line-height:1.4;
+    }
+    #welcomeBox{
+      margin-top:0!important;
+    }
+    @media(max-width:700px){
+      .month-focus-card{padding:19px}
+      .month-focus-money{font-size:47px}
+      .month-focus-grid{grid-template-columns:1fr 1fr}
+      .month-focus-stat strong{font-size:21px}
+      .month-focus-days{font-size:14px}
+    }
+    @media(max-width:390px){
+      .month-focus-top{align-items:flex-start;flex-direction:column}
+      .month-focus-days{text-align:left;padding-bottom:0}
+      .month-focus-grid{grid-template-columns:1fr}
+    }
+
   </style>
 </head>
 <body>
@@ -1193,12 +1322,6 @@
       <button class="tab" data-view="history">Histórico</button>
     </div>
 
-    <div class="welcome" id="welcomeBox">
-      <h2 id="greetingText">Hola 👋</h2>
-      <p id="dailyPhrase">Hoy también cuenta.</p>
-      <div class="quote-chip">✨ Un día, una venta, un paso más</div>
-    </div>
-
     <section id="dashboardView">
       <div id="noMonth" class="card" style="margin-top:14px;text-align:center">
         <div style="font-size:42px">📈</div>
@@ -1208,6 +1331,41 @@
       </div>
 
       <div id="monthContent" class="hidden">
+        <div class="month-focus-card" id="monthFocusCard">
+          <div class="month-focus-top">
+            <div>
+              <div class="month-focus-kicker" id="heroMonth">MES</div>
+              <div class="month-focus-label">Venta acumulada</div>
+              <div class="month-focus-money" id="totalSales">0 €</div>
+            </div>
+            <div class="month-focus-days" id="daysInfo">0 de 0 jornadas</div>
+          </div>
+          <div class="month-focus-grid">
+            <div class="month-focus-stat">
+              <span>Tramo actual</span>
+              <strong id="homeCurrentTramo">—</strong>
+            </div>
+            <div class="month-focus-stat">
+              <span>Proyección fin de mes</span>
+              <strong id="homeProjection">—</strong>
+            </div>
+          </div>
+          <div class="month-focus-progress">
+            <div class="month-focus-progress-head">
+              <span id="homeNextTargetLabel">Próximo tramo</span>
+              <strong id="homeNextTargetAmount">—</strong>
+            </div>
+            <div class="month-focus-bar"><div id="homeNextTargetBar" class="month-focus-bar-fill" style="width:0%"></div></div>
+          </div>
+          <div class="month-focus-message" id="homeProjectionMessage">Añade jornadas y CUADRA te dirá a qué tramo puedes llegar.</div>
+        </div>
+
+    <div class="welcome" id="welcomeBox">
+      <h2 id="greetingText">Hola 👋</h2>
+      <p id="dailyPhrase">Hoy también cuenta.</p>
+      <div class="quote-chip">✨ Un día, una venta, un paso más</div>
+    </div>
+
         <div class="home-today-card" id="homeTodayCard">
           <div class="home-today-head">
             <div><h2>Tu jornada anterior</h2><div class="home-date" id="homeTodayDate">Última jornada a registrar</div><div class="home-date-note">CUADRA muestra el día anterior porque la jornada se registra al día siguiente.</div></div>
@@ -1222,16 +1380,6 @@
           <button class="btn primary full home-journey-btn" id="homeJourneyBtn" type="button">＋ Registrar jornada anterior</button>
         </div>
 
-        <div class="hero home-month-legacy" style="margin-top:14px">
-          <div class="eyebrow" id="heroMonth">MES</div>
-          <div class="hero-title">
-            <div>
-              <div class="subtle">Venta acumulada</div>
-              <div class="money" id="totalSales">0 €</div>
-            </div>
-            <div class="subtle" id="daysInfo">0 de 0 jornadas</div>
-          </div>
-        </div>
 
         <div class="liquidation-hero" id="liquidationHero">
           <div class="liquidation-top">
@@ -1834,7 +1982,7 @@
   <div class="toast" id="toast"></div>
 
 <script>
-const APP_VERSION = "0.17.0";
+const APP_VERSION = "0.18.0";
 const TRAMOS = [
   {pct:2.5, rate:210},
   {pct:6, rate:296},
@@ -2559,6 +2707,38 @@ function render(){
 
   $("totalSales").textContent = fmt(sums.sale);
   $("daysInfo").textContent = `${worked} de ${month.workDays} jornadas`;
+
+  if($("homeCurrentTramo")){
+    $("homeCurrentTramo").textContent = current ? `${String(current.pct).replace(".",",")} %` : "Sin tramo";
+  }
+  if($("homeProjection")){
+    $("homeProjection").textContent = worked ? fmt(projection) : "—";
+  }
+  if($("homeNextTargetLabel") && $("homeNextTargetAmount") && $("homeNextTargetBar")){
+    if(next){
+      const nextGoal=tramoGoal(month.workDays,next);
+      const prevGoal=current ? tramoGoal(month.workDays,current) : 0;
+      const span=Math.max(1,nextGoal-prevGoal);
+      const progress=Math.max(0,Math.min(100,(sums.sale-prevGoal)/span*100));
+      $("homeNextTargetLabel").textContent=`Próximo tramo: ${String(next.pct).replace(".",",")} %`;
+      $("homeNextTargetAmount").textContent=`Faltan ${fmt(Math.max(0,nextGoal-sums.sale))}`;
+      $("homeNextTargetBar").style.width=`${progress}%`;
+    }else{
+      $("homeNextTargetLabel").textContent="Tramo máximo";
+      $("homeNextTargetAmount").textContent="17,5 % conseguido";
+      $("homeNextTargetBar").style.width="100%";
+    }
+  }
+  if($("homeProjectionMessage")){
+    if(!worked){
+      $("homeProjectionMessage").textContent="Añade tu primera jornada y CUADRA te dirá a qué tramo puedes llegar.";
+    }else if(projected){
+      $("homeProjectionMessage").textContent=`A este ritmo puedes terminar alrededor de ${fmt(projection)} y alcanzar aproximadamente el ${String(projected.pct).replace(".",",")} %.`;
+    }else{
+      $("homeProjectionMessage").textContent=`A este ritmo terminarías alrededor de ${fmt(projection)}. Sigue sumando para alcanzar el primer tramo.`;
+    }
+  }
+
   $("avgDaily").textContent = `${fmt(avg)}/día`;
   $("remainingDays").textContent = remaining;
   $("projection").textContent = worked ? fmt(projection) : "—";
