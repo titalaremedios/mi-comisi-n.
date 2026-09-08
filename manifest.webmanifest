@@ -1,10 +1,11 @@
 {
-  "name": "CUADRA",
-  "short_name": "CUADRA",
+  "name": "Cuenta Clara",
+  "short_name": "Cuenta Clara",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#f5f7fb",
-  "theme_color": "#3478e5",
+  "background_color": "#F6FAF8",
+  "theme_color": "#168F7D",
   "icons": [
     {
       "src": "icon-192.png",
@@ -16,5 +17,7 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "id": "./",
+  "description": "Control de jornadas, ventas, liquidaciones y comisiones para vendedores ONCE."
 }
