@@ -100,3 +100,9 @@ v0.41.0
 - ORD se marca como pendiente de identificar y nunca se añade automáticamente.
 - Siempre muestra una revisión antes de añadir los datos a Activos.
 - Si la fiabilidad no es suficiente, el siguiente paso será probar una API de visión desde servidor.
+
+
+## v0.46.0 — Tarjetas de jornada en una sola columna
+- En móvil, cada tarjeta de “Tu jornada anterior” ocupa una fila completa.
+- Vendido, comisión estimada, comisión por extras y pendiente de liquidar ya no comparten fila.
+- Se mejora la legibilidad y se evita que títulos o textos queden apretados.

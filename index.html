@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-cuadra-version="0.45.0">
+<html lang="es" data-cuadra-version="0.46.0">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -4103,6 +4103,24 @@
       .active-ocr-actions{grid-template-columns:1fr}
     }
 
+
+    /* ===== Cuenta Clara v0.46 · tarjetas de jornada a ancho completo en móvil ===== */
+    @media(max-width:700px){
+      .home-main-metrics{
+        display:grid!important;
+        grid-template-columns:1fr!important;
+        gap:10px!important;
+      }
+      .home-main-metric,
+      .home-main-metric.primary,
+      .home-main-metric.pending,
+      #homeExtraCommissionCard{
+        grid-column:1/-1!important;
+        width:100%!important;
+        max-width:none!important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -5019,7 +5037,7 @@
               <strong>Versión de Cuenta Clara</strong>
               <span id="updateHelpText">Busca la última versión publicada y recarga la app.</span>
             </div>
-            <span class="version-badge" id="appVersionBadge">v0.45.0</span>
+            <span class="version-badge" id="appVersionBadge">v0.46.0</span>
           </div>
           <button class="btn secondary full" id="updateAppBtn" type="button">↻ Actualizar Cuenta Clara</button>
           <div class="update-status" id="updateStatus" aria-live="polite"></div>
@@ -5045,7 +5063,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const APP_VERSION = "0.45.0";
+const APP_VERSION = "0.46.0";
 const TRAMOS = [
   {pct:2.5, rate:210},
   {pct:6, rate:296},
