@@ -1,6 +1,8 @@
 {
+  "id": "./",
   "name": "Cuenta Clara",
   "short_name": "Cuenta Clara",
+  "description": "Control de jornadas, ventas, liquidaciones y comisiones.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -17,7 +19,5 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "id": "./",
-  "description": "Control de jornadas, ventas, liquidaciones y comisiones para vendedores ONCE."
+  ]
 }

@@ -81,3 +81,22 @@ v0.41.0
 - Identidad verde unificada y limpieza de restos azules/morados.
 - Versión interna actualizada para que los avisos automáticos de nuevas versiones funcionen.
 - Copias de seguridad exportadas como cuenta-clara-copia.json.
+
+
+## v0.44.0 — Otros productos
+- Nuevo bloque “Otros” dentro de Añadir jornada.
+- Productos: Paysafecard, Amazon, Google, Topii y Otro.
+- Permite añadir varios productos e importes en una misma jornada.
+- “Otros” se suma exclusivamente a la liquidación.
+- No se añade a Venta ONCE, tramos ni comisión.
+- Los importes quedan visibles en el detalle de la jornada y en la liquidación.
+
+
+## v0.45.0 — Piloto de foto para Activos
+- Nuevo botón “📷 Leer cierre de ventas” en Añadir jornada.
+- Esta primera prueba no necesita API, clave ni servidor.
+- Usa OCR en el propio navegador; requiere conexión a internet para cargar el lector.
+- Reconoce inicialmente EUJ, TRI, MID, DUP y SUP.
+- ORD se marca como pendiente de identificar y nunca se añade automáticamente.
+- Siempre muestra una revisión antes de añadir los datos a Activos.
+- Si la fiabilidad no es suficiente, el siguiente paso será probar una API de visión desde servidor.

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-cuadra-version="0.41.0">
+<html lang="es" data-cuadra-version="0.45.0">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -3955,6 +3955,154 @@
       .weekday-mobile-head>.trend-flat{display:inline-block;margin-top:7px}
     }
 
+
+    /* ===== Cuenta Clara v0.42 · ayuda sin salto de línea en tarjetas de jornada ===== */
+    .home-main-metric{position:relative!important;}
+    .home-main-metric .help-label{
+      display:block!important;
+      padding-right:46px!important;
+      margin:0!important;
+    }
+    .home-main-metric .help-btn{
+      position:absolute!important;
+      top:14px!important;
+      right:14px!important;
+      width:30px!important;
+      height:30px!important;
+      margin:0!important;
+      z-index:2!important;
+    }
+    @media(max-width:560px){
+      .home-main-metric .help-label{padding-right:44px!important;}
+      .home-main-metric .help-btn{
+        top:13px!important;
+        right:13px!important;
+        width:29px!important;
+        height:29px!important;
+      }
+    }
+
+
+    /* ===== Cuenta Clara v0.43 · título de comisión en una sola línea ===== */
+    .home-main-metric .help-label{
+      white-space:nowrap!important;
+      overflow:hidden!important;
+      text-overflow:clip!important;
+      padding-right:42px!important;
+      font-size:clamp(13.5px,3.6vw,16px)!important;
+      line-height:1.15!important;
+      letter-spacing:-0.015em!important;
+    }
+    .home-main-metric .help-btn{
+      top:12px!important;
+      right:12px!important;
+    }
+    @media(max-width:380px){
+      .home-main-metric .help-label{
+        font-size:13px!important;
+        padding-right:40px!important;
+      }
+    }
+
+
+    /* ===== Cuenta Clara v0.44 · Otros productos ===== */
+    .other-box{
+      grid-column:1/-1;
+      padding:14px;
+      border-radius:18px;
+      border:1px solid #d7e9e4;
+      background:linear-gradient(135deg,#f1faf7,#fbfefd);
+      min-width:0;
+    }
+    .other-add-row{
+      display:grid;
+      grid-template-columns:minmax(0,1.35fr) minmax(0,.8fr) auto;
+      gap:9px;
+      align-items:end;
+      margin-top:11px;
+    }
+    .other-selected{
+      display:grid;
+      gap:7px;
+      margin-top:10px;
+    }
+    .other-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 11px;
+      border:1px solid #dcebe6;
+      border-radius:14px;
+      background:#fff;
+      min-width:0;
+    }
+    .other-item>div{min-width:0}
+    .other-item strong{
+      display:block;
+      color:#16312e;
+      font-size:14px;
+      line-height:1.2;
+      font-weight:800;
+    }
+    .other-item span{
+      display:block;
+      margin-top:3px;
+      color:#657570;
+      font-size:12px;
+      line-height:1.2;
+    }
+    @media(max-width:560px){
+      .other-add-row{
+        grid-template-columns:1fr 1fr;
+      }
+      .other-add-row .btn{
+        grid-column:1/-1;
+        width:100%;
+      }
+    }
+    @media(max-width:380px){
+      .other-add-row{grid-template-columns:1fr}
+      .other-add-row .btn{grid-column:auto}
+    }
+
+
+    /* ===== Cuenta Clara v0.45 · piloto OCR de cierre de ventas ===== */
+    .active-ocr-box{
+      grid-column:1/-1;
+      margin:0 0 12px;
+      padding:14px;
+      border:1px solid #cfe8e1;
+      border-radius:19px;
+      background:linear-gradient(135deg,#eef9f6,#fbfefd);
+      min-width:0;
+    }
+    .active-ocr-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:11px}
+    .active-ocr-head strong{display:block;color:#16312e;font-size:15px;font-weight:850}
+    .active-ocr-head span:not(.pilot-pill){display:block;margin-top:4px;color:#657570;font-size:12.5px;line-height:1.35}
+    .pilot-pill{flex:0 0 auto;padding:5px 8px;border-radius:999px;background:#dff4ef;color:#0f7567;font-size:10px;font-weight:900;letter-spacing:.04em}
+    .active-ocr-status{margin-top:10px;padding:10px 11px;border-radius:14px;background:#fff;border:1px solid #dcebe6}
+    .active-ocr-status strong,.active-ocr-status span{display:block}
+    .active-ocr-status strong{color:#16312e;font-size:13px;font-weight:800}
+    .active-ocr-status span{margin-top:3px;color:#657570;font-size:12px;line-height:1.3}
+    .active-ocr-review{margin-top:10px;padding:11px;border-radius:15px;background:#fff;border:1px solid #dcebe6}
+    .active-ocr-review-title{margin-bottom:8px;color:#16312e;font-size:13px;font-weight:850}
+    .active-ocr-row{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:9px;align-items:end;padding:9px 0;border-bottom:1px solid #edf3f1}
+    .active-ocr-row:last-child{border-bottom:0}
+    .active-ocr-name strong{display:block;color:#16312e;font-size:13px;font-weight:850}
+    .active-ocr-name span{display:block;margin-top:3px;color:#657570;font-size:11.5px}
+    .active-ocr-edit label{display:block;margin-bottom:4px;color:#657570;font-size:10.5px;font-weight:750}
+    .active-ocr-edit input{min-height:42px!important;padding:8px 9px!important;font-size:14px!important}
+    .active-ocr-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+    .ocr-unknown-note{margin-top:8px;padding:10px;border-radius:13px;background:#fff8e8;border:1px solid #f1dfad}
+    .ocr-unknown-note strong,.ocr-unknown-note span{display:block}
+    .ocr-unknown-note strong{color:#765c16;font-size:12.5px;font-weight:850}
+    .ocr-unknown-note span{margin-top:3px;color:#786b45;font-size:11.5px;line-height:1.3}
+    @media(max-width:380px){
+      .active-ocr-row{grid-template-columns:1fr}
+      .active-ocr-actions{grid-template-columns:1fr}
+    }
+
   </style>
 </head>
 <body>
@@ -4437,6 +4585,27 @@
           <input type="number" id="activo" min="0" step="0.01" inputmode="decimal">
           <div class="mini" id="activoAutoHint" style="margin-top:5px">Se rellenará automáticamente cuando añadas apuestas activas.</div>
         </div>
+        <div class="active-ocr-box">
+          <div class="active-ocr-head">
+            <div>
+              <strong>📷 Leer cierre de ventas</strong>
+              <span>Prueba piloto: haz una foto del cierre y Cuenta Clara intentará detectar los activos.</span>
+            </div>
+            <span class="pilot-pill">PILOTO</span>
+          </div>
+          <input id="activeReceiptPhoto" type="file" accept="image/*" capture="environment" hidden>
+          <button class="btn secondary full" type="button" id="scanActiveReceiptBtn">📷 Hacer foto / elegir imagen</button>
+          <div class="active-ocr-status hidden" id="activeOcrStatus"></div>
+          <div class="active-ocr-review hidden" id="activeOcrReview">
+            <div class="active-ocr-review-title">Revisa lo detectado antes de añadirlo</div>
+            <div id="activeOcrResults"></div>
+            <div class="active-ocr-actions">
+              <button class="btn secondary" type="button" id="cancelActiveOcrBtn">Cancelar</button>
+              <button class="btn primary" type="button" id="confirmActiveOcrBtn">Añadir a Activos</button>
+            </div>
+          </div>
+        </div>
+
         <div class="active-box">
           <label style="font-size:13px;font-weight:800;color:#475467">Juegos activos</label>
           <div class="mini" style="margin-top:4px">Añade las apuestas vendidas de Mi Día, Triplex, Super 11, Eurojackpot o Dupla. El importe de Activo se calcula automáticamente.</div>
@@ -4522,6 +4691,29 @@
             <input type="number" id="rascas" readonly>
           </div>
         </div>
+        <div class="other-box">
+          <label style="font-size:13px;font-weight:800;color:#475467">Otros</label>
+          <div class="mini" style="margin-top:4px">Registra productos como Paysafecard, Amazon, Google o Topii. Estos importes se suman a la liquidación, pero no cuentan como venta ONCE ni para tramos o comisión.</div>
+          <div class="other-add-row">
+            <div class="field">
+              <label>Producto</label>
+              <select id="otherProduct">
+                <option value="">Selecciona un producto</option>
+                <option value="Paysafecard">Paysafecard</option>
+                <option value="Amazon">Amazon</option>
+                <option value="Google">Google</option>
+                <option value="Topii">Topii</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Importe (€)</label>
+              <input type="number" id="otherAmount" min="0" step="0.01" inputmode="decimal">
+            </div>
+            <button class="btn secondary" type="button" id="addOtherBtn">＋ Añadir</button>
+          </div>
+          <div class="other-selected" id="otherSelected"></div>
+        </div>
         <div class="field">
           <label>Pagos (€)</label>
           <input type="number" id="pagos" min="0" step="0.01" inputmode="decimal">
@@ -4560,7 +4752,8 @@
         </details>
       </div>
       <div class="calc-preview">
-        <div class="preview-line"><span>Venta del día</span><strong id="previewSale">0 €</strong></div>
+        <div class="preview-line"><span>Venta ONCE del día</span><strong id="previewSale">0 €</strong></div>
+        <div class="preview-line"><span>Otros a liquidar</span><strong id="previewOthers">0 €</strong></div>
         <div class="preview-line"><span>A liquidar</span><strong id="previewLiq">0 €</strong></div>
       </div>
       <div class="actions" style="margin-top:16px">
@@ -4826,7 +5019,7 @@
               <strong>Versión de Cuenta Clara</strong>
               <span id="updateHelpText">Busca la última versión publicada y recarga la app.</span>
             </div>
-            <span class="version-badge" id="appVersionBadge">v0.41.0</span>
+            <span class="version-badge" id="appVersionBadge">v0.45.0</span>
           </div>
           <button class="btn secondary full" id="updateAppBtn" type="button">↻ Actualizar Cuenta Clara</button>
           <div class="update-status" id="updateStatus" aria-live="polite"></div>
@@ -4850,8 +5043,9 @@
 
   <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const APP_VERSION = "0.41.0";
+const APP_VERSION = "0.45.0";
 const TRAMOS = [
   {pct:2.5, rate:210},
   {pct:6, rate:296},
@@ -4890,6 +5084,8 @@ const scratchPackValue = price => Number(price) <= 2 ? 100 : 150;
 let tempScratchPacks = [];
 let tempCoupons = [];
 let tempActiveBets = [];
+let pendingOcrActiveRows = [];
+let tempOtherItems = [];
 const ACTIVE_CATALOG = [
   {name:"Mi Día", price:1},
   {name:"Triplex", price:0.5},
@@ -5955,6 +6151,7 @@ function renderDays(month){
           ${(d.scratchPacks||[]).filter(x=>!x.legacy).map(x=>{ const m=scratchCatalogItem(x.product); return `<span class="pill">🎟️ ${x.product}: ${x.qty} paq. · ${scratchGroupLabel(x.group||m?.group)}</span>`; }).join('')}
           ${(d.coupons||[]).length?`<span class="pill">🎫 ${(d.coupons||[]).length} sorteo${(d.coupons||[]).length===1?'':'s'} · ${(d.coupons||[]).reduce((a,c)=>a+couponDerived(c).total,0)} cupones · ${fmt((d.coupons||[]).reduce((a,c)=>a+couponDerived(c).totalValue,0))}</span>`:''}
           ${Number(d.bonoQty||0)>0?`<span class="pill">📅 Bono semanal (lunes): ${Number(d.bonoQty||0)} × ${fmt(15)} = ${fmt(Number(d.bonoQty||0)*15)}</span>`:''}
+          ${(d.otherItems||[]).length?`<span class="pill">🧾 Otros ${fmt(Number(d.otherTotal||0))}</span>`:''}
           <span class="pill">Pagos ${fmt(d.pagos)}</span>
           <span class="pill">Tarjeta ${fmt(d.tarjeta)}</span>
           ${d.cashControl?.used ? `<span class="pill">💶 Caja ${d.cashControl.complete ? (Math.abs(Number(d.cashControl.difference||0))<0.005 ? '✅ Cuadra' : `· Diferencia ${fmt(Number(d.cashControl.difference||0))}`) : '· Pendiente de completar'}</span>` : ''}
@@ -5965,6 +6162,7 @@ function renderDays(month){
         ${(d.scratchPacks||[]).length ? `<div class="mini" style="margin-top:10px"><strong>Rascas:</strong> ${(d.scratchPacks||[]).map(x=>x.legacy?`${x.product} ${fmt(Number(x.packValue||0)*Number(x.qty||0))}`:`${x.product} × ${x.qty}`).join(' · ')}</div>` : ''}
         ${(d.coupons||[]).length?`<div style="margin-top:12px"><strong style="font-size:13px">Control de cupones</strong>${(d.coupons||[]).map(raw=>{const c=couponDerived(raw);const draw=c.drawDate?dateLabelShort(c.drawDate):'Sin fecha';return `<div class="coupon-detail-card"><strong>🎫 ${c.type||'Cupón'} · ${draw}</strong><div class="mini">Precio ${fmt(c.unitPrice)} · Llevados ${c.carried} · Devueltos ${c.returned} · Físicos ${c.physical} (${fmt(c.physicalValue)}) · TPV ${c.tpv} (${fmt(c.tpvValue)}) · Total ${c.total} (${fmt(c.totalValue)})</div></div>`;}).join('')}</div>`:''}
         ${Number(d.bonoQty||0)>0?`<div class="coupon-detail-card"><strong>📅 Bono semanal TPV · lunes</strong><div class="mini">${Number(d.bonoQty||0)} bono${Number(d.bonoQty||0)===1?'':'s'} × ${fmt(15)} = <strong>${fmt(Number(d.bonoQty||0)*15)}</strong> · incluido en Pasivo</div></div>`:''}
+        ${(d.otherItems||[]).length?`<div style="margin-top:12px"><strong style="font-size:13px">Otros · solo liquidación</strong>${(d.otherItems||[]).map(x=>`<div class="coupon-detail-card"><strong>🧾 ${x.product}</strong><div class="mini">${fmt(Number(x.amount||0))} · se suma a liquidación y no a venta ONCE, tramo ni comisión.</div></div>`).join('')}</div>`:''}
         ${d.cashControl?.used ? `<div class="coupon-detail-card"><strong>💶 Control de caja</strong><div class="mini">Cambio inicial ${fmt(Number(d.cashControl.opening||0))} · Venta en efectivo ${fmt(Number(d.cashControl.cashSales||0))} · Pagos ${fmt(Number(d.pagos||0))} · Deberías llevar ${fmt(Number(d.cashControl.expected||0))}${d.cashControl.complete ? ` · Contado ${fmt(Number(d.cashControl.counted||0))} · ${Math.abs(Number(d.cashControl.difference||0))<0.005 ? '<strong>Cuadra ✅</strong>' : `<strong>Diferencia ${fmt(Number(d.cashControl.difference||0))}</strong>`}` : ' · Falta completar el efectivo contado'}</div></div>` : ''}
         <div class="day-actions">
           <button class="small-btn" onclick="editDay('${d.id}')">✏️ Editar</button>
@@ -6222,6 +6420,185 @@ function updateActiveInputMode(){
     if(hint) hint.textContent="";
   }
 }
+
+const OCR_ACTIVE_CODE_MAP={
+  EUJ:{name:"Eurojackpot",mode:"amount"},
+  TRI:{name:"Triplex",price:.5},
+  MID:{name:"Mi Día",price:1},
+  DUP:{name:"Dupla",price:1},
+  SUP:{name:"Super 11",price:1}
+};
+
+function normalizeOcrLine(s){
+  return String(s||"")
+    .replace(/\u00A0/g," ")
+    .replace(/[–—]/g,"-")
+    .replace(/,/g,".")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+function parseActiveReceiptText(raw){
+  const rows=[];
+  const unknown=[];
+  const lines=String(raw||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+
+  for(const line of lines){
+    const clean=normalizeOcrLine(line).toUpperCase();
+    const code=Object.keys(OCR_ACTIVE_CODE_MAP).find(c=>new RegExp(`\\b${c}\\b`).test(clean));
+
+    if(code){
+      const after=clean.split(new RegExp(`\\b${code}\\b`))[1]||"";
+      const nums=[...after.matchAll(/(\d+(?:\.\d+)?)/g)]
+        .map(m=>Number(m[1])).filter(Number.isFinite);
+      if(!nums.length) continue;
+
+      const meta=OCR_ACTIVE_CODE_MAP[code];
+      let units=nums.length>=2 ? Math.max(0,Math.round(nums[0])) : null;
+      let amount=nums.length>=2 ? Number(nums[1]) : Number(nums[0]);
+
+      if(meta.price && units!=null){
+        amount=Number((units*meta.price).toFixed(2));
+      }
+      if(meta.mode==="amount" && nums.length>=2){
+        amount=Number(nums[1]);
+      }
+      if(amount>0) rows.push({code,name:meta.name,units,amount});
+      continue;
+    }
+
+    if(/\bORD\b/.test(clean)){
+      const nums=[...clean.matchAll(/(\d+(?:\.\d+)?)/g)]
+        .map(m=>Number(m[1])).filter(Number.isFinite);
+      unknown.push({code:"ORD",line,amount:nums.length?nums[nums.length-1]:0});
+    }
+  }
+
+  const merged={};
+  for(const r of rows){
+    if(!merged[r.code]) merged[r.code]={...r};
+    else{
+      merged[r.code].amount=Number((merged[r.code].amount+r.amount).toFixed(2));
+      if(r.units!=null) merged[r.code].units=(merged[r.code].units||0)+r.units;
+    }
+  }
+  return {rows:Object.values(merged),unknown};
+}
+
+function renderActiveOcrReview(){
+  const wrap=$("activeOcrResults");
+  if(!wrap) return;
+  const known=pendingOcrActiveRows.filter(x=>!x.unknown);
+  const unknown=pendingOcrActiveRows.filter(x=>x.unknown);
+
+  let html=known.map((r,i)=>`<div class="active-ocr-row">
+    <div class="active-ocr-name"><strong>${r.name}</strong><span>${r.code}${r.units!=null?` · ${r.units} unidad${r.units===1?'':'es'}`:''}</span></div>
+    <div class="active-ocr-edit"><label>Importe (€)</label><input type="number" min="0" step="0.01" inputmode="decimal" value="${Number(r.amount||0)}" data-ocr-index="${i}"></div>
+  </div>`).join("");
+
+  if(unknown.length){
+    html+=`<div class="ocr-unknown-note"><strong>⚠️ Línea pendiente de identificar</strong><span>He detectado “ORD”, pero todavía no sabemos qué producto representa. No se añadirá automáticamente.</span></div>`;
+  }
+  wrap.innerHTML=html;
+
+  wrap.querySelectorAll("[data-ocr-index]").forEach(inp=>{
+    inp.addEventListener("input",()=>{
+      const knownRows=pendingOcrActiveRows.filter(x=>!x.unknown);
+      const target=knownRows[Number(inp.dataset.ocrIndex)];
+      if(target) target.amount=Math.max(0,Number(inp.value||0));
+    });
+  });
+}
+
+async function scanActiveReceipt(file){
+  if(!file) return;
+  const status=$("activeOcrStatus");
+  const review=$("activeOcrReview");
+  pendingOcrActiveRows=[];
+  review.classList.add("hidden");
+  status.classList.remove("hidden");
+
+  if(!window.Tesseract){
+    status.innerHTML="<strong>No se ha cargado el lector.</strong><span>Necesitas conexión a internet para esta prueba piloto.</span>";
+    return;
+  }
+
+  status.innerHTML="<strong>Preparando la foto…</strong><span>La primera lectura puede tardar un poco.</span>";
+
+  try{
+    const result=await Tesseract.recognize(file,"spa",{
+      logger:m=>{
+        const pct=Math.round(Number(m.progress||0)*100);
+        const labels={
+          "loading tesseract core":"Cargando lector…",
+          "initializing tesseract":"Iniciando lector…",
+          "loading language traineddata":"Cargando idioma…",
+          "initializing api":"Preparando lectura…",
+          "recognizing text":"Leyendo ticket…"
+        };
+        status.innerHTML=`<strong>${labels[m.status]||"Procesando foto…"}</strong><span>${pct?pct+" %":""}</span>`;
+      }
+    });
+
+    const parsed=parseActiveReceiptText(result?.data?.text||"");
+    pendingOcrActiveRows=[
+      ...parsed.rows,
+      ...parsed.unknown.map(x=>({...x,unknown:true}))
+    ];
+
+    if(!parsed.rows.length){
+      status.innerHTML="<strong>No he podido reconocer activos con seguridad.</strong><span>Prueba con la foto recta, cercana y con buena luz. No se ha guardado nada.</span>";
+      if(parsed.unknown.length){
+        renderActiveOcrReview();
+        review.classList.remove("hidden");
+      }
+      return;
+    }
+
+    status.innerHTML=`<strong>${parsed.rows.length} producto${parsed.rows.length===1?'':'s'} detectado${parsed.rows.length===1?'':'s'}.</strong><span>Revisa los importes antes de confirmar.</span>`;
+    renderActiveOcrReview();
+    review.classList.remove("hidden");
+  }catch(err){
+    console.error(err);
+    status.innerHTML="<strong>No se ha podido leer la foto.</strong><span>Comprueba la conexión e inténtalo otra vez. No se ha guardado nada.</span>";
+  }
+}
+
+function confirmActiveOcr(){
+  const rows=pendingOcrActiveRows.filter(x=>!x.unknown && Number(x.amount||0)>0);
+  if(!rows.length){alert("No hay activos válidos para añadir.");return;}
+
+  for(const row of rows){
+    const item=activeCatalogItem(row.name);
+    if(!item) continue;
+
+    if(row.name==="Eurojackpot"){
+      const existing=tempActiveBets.find(x=>x.name===row.name);
+      if(existing){
+        existing.mode="amount";
+        existing.amount=Number(existing.amount||activeItemValue(existing))+Number(row.amount||0);
+        delete existing.qty;
+        delete existing.price;
+      }else{
+        tempActiveBets.push({name:item.name,mode:"amount",amount:Number(row.amount||0),source:"ocr"});
+      }
+    }else{
+      const qty=row.units!=null
+        ? row.units
+        : Math.max(1,Math.round(Number(row.amount||0)/Number(item.price||1)));
+      const existing=tempActiveBets.find(x=>x.name===row.name && x.mode!=="amount");
+      if(existing) existing.qty=Number(existing.qty||0)+qty;
+      else tempActiveBets.push({name:item.name,price:item.price,qty,source:"ocr"});
+    }
+  }
+
+  pendingOcrActiveRows=[];
+  $("activeOcrReview").classList.add("hidden");
+  $("activeOcrStatus").classList.add("hidden");
+  $("activeReceiptPhoto").value="";
+  renderActiveSelected();
+}
+
 function activeDraftValue(){
   return tempActiveBets.reduce((sum,x)=>sum+activeItemValue(x),0);
 }
@@ -6438,6 +6815,10 @@ function openDayDialog(day=null){
   } else if(day && Number(day.activo||0)>0){
     tempActiveBets = [];
   } else tempActiveBets=[];
+  pendingOcrActiveRows=[];
+  if($("activeOcrReview")) $("activeOcrReview").classList.add("hidden");
+  if($("activeOcrStatus")) $("activeOcrStatus").classList.add("hidden");
+  if($("activeReceiptPhoto")) $("activeReceiptPhoto").value="";
   renderActiveSelected();
   $("bonoQty").value = day && isMondayDate(day.date) ? blankIfZero(Number(day.bonoQty||0)) : "";
   updateBonoAvailability();
@@ -6448,8 +6829,10 @@ function openDayDialog(day=null){
     tempScratchPacks = [{product:"Rascas anteriores",packValue:Number(day.rascas||0),qty:1,legacy:true}];
   } else tempScratchPacks=[];
   tempCoupons = day && Array.isArray(day.coupons) ? day.coupons.map(x=>({...x})) : [];
+  tempOtherItems = day && Array.isArray(day.otherItems) ? day.otherItems.map(x=>({...x})) : [];
   renderScratchSelected();
   renderCouponSelected();
+  renderOtherSelected();
   if(tempCoupons.length || (bonoAllowedForCurrentDay() && Number($("bonoQty").value||0)>0)) syncPasivoFromCoupons();
   else {
     $("pasivo").readOnly=false;
@@ -6461,15 +6844,50 @@ function openDayDialog(day=null){
   }
   $("dayDialog").showModal();
 }
+
+const otherDraftValue=()=>tempOtherItems.reduce((sum,x)=>sum+Number(x.amount||0),0);
+
+function renderOtherSelected(){
+  const box=$("otherSelected");
+  if(!box) return;
+  if(!tempOtherItems.length){
+    box.innerHTML='<div class="mini" style="margin-top:9px">No has añadido otros productos.</div>';
+  }else{
+    box.innerHTML=tempOtherItems.map((x,i)=>`<div class="other-item">
+      <div><strong>${x.product}</strong><span>${fmt(Number(x.amount||0))} · solo liquidación</span></div>
+      <button type="button" class="small-btn danger" onclick="removeOtherTemp(${i})">Quitar</button>
+    </div>`).join('');
+  }
+  if($("previewOthers")) $("previewOthers").textContent=fmt(otherDraftValue());
+  updateDayPreview();
+}
+
+function addOtherTemp(){
+  const product=$("otherProduct").value||"";
+  const amount=Number($("otherAmount").value||0);
+  if(!product){alert("Selecciona un producto en Otros.");return;}
+  if(amount<=0){alert("Indica un importe mayor que 0.");return;}
+  tempOtherItems.push({
+    id:"o"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),
+    product,
+    amount
+  });
+  $("otherProduct").value="";
+  $("otherAmount").value="";
+  renderOtherSelected();
+}
+window.removeOtherTemp=i=>{tempOtherItems.splice(i,1);renderOtherSelected();};
+
 function cashControlValues(){
   const sale = num("pasivo")+num("activo")+num("rascas");
+  const others = otherDraftValue();
   const card = num("tarjeta");
   const payments = num("pagos");
   const openingRaw = $("cashOpening")?.value ?? "";
   const countedRaw = $("cashCounted")?.value ?? "";
   const opening = Number(openingRaw||0);
   const counted = Number(countedRaw||0);
-  const cashSales = sale-card;
+  const cashSales = sale+others-card;
   const expected = opening+cashSales-payments;
   const used = openingRaw!=="" || countedRaw!=="";
   const complete = openingRaw!=="" && countedRaw!=="";
@@ -6502,8 +6920,10 @@ function updateCashPreview(){
 }
 function updateDayPreview(){
   const sale = num("pasivo")+num("activo")+num("rascas");
-  const liq = sale-num("pagos")-num("tarjeta");
+  const others = otherDraftValue();
+  const liq = sale+others-num("pagos")-num("tarjeta");
   $("previewSale").textContent = fmt(sale);
+  if($("previewOthers")) $("previewOthers").textContent = fmt(others);
   $("previewLiq").textContent = fmt(liq);
   updateCashPreview();
 }
@@ -6551,8 +6971,22 @@ document.querySelectorAll("[data-open-section]").forEach(btn=>btn.addEventListen
 
 $("addActiveBtn").addEventListener("click",addActiveTemp);
 $("activeProduct").addEventListener("change",updateActiveInputMode);
+$("scanActiveReceiptBtn").addEventListener("click",()=>$("activeReceiptPhoto").click());
+$("activeReceiptPhoto").addEventListener("change",e=>{
+  const file=e.target.files&&e.target.files[0];
+  if(file) scanActiveReceipt(file);
+});
+$("cancelActiveOcrBtn").addEventListener("click",()=>{
+  pendingOcrActiveRows=[];
+  $("activeOcrReview").classList.add("hidden");
+  $("activeOcrStatus").classList.add("hidden");
+  $("activeReceiptPhoto").value="";
+});
+$("confirmActiveOcrBtn").addEventListener("click",confirmActiveOcr);
 $("addScratchBtn").addEventListener("click",addScratchTemp);
 $("addCouponBtn").addEventListener("click",addCouponTemp);
+$("addOtherBtn").addEventListener("click",addOtherTemp);
+$("otherAmount").addEventListener("input",updateDayPreview);
 $("addExtraBtn").addEventListener("click",()=>openExtraDialog());
 ["extraInitialStock","extraAdditionalStock","extraPhysicalSold","extraTpvSold","extraUnitPrice","extraManualPct"].forEach(id=>$(id).addEventListener("input",updateExtraPreview));
 ["pasivo","activo","pagos","tarjeta","cashOpening","cashCounted"].forEach(id=>$(id).addEventListener("input",updateDayPreview));
@@ -6660,15 +7094,18 @@ $("dayForm").addEventListener("submit",e=>{
     bonoUnitPrice:isMondayDate(date)?15:0,
     scratchPacks: tempScratchPacks.map(x=>({...x})),
     coupons: tempCoupons.map(x=>({...x})),
+    otherItems: tempOtherItems.map(x=>({...x})),
+    otherTotal: otherDraftValue(),
     pagos:num("pagos"), tarjeta:num("tarjeta"),
     settlementId: previousEntry?.settlementId || null
   };
   entry.sale = entry.pasivo+entry.activo+entry.rascas;
-  if(entry.tarjeta > entry.sale){
-    alert("El importe cobrado con tarjeta no puede ser mayor que la venta total de la jornada.");
+  const liquidableBase = entry.sale + Number(entry.otherTotal||0);
+  if(entry.tarjeta > liquidableBase){
+    alert("El importe cobrado con tarjeta no puede ser mayor que la venta ONCE más los productos de Otros.");
     return;
   }
-  entry.liq = entry.sale-entry.pagos-entry.tarjeta;
+  entry.liq = liquidableBase-entry.pagos-entry.tarjeta;
   const cashNow=cashControlValues();
   entry.cashControl = cashNow.used ? {
     used:true,
