@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-cuadra-version="0.46.0">
+<html lang="es" data-cuadra-version="0.48.0">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -4121,6 +4121,29 @@
       }
     }
 
+
+    /* ===== Cuenta Clara v0.48 · rascas aplazados visible ===== */
+    .scratch-deferred-option{margin-top:12px;padding:12px;border:1px solid #d8e9e4;border-radius:16px;background:#fbfefd}
+    .scratch-deferred-check{display:flex;align-items:flex-start;gap:9px;cursor:pointer}
+    .scratch-deferred-check input{width:19px!important;height:19px!important;min-height:19px!important;margin-top:2px;accent-color:#168f7d;flex:0 0 auto}
+    .scratch-deferred-check strong{display:block;color:#16312e;font-size:13px;line-height:1.25;font-weight:850}
+    .scratch-deferred-check small{display:block;margin-top:4px;color:#657570;font-size:11.5px;line-height:1.35;font-weight:600}
+    .scratch-deferred-badge{display:inline-block;margin-top:6px;padding:5px 8px;border-radius:999px;background:#fff4d6;color:#7a5d0b;font-size:10.5px;font-weight:850}
+    .deferred-scratch-card{margin-top:14px;padding:16px;border:1px solid #ead89f;border-radius:22px;background:linear-gradient(180deg,#fffaf0,#fff);box-shadow:0 8px 22px rgba(81,65,20,.06)}
+    .deferred-scratch-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+    .deferred-scratch-head h3{margin:4px 0 0;color:#16312e;font-size:17px;line-height:1.2}
+    .deferred-scratch-head>strong{font-size:22px;white-space:nowrap;color:#16312e}
+    .deferred-scratch-list{display:grid;gap:8px;margin-top:13px}
+    .deferred-scratch-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:10px 11px;border:1px solid #eee2bc;border-radius:15px;background:#fff}
+    .deferred-scratch-row strong{display:block;color:#16312e;font-size:13px;font-weight:850}
+    .deferred-scratch-row span{display:block;margin-top:3px;color:#657570;font-size:11.5px;line-height:1.25}
+    .deferred-scratch-row b{white-space:nowrap;color:#16312e}
+    .deferred-state{display:inline-block!important;width:max-content;max-width:100%;padding:4px 7px;border-radius:999px;font-size:10px!important;font-weight:850}
+    .deferred-state.future{background:#fff5dc;color:#80600d!important}
+    .deferred-state.due{background:#fff0e5;color:#a3440b!important}
+    .deferred-state.released{background:#e8f6f1;color:#0f7567!important}
+    .deferred-scratch-note{margin:11px 0;color:#657570;font-size:12px;line-height:1.35;font-weight:650}
+
   </style>
 </head>
 <body>
@@ -4285,6 +4308,19 @@
           <button class="btn primary full home-journey-btn" id="homeJourneyBtn" type="button">＋ Registrar jornada anterior</button>
         </div>
 
+
+        <div class="deferred-scratch-card hidden" id="deferredScratchCard">
+          <div class="deferred-scratch-head">
+            <div>
+              <span class="eyebrow">RASCAS APLAZADOS</span>
+              <h3>Vendidos, pero todavía no liquidados</h3>
+            </div>
+            <strong id="deferredScratchTotal">0 €</strong>
+          </div>
+          <div id="deferredScratchList" class="deferred-scratch-list"></div>
+          <div id="deferredScratchNote" class="deferred-scratch-note"></div>
+          <button class="btn primary full hidden" id="releaseDeferredScratchBtn" type="button">Añadir los vencidos a la liquidación</button>
+        </div>
 
         <div class="liquidation-hero" id="liquidationHero">
           <div class="liquidation-top">
@@ -4703,6 +4739,19 @@
             </div>
             <button class="btn secondary" type="button" id="addScratchBtn">＋ Añadir</button>
           </div>
+          <div class="scratch-deferred-option">
+            <label class="scratch-deferred-check">
+              <input type="checkbox" id="scratchDeferred">
+              <span>
+                <strong>Cierre de juego · liquidación aplazada</strong>
+                <small>Úsalo cuando el rasca ya cuenta como vendido, pero ONCE no te lo cobra hasta una fecha posterior.</small>
+              </span>
+            </label>
+            <div class="field hidden" id="scratchDeferredDateWrap" style="margin-top:10px">
+              <label>Fecha en que se liquidará</label>
+              <input type="date" id="scratchDeferredDate">
+            </div>
+          </div>
           <div class="scratch-selected" id="scratchSelected"></div>
           <div class="field" style="margin-top:12px">
             <label>Total rascas (€)</label>
@@ -5037,7 +5086,7 @@
               <strong>Versión de Cuenta Clara</strong>
               <span id="updateHelpText">Busca la última versión publicada y recarga la app.</span>
             </div>
-            <span class="version-badge" id="appVersionBadge">v0.46.0</span>
+            <span class="version-badge" id="appVersionBadge">v0.48.0</span>
           </div>
           <button class="btn secondary full" id="updateAppBtn" type="button">↻ Actualizar Cuenta Clara</button>
           <div class="update-status" id="updateStatus" aria-live="polite"></div>
@@ -5063,7 +5112,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const APP_VERSION = "0.46.0";
+const APP_VERSION = "0.48.0";
 const TRAMOS = [
   {pct:2.5, rate:210},
   {pct:6, rate:296},
@@ -5227,29 +5276,109 @@ function previousIsoDate(iso){
   d.setDate(d.getDate()-1);
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 }
+
+function deferredScratchValue(pack){
+  return Number(pack?.packValue||0)*Number(pack?.qty||0);
+}
+function allDeferredScratch(){
+  const out=[];
+  Object.entries(data.months||{}).forEach(([monthKey,month])=>{
+    (month.days||[]).forEach(day=>{
+      (day.scratchPacks||[]).forEach(pack=>{
+        if(pack?.deferredLiquidation){
+          out.push({
+            kind:"deferredScratch",
+            monthKey, month, day, pack,
+            date:pack.deferredReleasedAt || pack.deferredDueDate || day.date,
+            saleDate:day.date,
+            dueDate:pack.deferredDueDate||null,
+            amount:deferredScratchValue(pack)
+          });
+        }
+      });
+    });
+  });
+  return out;
+}
+function deferredScratchWaiting(){
+  return allDeferredScratch().filter(x=>!x.pack.deferredReleasedAt && !x.pack.deferredSettlementId);
+}
+function deferredScratchDue(){
+  const today=isoToday();
+  return deferredScratchWaiting().filter(x=>x.dueDate && x.dueDate<=today);
+}
+function deferredScratchReleasedPending(){
+  return allDeferredScratch().filter(x=>x.pack.deferredReleasedAt && !x.pack.deferredSettlementId);
+}
+function releaseDeferredScratchDue(){
+  const due=deferredScratchDue();
+  if(!due.length) return;
+  const total=due.reduce((s,x)=>s+x.amount,0);
+  if(!confirm(`Tienes ${fmt(total)} de rascas aplazados que ya toca liquidar.\n\n¿Añadirlos ahora al pendiente de liquidar?`)) return;
+  const today=isoToday();
+  due.forEach(x=>x.pack.deferredReleasedAt=today);
+  saveData();
+  render();
+  toast(`✅ ${fmt(total)} añadidos a la liquidación`);
+}
+function renderDeferredScratchCard(){
+  const card=$("deferredScratchCard");
+  if(!card) return;
+  const all=allDeferredScratch().filter(x=>!x.pack.deferredSettlementId);
+  if(!all.length){ card.classList.add("hidden"); return; }
+
+  const today=isoToday();
+  $("deferredScratchTotal").textContent=fmt(all.reduce((s,x)=>s+x.amount,0));
+  $("deferredScratchList").innerHTML=all.map(x=>{
+    let state;
+    if(x.pack.deferredReleasedAt) state=`<span class="deferred-state released">Ya añadido a liquidación</span>`;
+    else if(x.dueDate && x.dueDate<=today) state=`<span class="deferred-state due">Ya toca liquidarlo</span>`;
+    else state=`<span class="deferred-state future">Se liquida ${dateLabelShort(x.dueDate)}</span>`;
+    return `<div class="deferred-scratch-row">
+      <div><strong>${x.pack.product}</strong><span>${Number(x.pack.qty||0)} paquete${Number(x.pack.qty||0)===1?'':'s'} · vendido ${dateLabelShort(x.saleDate)}</span>${state}</div>
+      <b>${fmt(x.amount)}</b>
+    </div>`;
+  }).join("");
+
+  const due=deferredScratchDue();
+  $("releaseDeferredScratchBtn").classList.toggle("hidden",!due.length);
+  $("deferredScratchNote").textContent=due.length
+    ? `Tienes ${fmt(due.reduce((s,x)=>s+x.amount,0))} que ya puedes pasar a liquidación.`
+    : "Estos importes ya cuentan como venta, tramo y comisión, pero no como liquidación hasta su fecha.";
+  card.classList.remove("hidden");
+}
+
 function pendingEntries(cutoffDate=null){
   const start=data.liquidationTrackingStart || "0000-01-01";
   const days=allDays().filter(x=>x.date>=start && !x.day.settlementId && (!cutoffDate || x.date<=cutoffDate));
-  // Un ingreso a cuenta hecho hoy se trata como un movimiento económico de hoy:
-  // entra en la liquidación del día siguiente, igual que el resultado de la jornada.
   const deposits=allAccountDeposits().filter(x=>x.date>=start && !x.deposit.settlementId && (!cutoffDate || x.date<=cutoffDate));
-  return [...days,...deposits].sort((a,b)=>a.date.localeCompare(b.date) || (a.kind==='day'?-1:1));
+  const deferred=deferredScratchReleasedPending().filter(x=>x.date>=start);
+  return [...days,...deposits,...deferred].sort((a,b)=>a.date.localeCompare(b.date) || (a.kind==='day'?-1:1));
 }
 function pendingLiquidationStats(cutoffDate=null){
   const entries=pendingEntries(cutoffDate);
-  const amount=entries.reduce((a,x)=>a+(x.kind==='deposit'?Number(x.deposit.amount||0):Number(x.day.liq||0)),0);
+  const amount=entries.reduce((a,x)=>{
+    if(x.kind==='deposit') return a+Number(x.deposit.amount||0);
+    if(x.kind==='deferredScratch') return a+Number(x.amount||0);
+    return a+Number(x.day.liq||0);
+  },0);
   const dayCount=entries.filter(x=>x.kind==='day').length;
   const depositCount=entries.filter(x=>x.kind==='deposit').length;
-  return {entries,amount,dayCount,depositCount,from:entries[0]?.date||null,to:entries[entries.length-1]?.date||null};
+  const deferredCount=entries.filter(x=>x.kind==='deferredScratch').length;
+  return {entries,amount,dayCount,depositCount,deferredCount,from:entries[0]?.date||null,to:entries[entries.length-1]?.date||null};
 }
 function recalcSettlements(){
   (data.settlements||[]).forEach(s=>{
     const linkedDays=allDays().filter(x=>x.day.settlementId===s.id);
     const linkedDeposits=allAccountDeposits().filter(x=>x.deposit.settlementId===s.id);
-    const linked=[...linkedDays,...linkedDeposits].sort((a,b)=>a.date.localeCompare(b.date));
-    s.amount=linkedDays.reduce((a,x)=>a+Number(x.day.liq||0),0)+linkedDeposits.reduce((a,x)=>a+Number(x.deposit.amount||0),0);
+    const linkedDeferred=allDeferredScratch().filter(x=>x.pack.deferredSettlementId===s.id);
+    const linked=[...linkedDays,...linkedDeposits,...linkedDeferred].sort((a,b)=>a.date.localeCompare(b.date));
+    s.amount=linkedDays.reduce((a,x)=>a+Number(x.day.liq||0),0)
+      +linkedDeposits.reduce((a,x)=>a+Number(x.deposit.amount||0),0)
+      +linkedDeferred.reduce((a,x)=>a+Number(x.amount||0),0);
     s.dayCount=linkedDays.length;
     s.depositCount=linkedDeposits.length;
+    s.deferredCount=linkedDeferred.length;
     if(linked.length){s.from=linked[0].date;s.to=linked[linked.length-1].date;}
   });
 }
@@ -5432,6 +5561,9 @@ function renderLiquidationBreakdown(stats){
       const extra=x.month?.extras?.find(e=>e.id===x.deposit.extraId);
       const label=extra?`Ingreso a cuenta · ${extra.name}`:"Ingreso a cuenta";
       return `<div class="liquidation-breakdown-row"><span>${dateLabelShort(x.date)} · ${label}</span><strong>${fmt(Number(x.deposit.amount||0))}</strong></div>`;
+    }
+    if(x.kind==="deferredScratch"){
+      return `<div class="liquidation-breakdown-row"><span>${dateLabelShort(x.date)} · Rasca aplazado · ${x.pack.product}</span><strong>${fmt(Number(x.amount||0))}</strong></div>`;
     }
     const d=x.day;
     const label=`${dateLabelShort(x.date)} · Jornada`;
@@ -5745,6 +5877,7 @@ function render(){
     $("pendingPeriod").textContent=todaySchedule.liquidation?"No hay movimientos anteriores pendientes":"Sin movimientos pendientes";
   }
   renderLiquidationBreakdown(pstats);
+  renderDeferredScratchCard();
   setMoneyText("todayResult", todayResult);
   const nextLiq=nextLiquidationFrom(today);
   $("nextLiquidationDate").textContent=nextLiq?dateLabelShort(nextLiq):"Sin configurar";
@@ -6121,16 +6254,17 @@ function confirmCurrentLiquidation(){
     render();
     return;
   }
-  const detail=`${stats.dayCount} jornada${stats.dayCount===1?'':'s'}${stats.depositCount?` y ${stats.depositCount} ingreso${stats.depositCount===1?'':'s'} a cuenta`:''}`;
+  const detail=`${stats.dayCount} jornada${stats.dayCount===1?'':'s'}${stats.depositCount?` · ${stats.depositCount} ingreso${stats.depositCount===1?'':'s'} a cuenta`:''}${stats.deferredCount?` · ${stats.deferredCount} rasca${stats.deferredCount===1?'':'s'} aplazado${stats.deferredCount===1?'':'s'}`:''}`;
   const periodo=stats.from&&stats.to?`${dateLabelShort(stats.from)}–${dateLabelShort(stats.to)}`:"periodo pendiente";
   if(!confirm(`Liquidación: ${fmt(stats.amount)}\nPeriodo: ${periodo}\nIncluye: ${detail}\n\n¿Confirmar liquidación?`)) return;
   const id="liq"+Date.now().toString(36);
   stats.entries.forEach(x=>{
     if(x.kind==='deposit') x.deposit.settlementId=id;
+    else if(x.kind==='deferredScratch') x.pack.deferredSettlementId=id;
     else x.day.settlementId=id;
   });
   data.settlements=data.settlements||[];
-  data.settlements.push({id,confirmedAt:isoToday(),from:stats.from,to:stats.to,dayCount:stats.dayCount,depositCount:stats.depositCount,amount:stats.amount,status:"liquidated"});
+  data.settlements.push({id,confirmedAt:isoToday(),from:stats.from,to:stats.to,dayCount:stats.dayCount,depositCount:stats.depositCount,deferredCount:stats.deferredCount||0,amount:stats.amount,status:"liquidated"});
   saveData(); render(); toast("✅ Liquidación realizada");
 }
 
@@ -6681,6 +6815,7 @@ function renderScratchSelected(){
       <div class="scratch-item-main">
         <div class="scratch-item-name">${x.product}</div>
         <div class="scratch-item-meta">${x.legacy ? 'Registro anterior sin desglose' : `${x.qty} paquete${Number(x.qty)===1?'':'s'} · ${fmt(Number(x.qty)*Number(x.packValue))}`}</div>
+        ${x.deferredLiquidation?`<div class="scratch-deferred-badge">⏳ Liquidación aplazada hasta ${dateLabelShort(x.deferredDueDate)}</div>`:''}
       </div>
       <button type="button" class="scratch-remove" onclick="removeScratchTemp(${i})">Quitar</button>
     </div>`).join('');
@@ -6693,12 +6828,26 @@ window.removeScratchTemp = i => { tempScratchPacks.splice(i,1); renderScratchSel
 function addScratchTemp(){
   const item=SCRATCH_CATALOG[Number($("scratchProduct").value||0)];
   const qty=Math.max(0,Math.round(Number($("scratchQty").value||0)));
+  const deferred=!!$("scratchDeferred")?.checked;
+  const dueDate=$("scratchDeferredDate")?.value||"";
   if(!item) return;
   if(qty<=0){alert("Indica al menos 1 paquete.");return;}
-  const existing=tempScratchPacks.find(x=>!x.legacy && x.product===item.name);
+  if(deferred && !dueDate){alert("Indica la fecha en que tendrás que liquidar este rasca.");return;}
+  const existing=tempScratchPacks.find(x=>!x.legacy && x.product===item.name && !!x.deferredLiquidation===deferred && (x.deferredDueDate||"")===(deferred?dueDate:""));
   if(existing) existing.qty=Number(existing.qty||0)+qty;
-  else tempScratchPacks.push({product:item.name,price:item.price,packValue:scratchPackValue(item.price),qty,group:item.group,prizePct:item.prizePct,status:item.status});
-  $("scratchQty").value=""; renderScratchSelected();
+  else tempScratchPacks.push({
+    product:item.name,price:item.price,packValue:scratchPackValue(item.price),qty,
+    group:item.group,prizePct:item.prizePct,status:item.status,
+    deferredLiquidation:deferred,
+    deferredDueDate:deferred?dueDate:null,
+    deferredReleasedAt:null,
+    deferredSettlementId:null
+  });
+  $("scratchQty").value="";
+  $("scratchDeferred").checked=false;
+  $("scratchDeferredDate").value="";
+  $("scratchDeferredDateWrap").classList.add("hidden");
+  renderScratchSelected();
 }
 function couponDraftValue(){
   return tempCoupons.reduce((sum,c)=>sum+couponDerived(c).totalValue,0);
@@ -6848,6 +6997,9 @@ function openDayDialog(day=null){
   } else tempScratchPacks=[];
   tempCoupons = day && Array.isArray(day.coupons) ? day.coupons.map(x=>({...x})) : [];
   tempOtherItems = day && Array.isArray(day.otherItems) ? day.otherItems.map(x=>({...x})) : [];
+  $("scratchDeferred").checked=false;
+  $("scratchDeferredDate").value="";
+  $("scratchDeferredDateWrap").classList.add("hidden");
   renderScratchSelected();
   renderCouponSelected();
   renderOtherSelected();
@@ -6896,8 +7048,12 @@ function addOtherTemp(){
 }
 window.removeOtherTemp=i=>{tempOtherItems.splice(i,1);renderOtherSelected();};
 
+function deferredScratchDraftTotal(){
+  return tempScratchPacks.reduce((sum,x)=>sum+(x.deferredLiquidation?Number(x.packValue||0)*Number(x.qty||0):0),0);
+}
 function cashControlValues(){
   const sale = num("pasivo")+num("activo")+num("rascas");
+  const deferredScratch = deferredScratchDraftTotal();
   const others = otherDraftValue();
   const card = num("tarjeta");
   const payments = num("pagos");
@@ -6905,7 +7061,7 @@ function cashControlValues(){
   const countedRaw = $("cashCounted")?.value ?? "";
   const opening = Number(openingRaw||0);
   const counted = Number(countedRaw||0);
-  const cashSales = sale+others-card;
+  const cashSales = sale-deferredScratch+others-card;
   const expected = opening+cashSales-payments;
   const used = openingRaw!=="" || countedRaw!=="";
   const complete = openingRaw!=="" && countedRaw!=="";
@@ -6939,7 +7095,8 @@ function updateCashPreview(){
 function updateDayPreview(){
   const sale = num("pasivo")+num("activo")+num("rascas");
   const others = otherDraftValue();
-  const liq = sale+others-num("pagos")-num("tarjeta");
+  const deferredScratch = deferredScratchDraftTotal();
+  const liq = sale-deferredScratch+others-num("pagos")-num("tarjeta");
   $("previewSale").textContent = fmt(sale);
   if($("previewOthers")) $("previewOthers").textContent = fmt(others);
   $("previewLiq").textContent = fmt(liq);
@@ -7002,6 +7159,12 @@ $("cancelActiveOcrBtn").addEventListener("click",()=>{
 });
 $("confirmActiveOcrBtn").addEventListener("click",confirmActiveOcr);
 $("addScratchBtn").addEventListener("click",addScratchTemp);
+$("scratchDeferred").addEventListener("change",()=>{
+  const on=$("scratchDeferred").checked;
+  $("scratchDeferredDateWrap").classList.toggle("hidden",!on);
+  if(!on) $("scratchDeferredDate").value="";
+});
+$("releaseDeferredScratchBtn").addEventListener("click",releaseDeferredScratchDue);
 $("addCouponBtn").addEventListener("click",addCouponTemp);
 $("addOtherBtn").addEventListener("click",addOtherTemp);
 $("otherAmount").addEventListener("input",updateDayPreview);
@@ -7118,7 +7281,8 @@ $("dayForm").addEventListener("submit",e=>{
     settlementId: previousEntry?.settlementId || null
   };
   entry.sale = entry.pasivo+entry.activo+entry.rascas;
-  const liquidableBase = entry.sale + Number(entry.otherTotal||0);
+  entry.deferredScratchTotal=(entry.scratchPacks||[]).reduce((sum,x)=>sum+(x.deferredLiquidation?Number(x.packValue||0)*Number(x.qty||0):0),0);
+  const liquidableBase = entry.sale - entry.deferredScratchTotal + Number(entry.otherTotal||0);
   if(entry.tarjeta > liquidableBase){
     alert("El importe cobrado con tarjeta no puede ser mayor que la venta ONCE más los productos de Otros.");
     return;

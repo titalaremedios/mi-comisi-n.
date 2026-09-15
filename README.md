@@ -106,3 +106,10 @@ v0.41.0
 - En móvil, cada tarjeta de “Tu jornada anterior” ocupa una fila completa.
 - Vendido, comisión estimada, comisión por extras y pendiente de liquidar ya no comparten fila.
 - Se mejora la legibilidad y se evita que títulos o textos queden apretados.
+
+
+## v0.48.0 — Rascas con liquidación aplazada
+- Opción visible dentro de Rascas por paquetes.
+- Fecha de liquidación futura.
+- Cuenta en venta/tramo/comisión desde hoy, pero no en pendiente de liquidar hasta confirmación.
+- Tarjeta de Rascas aplazados en Inicio.
