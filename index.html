@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-cuadra-version="0.48.0">
+<html lang="es" data-cuadra-version="0.50.0">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -4144,6 +4144,56 @@
     .deferred-state.released{background:#e8f6f1;color:#0f7567!important}
     .deferred-scratch-note{margin:11px 0;color:#657570;font-size:12px;line-height:1.35;font-weight:650}
 
+
+    /* ===== Cuenta Clara v0.50 · primer paquete no computable ===== */
+    .scratch-first-pack-option{
+      margin-top:12px;
+      padding:12px;
+      border:1px solid #d8e9e4;
+      border-radius:16px;
+      background:#f6fbf9;
+    }
+    .scratch-first-pack-check{
+      display:flex;
+      align-items:flex-start;
+      gap:9px;
+      cursor:pointer;
+    }
+    .scratch-first-pack-check input{
+      width:19px!important;
+      height:19px!important;
+      min-height:19px!important;
+      margin-top:2px;
+      accent-color:#168f7d;
+      flex:0 0 auto;
+    }
+    .scratch-first-pack-check strong{
+      display:block;
+      color:#16312e;
+      font-size:13px;
+      line-height:1.25;
+      font-weight:850;
+    }
+    .scratch-first-pack-check small{
+      display:block;
+      margin-top:4px;
+      color:#657570;
+      font-size:11.5px;
+      line-height:1.35;
+      font-weight:600;
+    }
+    .scratch-first-pack-badge{
+      display:inline-block;
+      margin-top:6px;
+      padding:5px 8px;
+      border-radius:999px;
+      background:#e8f6f1;
+      color:#0f7567;
+      font-size:10.5px;
+      line-height:1.2;
+      font-weight:850;
+    }
+
   </style>
 </head>
 <body>
@@ -4739,6 +4789,16 @@
             </div>
             <button class="btn secondary" type="button" id="addScratchBtn">＋ Añadir</button>
           </div>
+          <div class="scratch-first-pack-option">
+            <label class="scratch-first-pack-check">
+              <input type="checkbox" id="scratchFirstPackFree">
+              <span>
+                <strong>Primer paquete del nuevo modelo · no computable</strong>
+                <small>Se guarda para el control de rascas, pero no suma a venta, liquidación, tramo ni comisión.</small>
+              </span>
+            </label>
+          </div>
+
           <div class="scratch-deferred-option">
             <label class="scratch-deferred-check">
               <input type="checkbox" id="scratchDeferred">
@@ -5086,7 +5146,7 @@
               <strong>Versión de Cuenta Clara</strong>
               <span id="updateHelpText">Busca la última versión publicada y recarga la app.</span>
             </div>
-            <span class="version-badge" id="appVersionBadge">v0.48.0</span>
+            <span class="version-badge" id="appVersionBadge">v0.50.0</span>
           </div>
           <button class="btn secondary full" id="updateAppBtn" type="button">↻ Actualizar Cuenta Clara</button>
           <div class="update-status" id="updateStatus" aria-live="polite"></div>
@@ -5112,7 +5172,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const APP_VERSION = "0.48.0";
+const APP_VERSION = "0.50.0";
 const TRAMOS = [
   {pct:2.5, rate:210},
   {pct:6, rate:296},
@@ -5124,7 +5184,7 @@ const TRAMOS = [
   {pct:17.5, rate:694}
 ];
 const SCRATCH_CATALOG = [
-  {name:"7 de la Suerte 2025", price:0.50, prizePct:55, group:"resto", status:"voluntario", endDate:"2026-09-23"},
+  {name:"7 de la Suerte 2026", price:0.50, prizePct:55, group:"resto", status:"voluntario"},
   {name:"Siete y Media 2026", price:1, prizePct:59, group:"resto", status:"obligatorio"},
   {name:"El Gato de la Fortuna", price:1, prizePct:59, group:"resto", status:"voluntario"},
   {name:"X10 2026", price:2, prizePct:64, group:"alto", status:"obligatorio"},
@@ -5133,10 +5193,9 @@ const SCRATCH_CATALOG = [
   {name:"Rasca Flower Power", price:2, prizePct:64, group:"alto", status:"voluntario"},
   {name:"Galleta de la Fortuna 2025", price:2, prizePct:64, group:"alto", status:"voluntario"},
   {name:"Palabras Ganadoras", price:3, prizePct:65.5, group:"alto", status:"voluntario"},
-  {name:"Rasca de Verano 2026", price:3, prizePct:65.5, group:"alto", status:"voluntario", endDate:"2026-09-23"},
   {name:"X20 2026", price:5, prizePct:69.59, group:"muy_alto", status:"obligatorio", voluntaryFrom:"2026-09-15"},
   {name:"5 años para ti", price:5, prizePct:69.59, group:"muy_alto", status:"obligatorio"},
-  {name:"Millonario 2024", price:5, prizePct:69.5, group:"muy_alto", status:"voluntario", endDate:"2026-09-23"},
+  {name:"Millonario 2026", price:5, prizePct:69.5, group:"muy_alto", status:"voluntario"},
   {name:"X50 2026", price:10, prizePct:74, group:"muy_alto", status:"obligatorio", voluntaryFrom:"2026-09-15"},
   {name:"Rasca Platinum 2026", price:10, prizePct:74, group:"muy_alto", status:"voluntario"},
   {name:"Mega Millonario 2026", price:10, prizePct:74, group:"muy_alto", status:"voluntario"}
@@ -6300,7 +6359,7 @@ function renderDays(month){
           <span class="pill">Activo ${fmt(d.activo)}</span>
           ${(d.activeBets||[]).map(x=>`<span class="pill">🎯 ${x.name}: ${x.qty} ap. · ${fmt(Number(x.qty)*Number(x.price))}</span>`).join('')}
           <span class="pill">Rascas ${fmt(d.rascas)}</span>
-          ${(d.scratchPacks||[]).filter(x=>!x.legacy).map(x=>{ const m=scratchCatalogItem(x.product); return `<span class="pill">🎟️ ${x.product}: ${x.qty} paq. · ${scratchGroupLabel(x.group||m?.group)}</span>`; }).join('')}
+          ${(d.scratchPacks||[]).filter(x=>!x.legacy).map(x=>{ const m=scratchCatalogItem(x.product); return `<span class="pill">🎟️ ${x.product}: ${x.qty} paq. · ${scratchGroupLabel(x.group||m?.group)}${x.firstPackFree?' · 🎁 primer paquete no computable':''}${x.deferredLiquidation?` · ⏳ liquida ${dateLabelShort(x.deferredDueDate)}`:''}</span>`; }).join('')}
           ${(d.coupons||[]).length?`<span class="pill">🎫 ${(d.coupons||[]).length} sorteo${(d.coupons||[]).length===1?'':'s'} · ${(d.coupons||[]).reduce((a,c)=>a+couponDerived(c).total,0)} cupones · ${fmt((d.coupons||[]).reduce((a,c)=>a+couponDerived(c).totalValue,0))}</span>`:''}
           ${Number(d.bonoQty||0)>0?`<span class="pill">📅 Bono semanal (lunes): ${Number(d.bonoQty||0)} × ${fmt(15)} = ${fmt(Number(d.bonoQty||0)*15)}</span>`:''}
           ${(d.otherItems||[]).length?`<span class="pill">🧾 Otros ${fmt(Number(d.otherTotal||0))}</span>`:''}
@@ -6804,7 +6863,10 @@ function populateScratchCatalog(){
   $("scratchProduct").innerHTML = SCRATCH_CATALOG.map((x,i)=>`<option value="${i}">${x.name} · ${String(x.price).replace('.',',')} €</option>`).join("");
 }
 function scratchTempTotal(){
-  return tempScratchPacks.reduce((a,x)=>a + Number(x.packValue||0)*Number(x.qty||0),0);
+  return tempScratchPacks.reduce((a,x)=>{
+    if(x.firstPackFree) return a;
+    return a + Number(x.packValue||0)*Number(x.qty||0);
+  },0);
 }
 function renderScratchSelected(){
   const box=$("scratchSelected");
@@ -6815,6 +6877,7 @@ function renderScratchSelected(){
       <div class="scratch-item-main">
         <div class="scratch-item-name">${x.product}</div>
         <div class="scratch-item-meta">${x.legacy ? 'Registro anterior sin desglose' : `${x.qty} paquete${Number(x.qty)===1?'':'s'} · ${fmt(Number(x.qty)*Number(x.packValue))}`}</div>
+        ${x.firstPackFree?`<div class="scratch-first-pack-badge">🎁 Primer paquete · no computable</div>`:''}
         ${x.deferredLiquidation?`<div class="scratch-deferred-badge">⏳ Liquidación aplazada hasta ${dateLabelShort(x.deferredDueDate)}</div>`:''}
       </div>
       <button type="button" class="scratch-remove" onclick="removeScratchTemp(${i})">Quitar</button>
@@ -6828,22 +6891,35 @@ window.removeScratchTemp = i => { tempScratchPacks.splice(i,1); renderScratchSel
 function addScratchTemp(){
   const item=SCRATCH_CATALOG[Number($("scratchProduct").value||0)];
   const qty=Math.max(0,Math.round(Number($("scratchQty").value||0)));
+  const firstPackFree=!!$("scratchFirstPackFree")?.checked;
   const deferred=!!$("scratchDeferred")?.checked;
   const dueDate=$("scratchDeferredDate")?.value||"";
   if(!item) return;
   if(qty<=0){alert("Indica al menos 1 paquete.");return;}
+  if(firstPackFree && deferred){
+    alert("El primer paquete no computable no puede ser también una liquidación aplazada.");
+    return;
+  }
   if(deferred && !dueDate){alert("Indica la fecha en que tendrás que liquidar este rasca.");return;}
-  const existing=tempScratchPacks.find(x=>!x.legacy && x.product===item.name && !!x.deferredLiquidation===deferred && (x.deferredDueDate||"")===(deferred?dueDate:""));
+  const existing=tempScratchPacks.find(x=>
+    !x.legacy &&
+    x.product===item.name &&
+    !!x.firstPackFree===firstPackFree &&
+    !!x.deferredLiquidation===deferred &&
+    (x.deferredDueDate||"")===(deferred?dueDate:"")
+  );
   if(existing) existing.qty=Number(existing.qty||0)+qty;
   else tempScratchPacks.push({
     product:item.name,price:item.price,packValue:scratchPackValue(item.price),qty,
     group:item.group,prizePct:item.prizePct,status:item.status,
+    firstPackFree,
     deferredLiquidation:deferred,
     deferredDueDate:deferred?dueDate:null,
     deferredReleasedAt:null,
     deferredSettlementId:null
   });
   $("scratchQty").value="";
+  $("scratchFirstPackFree").checked=false;
   $("scratchDeferred").checked=false;
   $("scratchDeferredDate").value="";
   $("scratchDeferredDateWrap").classList.add("hidden");
@@ -6997,6 +7073,7 @@ function openDayDialog(day=null){
   } else tempScratchPacks=[];
   tempCoupons = day && Array.isArray(day.coupons) ? day.coupons.map(x=>({...x})) : [];
   tempOtherItems = day && Array.isArray(day.otherItems) ? day.otherItems.map(x=>({...x})) : [];
+  $("scratchFirstPackFree").checked=false;
   $("scratchDeferred").checked=false;
   $("scratchDeferredDate").value="";
   $("scratchDeferredDateWrap").classList.add("hidden");
@@ -7049,7 +7126,7 @@ function addOtherTemp(){
 window.removeOtherTemp=i=>{tempOtherItems.splice(i,1);renderOtherSelected();};
 
 function deferredScratchDraftTotal(){
-  return tempScratchPacks.reduce((sum,x)=>sum+(x.deferredLiquidation?Number(x.packValue||0)*Number(x.qty||0):0),0);
+  return tempScratchPacks.reduce((sum,x)=>sum+(x.deferredLiquidation && !x.firstPackFree?Number(x.packValue||0)*Number(x.qty||0):0),0);
 }
 function cashControlValues(){
   const sale = num("pasivo")+num("activo")+num("rascas");
@@ -7161,8 +7238,16 @@ $("confirmActiveOcrBtn").addEventListener("click",confirmActiveOcr);
 $("addScratchBtn").addEventListener("click",addScratchTemp);
 $("scratchDeferred").addEventListener("change",()=>{
   const on=$("scratchDeferred").checked;
+  if(on && $("scratchFirstPackFree").checked) $("scratchFirstPackFree").checked=false;
   $("scratchDeferredDateWrap").classList.toggle("hidden",!on);
   if(!on) $("scratchDeferredDate").value="";
+});
+$("scratchFirstPackFree").addEventListener("change",()=>{
+  if($("scratchFirstPackFree").checked && $("scratchDeferred").checked){
+    $("scratchDeferred").checked=false;
+    $("scratchDeferredDate").value="";
+    $("scratchDeferredDateWrap").classList.add("hidden");
+  }
 });
 $("releaseDeferredScratchBtn").addEventListener("click",releaseDeferredScratchDue);
 $("addCouponBtn").addEventListener("click",addCouponTemp);
@@ -7281,7 +7366,7 @@ $("dayForm").addEventListener("submit",e=>{
     settlementId: previousEntry?.settlementId || null
   };
   entry.sale = entry.pasivo+entry.activo+entry.rascas;
-  entry.deferredScratchTotal=(entry.scratchPacks||[]).reduce((sum,x)=>sum+(x.deferredLiquidation?Number(x.packValue||0)*Number(x.qty||0):0),0);
+  entry.deferredScratchTotal=(entry.scratchPacks||[]).reduce((sum,x)=>sum+(x.deferredLiquidation && !x.firstPackFree?Number(x.packValue||0)*Number(x.qty||0):0),0);
   const liquidableBase = entry.sale - entry.deferredScratchTotal + Number(entry.otherTotal||0);
   if(entry.tarjeta > liquidableBase){
     alert("El importe cobrado con tarjeta no puede ser mayor que la venta ONCE más los productos de Otros.");

@@ -113,3 +113,18 @@ v0.41.0
 - Fecha de liquidación futura.
 - Cuenta en venta/tramo/comisión desde hoy, pero no en pendiente de liquidar hasta confirmación.
 - Tarjeta de Rascas aplazados en Inicio.
+
+
+## v0.49.0 — Actualización del catálogo de rascas
+- “7 de la Suerte 2025” se sustituye por “7 de la Suerte 2026” para nuevas jornadas.
+- “Millonario 2024” se sustituye por “Millonario 2026” para nuevas jornadas.
+- “Rasca de Verano 2026” se retira del catálogo vigente.
+- Los registros históricos de los modelos antiguos se conservan sin cambios.
+
+
+## v0.50.0 — Primer paquete del nuevo modelo no computable
+- Nueva opción dentro de Rascas: “Primer paquete del nuevo modelo · no computable”.
+- Se registra para el control de paquetes.
+- No suma a venta ONCE, liquidación, tramo ni comisión.
+- Queda identificado en la jornada con una etiqueta.
+- No puede combinarse con “liquidación aplazada”.
