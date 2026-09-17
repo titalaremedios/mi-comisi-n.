@@ -128,3 +128,13 @@ v0.41.0
 - No suma a venta ONCE, liquidación, tramo ni comisión.
 - Queda identificado en la jornada con una etiqueta.
 - No puede combinarse con “liquidación aplazada”.
+
+
+## v0.51.0 — Puntos colaboradores
+- Nuevo control para bares, cafeterías, peluquerías, tiendas y otros establecimientos que ayudan a vender cupones.
+- Se pueden guardar varios puntos y seleccionarlos desde Nueva jornada.
+- Por entrega: cupón, fecha de sorteo, llevados y devueltos.
+- Vendidos = llevados − devueltos.
+- Este control no vuelve a sumar venta ni liquidación, evitando duplicados.
+- Resumen mensual e histórico por establecimiento.
+- Gestión de puntos colaboradores desde Ajustes.

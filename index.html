@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-cuadra-version="0.50.0">
+<html lang="es" data-cuadra-version="0.51.0">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -4194,6 +4194,33 @@
       font-weight:850;
     }
 
+
+    /* ===== Cuenta Clara v0.51 · puntos colaboradores ===== */
+    .collab-box{grid-column:1/-1;background:#f7fbf9;border:1px solid #d7e9e2;border-radius:18px;padding:14px}
+    .collab-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+    .collab-head-title{font-size:13px;font-weight:850;color:#475467}
+    .collab-add-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr .7fr .7fr;gap:8px;align-items:end;margin-top:10px}
+    .collab-selected{display:grid;gap:8px;margin-top:12px}
+    .collab-item{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px 12px}
+    .collab-item strong{display:block;color:#16312e;font-size:13px}.collab-item span{display:block;color:var(--muted);font-size:11.5px;line-height:1.4;margin-top:3px}
+    .collab-remove{border:0;background:#fff0f0;color:var(--bad);border-radius:10px;padding:7px 9px;cursor:pointer;font-weight:800}
+    .collab-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}
+    .collab-stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px;box-shadow:0 7px 20px rgba(7,56,71,.05)}
+    .collab-stat span{display:block;color:var(--muted);font-size:11.5px;font-weight:700}.collab-stat strong{display:block;margin-top:5px;font-size:20px;color:#16312e}
+    .collab-summary-list{display:grid;gap:9px;margin-top:12px}
+    .collab-summary-card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:13px}
+    .collab-summary-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+    .collab-summary-name{font-weight:850;color:#16312e}.collab-summary-type{font-size:11px;color:var(--muted);margin-top:2px}
+    .collab-summary-sold{font-size:20px;font-weight:900;color:#168f7d;white-space:nowrap}
+    .collab-summary-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}
+    .collab-summary-meta div{background:#f7faf9;border-radius:11px;padding:8px}.collab-summary-meta span{display:block;font-size:10.5px;color:var(--muted);font-weight:700}
+    .collab-summary-meta strong{display:block;margin-top:3px;font-size:13px;color:#16312e}
+    .collab-settings-list{display:grid;gap:8px;margin-top:10px}
+    .collab-settings-row{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);border-radius:13px;padding:10px 11px;background:#fff}
+    .collab-settings-row strong{display:block;font-size:13px}.collab-settings-row span{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+    @media(max-width:720px){.collab-add-grid{grid-template-columns:1fr 1fr}.collab-add-grid .field:first-child{grid-column:1/-1}.collab-summary-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:430px){.collab-add-grid{grid-template-columns:1fr!important}.collab-add-grid .field:first-child{grid-column:auto}.collab-head{flex-direction:column}.collab-head .btn{width:100%}.collab-summary-grid{grid-template-columns:1fr 1fr}}
+
   </style>
 </head>
 <body>
@@ -4488,6 +4515,16 @@
         </div>
         <div id="couponMonthAlert" class="status good" style="margin-top:10px">Todavía no hay sorteos registrados este mes.</div>
 
+        <div class="section-title"><h2>🏪 Puntos colaboradores</h2></div>
+        <div class="mini">Seguimiento de bares, peluquerías y otros comercios que te ayudan a vender cupones.</div>
+        <div class="collab-summary-grid">
+          <div class="collab-stat"><span>Puntos con actividad</span><strong id="collabPointCount">0</strong></div>
+          <div class="collab-stat"><span>Cupones llevados</span><strong id="collabCarriedTotal">0</strong></div>
+          <div class="collab-stat"><span>Cupones devueltos</span><strong id="collabReturnedTotal">0</strong></div>
+          <div class="collab-stat"><span>Cupones vendidos</span><strong id="collabSoldTotal">0</strong></div>
+        </div>
+        <div id="collabMonthlyList" class="collab-summary-list"></div>
+
         <div class="section-title">
           <h2 class="help-label">Rascas <button class="help-btn" type="button" data-help="rascas" aria-label="Ayuda sobre rascas">?</button></h2>
         </div>
@@ -4619,6 +4656,12 @@
         <div id="weekdayInsight" class="weekday-insight">Aún faltan varias jornadas para detectar una tendencia fiable.</div>
         <div class="weekday-mobile-list" id="weekdayStatsBody"></div>
       </div>
+      <div class="section-title"><h2>Puntos colaboradores</h2></div>
+      <div class="card">
+        <div class="mini">Cuántos cupones vende cada establecimiento este mes y su acumulado histórico.</div>
+        <div id="collabHistoryList" class="collab-summary-list"></div>
+      </div>
+
       <div class="section-title"><h2>Comparativa de tramos</h2></div>
       <div class="tramo-compare-section">
         <div class="tramo-compare-intro">Compara cuánto vendiste y hasta qué tramo llegaste cada mes. El mes actual aparece primero con su proyección.</div>
@@ -4766,6 +4809,38 @@
           <button class="btn secondary" type="button" id="addCouponBtn" style="margin-top:10px">＋ Añadir sorteo</button>
           <div class="coupon-selected" id="couponSelected"></div>
         </div>
+
+        <div class="collab-box">
+          <div class="collab-head">
+            <div>
+              <div class="collab-head-title">🏪 Puntos colaboradores</div>
+              <div class="mini" style="margin-top:4px">Controla los cupones que dejas en bares, peluquerías u otros comercios. Es solo seguimiento: no vuelve a sumar la venta.</div>
+            </div>
+            <button class="btn secondary" type="button" id="newCollaboratorBtn">＋ Nuevo punto</button>
+          </div>
+          <div class="collab-add-grid">
+            <div class="field"><label>Establecimiento</label><select id="collabPoint"></select></div>
+            <div class="field">
+              <label>Día del cupón</label>
+              <select id="collabCouponType">
+                <option value="">Selecciona el cupón</option>
+                <option value="Cupón lunes">Cupón lunes</option>
+                <option value="Cupón martes">Cupón martes</option>
+                <option value="Cupón miércoles">Cupón miércoles</option>
+                <option value="Cupón jueves">Cupón jueves</option>
+                <option value="Cupón viernes">Cupón viernes</option>
+                <option value="Cupón sábado">Cupón sábado</option>
+                <option value="Cupón domingo">Cupón domingo</option>
+              </select>
+            </div>
+            <div class="field"><label>Fecha sorteo</label><input type="date" id="collabDrawDate"></div>
+            <div class="field"><label>Llevados</label><input type="number" id="collabCarried" min="0" step="1" inputmode="numeric"></div>
+            <div class="field"><label>Devueltos</label><input type="number" id="collabReturned" min="0" step="1" inputmode="numeric"></div>
+          </div>
+          <button class="btn secondary" type="button" id="addCollabEntryBtn" style="margin-top:10px">＋ Añadir entrega</button>
+          <div class="collab-selected" id="collabSelected"></div>
+        </div>
+
         <div class="bono-box" id="bonoBox">
           <label style="font-size:13px;font-weight:800;color:#475467">Bono semanal TPV</label>
           <div class="mini" style="margin-top:4px">El bono pertenece siempre al lunes de esa semana. Solo puede registrarse en una jornada de lunes y se suma automáticamente al Pasivo de ese lunes.</div>
@@ -5073,6 +5148,33 @@
     </div>
   </dialog>
 
+<dialog id="collaboratorDialog">
+    <form method="dialog" class="modal" id="collaboratorForm">
+      <div class="modal-head">
+        <h2>Nuevo punto colaborador</h2>
+        <button class="close" type="button" onclick="collaboratorDialog.close()">×</button>
+      </div>
+      <div class="field">
+        <label>Nombre del establecimiento</label>
+        <input type="text" id="collaboratorName" placeholder="Ej. Bar Manolo" required>
+      </div>
+      <div class="field" style="margin-top:10px">
+        <label>Tipo</label>
+        <select id="collaboratorType">
+          <option value="Bar">Bar</option>
+          <option value="Cafetería">Cafetería</option>
+          <option value="Peluquería">Peluquería</option>
+          <option value="Tienda">Tienda</option>
+          <option value="Restaurante">Restaurante</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+      <div class="actions" style="margin-top:16px">
+        <button class="btn primary full" type="submit">Guardar punto</button>
+      </div>
+    </form>
+  </dialog>
+
 <dialog id="settingsDialog">
     <div class="modal">
       <div class="modal-head">
@@ -5125,6 +5227,13 @@
       </div>
 
       <div class="settings-section">
+        <h3>🏪 Puntos colaboradores</h3>
+        <div class="mini">Guarda aquí bares, peluquerías u otros comercios para elegirlos rápidamente en Nueva jornada.</div>
+        <button class="btn secondary full" id="settingsAddCollaboratorBtn" type="button" style="margin-top:9px">＋ Añadir punto colaborador</button>
+        <div id="collaboratorSettingsList" class="collab-settings-list"></div>
+      </div>
+
+      <div class="settings-section">
         <h3>Cómo usar Cuenta Clara</h3>
         <div class="mini">Una guía rápida para empezar y entender los conceptos principales.</div>
         <button class="guide-button" id="openGuideBtn" type="button">
@@ -5146,7 +5255,7 @@
               <strong>Versión de Cuenta Clara</strong>
               <span id="updateHelpText">Busca la última versión publicada y recarga la app.</span>
             </div>
-            <span class="version-badge" id="appVersionBadge">v0.50.0</span>
+            <span class="version-badge" id="appVersionBadge">v0.51.0</span>
           </div>
           <button class="btn secondary full" id="updateAppBtn" type="button">↻ Actualizar Cuenta Clara</button>
           <div class="update-status" id="updateStatus" aria-live="polite"></div>
@@ -5172,7 +5281,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const APP_VERSION = "0.50.0";
+const APP_VERSION = "0.51.0";
 const TRAMOS = [
   {pct:2.5, rate:210},
   {pct:6, rate:296},
@@ -5209,6 +5318,7 @@ const scratchCatalogItem = name => SCRATCH_CATALOG.find(x=>x.name===name) || nul
 const scratchPackValue = price => Number(price) <= 2 ? 100 : 150;
 let tempScratchPacks = [];
 let tempCoupons = [];
+let tempCollaboratorEntries = [];
 let tempActiveBets = [];
 let pendingOcrActiveRows = [];
 let tempOtherItems = [];
@@ -5266,6 +5376,7 @@ if(!data.profile) data.profile={name:"Azucena"};
 if(!data.profile.schedule) data.profile.schedule={workDays:[],liquidationDays:[]};
 if(!data.calendarOverrides) data.calendarOverrides={};
 if(!data.settlements) data.settlements=[];
+if(!Array.isArray(data.collaborators)) data.collaborators=[];
 if(!data.liquidationTrackingStart){
   const n=new Date();
   data.liquidationTrackingStart=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-01`;
@@ -6062,6 +6173,7 @@ function render(){
   $("scratchHighSales").textContent = fmt(scratchStats.groupSales.alto);
   $("scratchVeryHighSales").textContent = fmt(scratchStats.groupSales.muy_alto);
   const couponStats=couponMonthStats(month);
+  renderCollaboratorSummaries(month);
   $("couponDrawCount").textContent=couponStats.draws;
   $("couponPhysicalTotal").textContent=couponStats.physical;
   $("couponTpvTotal").textContent=couponStats.tpv;
@@ -6359,7 +6471,7 @@ function renderDays(month){
           <span class="pill">Activo ${fmt(d.activo)}</span>
           ${(d.activeBets||[]).map(x=>`<span class="pill">🎯 ${x.name}: ${x.qty} ap. · ${fmt(Number(x.qty)*Number(x.price))}</span>`).join('')}
           <span class="pill">Rascas ${fmt(d.rascas)}</span>
-          ${(d.scratchPacks||[]).filter(x=>!x.legacy).map(x=>{ const m=scratchCatalogItem(x.product); return `<span class="pill">🎟️ ${x.product}: ${x.qty} paq. · ${scratchGroupLabel(x.group||m?.group)}${x.firstPackFree?' · 🎁 primer paquete no computable':''}${x.deferredLiquidation?` · ⏳ liquida ${dateLabelShort(x.deferredDueDate)}`:''}</span>`; }).join('')}
+          ${(d.scratchPacks||[]).filter(x=>!x.legacy).map(x=>{ const m=scratchCatalogItem(x.product); return `<span class="pill">🎟️ ${x.product}: ${x.qty} paq. · ${scratchGroupLabel(x.group||m?.group)}${x.firstPackFree?' · 🎁 primer paquete no computable':''}${x.deferredLiquidation?` · ⏳ liquida ${dateLabelShort(x.deferredDueDate)}`:''}</span>`; }).join('')}${(d.collaboratorEntries||[]).map(x=>`<span class="pill">🏪 ${x.collaboratorName}: ${Math.max(0,Number(x.carried||0)-Number(x.returned||0))} vendidos · ${x.couponType||'Cupón'}</span>`).join('')}
           ${(d.coupons||[]).length?`<span class="pill">🎫 ${(d.coupons||[]).length} sorteo${(d.coupons||[]).length===1?'':'s'} · ${(d.coupons||[]).reduce((a,c)=>a+couponDerived(c).total,0)} cupones · ${fmt((d.coupons||[]).reduce((a,c)=>a+couponDerived(c).totalValue,0))}</span>`:''}
           ${Number(d.bonoQty||0)>0?`<span class="pill">📅 Bono semanal (lunes): ${Number(d.bonoQty||0)} × ${fmt(15)} = ${fmt(Number(d.bonoQty||0)*15)}</span>`:''}
           ${(d.otherItems||[]).length?`<span class="pill">🧾 Otros ${fmt(Number(d.otherTotal||0))}</span>`:''}
@@ -6485,6 +6597,9 @@ function openWeekdayDetail(idx){
 
 function renderHistory(){
   const list = $("historyList");
+  const currentForCollaborators=getMonth();
+  if(currentForCollaborators) renderCollaboratorSummaries(currentForCollaborators);
+  else if($("collabHistoryList")) $("collabHistoryList").innerHTML='<div class="mini">Todavía no hay datos de puntos colaboradores.</div>';
   const compare = $("compareBody");
   const entries = Object.entries(data.months).sort((a,b)=>b[0].localeCompare(a[0]));
   renderWeekdayComparison();
@@ -6991,6 +7106,109 @@ function syncPasivoFromCoupons(resetWhenEmpty=false){
   updateDayPreview();
 }
 
+
+function collaboratorById(id){
+  return (data.collaborators||[]).find(x=>x.id===id)||null;
+}
+function populateCollaboratorSelect(){
+  const sel=$("collabPoint"); if(!sel) return;
+  const current=sel.value;
+  const items=(data.collaborators||[]).slice().sort((a,b)=>String(a.name||"").localeCompare(String(b.name||""),"es"));
+  sel.innerHTML=`<option value="">Selecciona un punto</option>`+items.map(x=>`<option value="${x.id}">${x.name} · ${x.type||"Otro"}</option>`).join("");
+  if(items.some(x=>x.id===current)) sel.value=current;
+}
+function openCollaboratorDialog(){
+  $("collaboratorName").value="";
+  $("collaboratorType").value="Bar";
+  $("collaboratorDialog").showModal();
+  setTimeout(()=>$("collaboratorName")?.focus(),50);
+}
+function renderCollaboratorSettings(){
+  const box=$("collaboratorSettingsList"); if(!box) return;
+  const items=(data.collaborators||[]).slice().sort((a,b)=>String(a.name||"").localeCompare(String(b.name||""),"es"));
+  box.innerHTML=items.length?items.map(x=>`<div class="collab-settings-row"><div><strong>${x.name}</strong><span>${x.type||"Otro"}</span></div><button class="small-btn danger" type="button" onclick="deleteCollaborator('${x.id}')">Borrar</button></div>`).join(""):`<div class="mini">Todavía no has guardado ningún punto colaborador.</div>`;
+}
+window.deleteCollaborator=id=>{
+  const c=collaboratorById(id); if(!c) return;
+  if(!confirm(`¿Quitar "${c.name}" de la lista?\n\nLos registros históricos ya guardados no se borrarán.`)) return;
+  data.collaborators=(data.collaborators||[]).filter(x=>x.id!==id);
+  saveData(); populateCollaboratorSelect(); renderCollaboratorSettings(); render(); toast("Punto colaborador eliminado");
+};
+function renderCollaboratorSelected(){
+  const box=$("collabSelected"); if(!box) return;
+  if(!tempCollaboratorEntries.length){
+    box.innerHTML=`<div class="mini">No has añadido entregas a puntos colaboradores en esta jornada.</div>`;
+    return;
+  }
+  box.innerHTML=tempCollaboratorEntries.map((x,i)=>{
+    const sold=Math.max(0,Number(x.carried||0)-Number(x.returned||0));
+    return `<div class="collab-item"><div><strong>🏪 ${x.collaboratorName}</strong><span>${x.collaboratorType||"Punto colaborador"} · ${x.couponType||"Cupón"} · ${dateLabelShort(x.drawDate)}</span><span>Llevados ${Number(x.carried||0)} · Devueltos ${Number(x.returned||0)} · <b>Vendidos ${sold}</b></span></div><button type="button" class="collab-remove" onclick="removeCollaboratorTemp(${i})">Quitar</button></div>`;
+  }).join("");
+}
+window.removeCollaboratorTemp=i=>{tempCollaboratorEntries.splice(i,1);renderCollaboratorSelected();};
+function addCollaboratorTemp(){
+  const point=collaboratorById($("collabPoint").value);
+  const couponType=$("collabCouponType").value||"";
+  const drawDate=$("collabDrawDate").value||"";
+  const carried=Math.max(0,Math.round(Number($("collabCarried").value||0)));
+  const returned=Math.max(0,Math.round(Number($("collabReturned").value||0)));
+  if(!point){alert("Selecciona un establecimiento.");return;}
+  if(!couponType){alert("Selecciona el día del cupón.");return;}
+  if(!drawDate){alert("Indica la fecha del sorteo.");return;}
+  if(carried<=0){alert("Indica cuántos cupones has llevado.");return;}
+  if(returned>carried){alert("Los cupones devueltos no pueden ser más que los llevados.");return;}
+  const weekdayNames=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+  const selectedDay=couponType.replace(/^Cupón\s+/i,"").toLowerCase();
+  const actualDay=weekdayNames[new Date(drawDate+"T12:00:00").getDay()];
+  if(selectedDay!==actualDay){alert(`Has seleccionado ${couponType}, pero la fecha indicada corresponde a ${actualDay}. Revisa uno de los dos datos.`);return;}
+  tempCollaboratorEntries.push({
+    id:"pc"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),
+    collaboratorId:point.id,collaboratorName:point.name,collaboratorType:point.type||"Otro",
+    couponType,drawDate,carried,returned
+  });
+  $("collabCouponType").value="";$("collabDrawDate").value="";$("collabCarried").value="";$("collabReturned").value="";
+  renderCollaboratorSelected();
+}
+function allCollaboratorEntries(){
+  const out=[];
+  Object.entries(data.months||{}).forEach(([monthKey,m])=>(m.days||[]).forEach(day=>(day.collaboratorEntries||[]).forEach(e=>out.push({...e,monthKey,dayDate:day.date}))));
+  return out;
+}
+function collaboratorStatsForEntries(entries){
+  const map=new Map();
+  (entries||[]).forEach(e=>{
+    const key=e.collaboratorId||e.collaboratorName||"unknown";
+    const row=map.get(key)||{id:e.collaboratorId||key,name:e.collaboratorName||"Punto colaborador",type:e.collaboratorType||"Otro",carried:0,returned:0,sold:0,deliveries:0};
+    const carried=Number(e.carried||0),returned=Number(e.returned||0);
+    row.carried+=carried;row.returned+=returned;row.sold+=Math.max(0,carried-returned);row.deliveries+=1;
+    map.set(key,row);
+  });
+  return [...map.values()].sort((a,b)=>b.sold-a.sold || a.name.localeCompare(b.name,"es"));
+}
+function currentMonthCollaboratorEntries(month){
+  return (month?.days||[]).flatMap(day=>(day.collaboratorEntries||[]).map(e=>({...e,dayDate:day.date})));
+}
+function collaboratorSummaryCard(row,historical=null){
+  const pct=row.carried?Math.round(row.sold/row.carried*1000)/10:0;
+  const histText=historical?`<div class="mini" style="margin-top:8px">Histórico total: <b>${historical.sold}</b> vendidos en ${historical.deliveries} entrega${historical.deliveries===1?"":"s"}.</div>`:"";
+  return `<div class="collab-summary-card"><div class="collab-summary-top"><div><div class="collab-summary-name">🏪 ${row.name}</div><div class="collab-summary-type">${row.type||"Punto colaborador"}</div></div><div class="collab-summary-sold">${row.sold}</div></div><div class="collab-summary-meta"><div><span>Llevados</span><strong>${row.carried}</strong></div><div><span>Devueltos</span><strong>${row.returned}</strong></div><div><span>% vendido</span><strong>${pct.toLocaleString("es-ES")}%</strong></div></div>${histText}</div>`;
+}
+function renderCollaboratorSummaries(month){
+  const monthly=currentMonthCollaboratorEntries(month);
+  const stats=collaboratorStatsForEntries(monthly);
+  const carried=stats.reduce((s,x)=>s+x.carried,0),returned=stats.reduce((s,x)=>s+x.returned,0),sold=stats.reduce((s,x)=>s+x.sold,0);
+  if($("collabPointCount")) $("collabPointCount").textContent=stats.length;
+  if($("collabCarriedTotal")) $("collabCarriedTotal").textContent=carried;
+  if($("collabReturnedTotal")) $("collabReturnedTotal").textContent=returned;
+  if($("collabSoldTotal")) $("collabSoldTotal").textContent=sold;
+  if($("collabMonthlyList")) $("collabMonthlyList").innerHTML=stats.length?stats.map(x=>collaboratorSummaryCard(x)).join(""):`<div class="mini">Todavía no hay entregas registradas este mes.</div>`;
+  if($("collabHistoryList")){
+    const historical=collaboratorStatsForEntries(allCollaboratorEntries());
+    const histMap=new Map(historical.map(x=>[x.id,x]));
+    $("collabHistoryList").innerHTML=stats.length?stats.map(x=>collaboratorSummaryCard(x,histMap.get(x.id)||null)).join(""):(historical.length?historical.map(x=>collaboratorSummaryCard(x,x)).join(""):`<div class="mini">Todavía no hay datos de puntos colaboradores.</div>`);
+  }
+}
+
 function renderCouponSelected(){
   const box=$("couponSelected");
   if(!tempCoupons.length){
@@ -7072,6 +7290,7 @@ function openDayDialog(day=null){
     tempScratchPacks = [{product:"Rascas anteriores",packValue:Number(day.rascas||0),qty:1,legacy:true}];
   } else tempScratchPacks=[];
   tempCoupons = day && Array.isArray(day.coupons) ? day.coupons.map(x=>({...x})) : [];
+  tempCollaboratorEntries = day && Array.isArray(day.collaboratorEntries) ? day.collaboratorEntries.map(x=>({...x})) : [];
   tempOtherItems = day && Array.isArray(day.otherItems) ? day.otherItems.map(x=>({...x})) : [];
   $("scratchFirstPackFree").checked=false;
   $("scratchDeferred").checked=false;
@@ -7079,6 +7298,8 @@ function openDayDialog(day=null){
   $("scratchDeferredDateWrap").classList.add("hidden");
   renderScratchSelected();
   renderCouponSelected();
+  populateCollaboratorSelect();
+  renderCollaboratorSelected();
   renderOtherSelected();
   if(tempCoupons.length || (bonoAllowedForCurrentDay() && Number($("bonoQty").value||0)>0)) syncPasivoFromCoupons();
   else {
@@ -7251,6 +7472,9 @@ $("scratchFirstPackFree").addEventListener("change",()=>{
 });
 $("releaseDeferredScratchBtn").addEventListener("click",releaseDeferredScratchDue);
 $("addCouponBtn").addEventListener("click",addCouponTemp);
+$("addCollabEntryBtn").addEventListener("click",addCollaboratorTemp);
+$("newCollaboratorBtn").addEventListener("click",openCollaboratorDialog);
+$("settingsAddCollaboratorBtn").addEventListener("click",openCollaboratorDialog);
 $("addOtherBtn").addEventListener("click",addOtherTemp);
 $("otherAmount").addEventListener("input",updateDayPreview);
 $("addExtraBtn").addEventListener("click",()=>openExtraDialog());
@@ -7338,6 +7562,24 @@ window.deleteAccount=id=>{const m=getMonth();ensureMonthCollections(m);const x=m
 window.editIncident=id=>{const m=getMonth(); ensureMonthCollections(m); const x=m.incidents.find(x=>x.id===id); if(x) openIncidentDialog(x);};
 window.deleteIncident=id=>{if(!confirm("¿Borrar esta incidencia?"))return;const m=getMonth();ensureMonthCollections(m);m.incidents=m.incidents.filter(x=>x.id!==id);saveData();render();toast("Incidencia borrada");};
 
+$("collaboratorForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const name=$("collaboratorName").value.trim();
+  const type=$("collaboratorType").value||"Otro";
+  if(!name){alert("Escribe el nombre del establecimiento.");return;}
+  const duplicate=(data.collaborators||[]).find(x=>String(x.name||"").trim().toLowerCase()===name.toLowerCase());
+  if(duplicate){alert("Ya tienes guardado un punto colaborador con ese nombre.");return;}
+  const item={id:"col"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),name,type};
+  data.collaborators=data.collaborators||[];
+  data.collaborators.push(item);
+  saveData();
+  $("collaboratorDialog").close();
+  populateCollaboratorSelect();
+  if($("collabPoint")) $("collabPoint").value=item.id;
+  renderCollaboratorSettings();
+  toast("Punto colaborador guardado");
+});
+
 $("dayForm").addEventListener("submit",e=>{
   e.preventDefault();
   const month = getMonth();
@@ -7360,6 +7602,7 @@ $("dayForm").addEventListener("submit",e=>{
     bonoUnitPrice:isMondayDate(date)?15:0,
     scratchPacks: tempScratchPacks.map(x=>({...x})),
     coupons: tempCoupons.map(x=>({...x})),
+    collaboratorEntries: tempCollaboratorEntries.map(x=>({...x})),
     otherItems: tempOtherItems.map(x=>({...x})),
     otherTotal: otherDraftValue(),
     pagos:num("pagos"), tarjeta:num("tarjeta"),
@@ -7580,6 +7823,7 @@ $("settingsBtn").addEventListener("click",()=>{
   $("liquidationTrackingStart").value=data.liquidationTrackingStart||"";
   $("overrideDate").value=isoToday();
   renderOverrides();
+  renderCollaboratorSettings();
   $("settingsDialog").showModal();
 });
 $("saveSettingsBtn").addEventListener("click",()=>{
@@ -7616,6 +7860,7 @@ $("importInput").addEventListener("change", async e=>{
     if(!data.profile.schedule) data.profile.schedule={workDays:[],liquidationDays:[]};
     if(!data.calendarOverrides) data.calendarOverrides={};
     if(!data.settlements) data.settlements=[];
+    if(!Array.isArray(data.collaborators)) data.collaborators=[];
     if(!data.liquidationTrackingStart){const n=new Date();data.liquidationTrackingStart=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-01`;}
     saveData(); $("settingsDialog").close(); render(); toast("Copia importada");
   }catch{ alert("Ese archivo no parece una copia válida de Cuenta Clara."); }
@@ -7624,7 +7869,7 @@ $("importInput").addEventListener("change", async e=>{
 $("clearBtn").addEventListener("click",()=>{
   if(!confirm("Esto borrará todos los meses y jornadas guardados en este dispositivo. ¿Continuar?")) return;
   const n=new Date();
-  data={months:{},currentMonth:null,profile:{name:"Azucena",schedule:{workDays:[],liquidationDays:[]}},calendarOverrides:{},settlements:[],liquidationTrackingStart:`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-01`}; currentMonth=null; saveData(); $("settingsDialog").close(); render(); toast("Datos borrados");
+  data={months:{},currentMonth:null,profile:{name:"Azucena",schedule:{workDays:[],liquidationDays:[]}},calendarOverrides:{},settlements:[],collaborators:[],liquidationTrackingStart:`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-01`}; currentMonth=null; saveData(); $("settingsDialog").close(); render(); toast("Datos borrados");
 });
 
 

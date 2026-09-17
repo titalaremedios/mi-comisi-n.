@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Cuenta Clara",
   "short_name": "Cuenta Clara",
-  "description": "Control de jornadas, ventas, liquidaciones y comisiones.",
+  "description": "Control de jornadas, ventas, liquidaciones, comisiones y puntos colaboradores.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
