@@ -138,3 +138,11 @@ v0.41.0
 - Este control no vuelve a sumar venta ni liquidación, evitando duplicados.
 - Resumen mensual e histórico por establecimiento.
 - Gestión de puntos colaboradores desde Ajustes.
+
+
+## v0.52.0 — Nuevo rasca Halloween
+- Se añade Halloween al catálogo vigente.
+- Precio: 3 €.
+- Porcentaje de premios: 65,50 %.
+- Categoría interna: Alto.
+- La categoría se determina por el porcentaje de premios, no por el precio del rasca.
