@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-cuadra-version="0.52.0">
+<html lang="es" data-cuadra-version="0.53.0">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -4221,6 +4221,78 @@
     @media(max-width:720px){.collab-add-grid{grid-template-columns:1fr 1fr}.collab-add-grid .field:first-child{grid-column:1/-1}.collab-summary-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:430px){.collab-add-grid{grid-template-columns:1fr!important}.collab-add-grid .field:first-child{grid-column:auto}.collab-head{flex-direction:column}.collab-head .btn{width:100%}.collab-summary-grid{grid-template-columns:1fr 1fr}}
 
+
+    /* ===== Cuenta Clara v0.53 · Nueva jornada adaptada a ordenador ===== */
+    @media (min-width: 701px){
+      #dayDialog{
+        width:min(1100px,94vw)!important;
+        max-width:min(1100px,94vw)!important;
+        max-height:92vh!important;
+        overflow:hidden!important;
+      }
+      #dayDialog .modal{
+        width:100%!important;
+        max-width:100%!important;
+        min-width:0!important;
+        max-height:92vh!important;
+        overflow-y:auto!important;
+        overflow-x:hidden!important;
+        box-sizing:border-box!important;
+        padding:22px 26px 30px!important;
+      }
+      #dayDialog .modal-head{
+        position:sticky;
+        top:-22px;
+        z-index:10;
+        background:#fff;
+        padding:22px 0 10px;
+      }
+      #dayDialog .form-grid,
+      #dayDialog .active-box,
+      #dayDialog .coupon-box,
+      #dayDialog .bono-box,
+      #dayDialog .collab-box,
+      #dayDialog .scratch-box,
+      #dayDialog .other-box,
+      #dayDialog .cash-box{
+        width:100%!important;
+        max-width:100%!important;
+        min-width:0!important;
+        box-sizing:border-box!important;
+      }
+      #dayDialog .field,
+      #dayDialog .field input,
+      #dayDialog .field select,
+      #dayDialog .field textarea,
+      #dayDialog .active-add-row > *,
+      #dayDialog .coupon-add-grid > *,
+      #dayDialog .scratch-add-row > *,
+      #dayDialog .collab-add-grid > *{
+        min-width:0!important;
+        max-width:100%!important;
+        box-sizing:border-box!important;
+      }
+      #dayDialog .active-add-row{
+        grid-template-columns:minmax(0,1.5fr) minmax(120px,.65fr) auto!important;
+      }
+      #dayDialog .coupon-add-grid{
+        grid-template-columns:repeat(5,minmax(0,1fr))!important;
+      }
+      #dayDialog .collab-add-grid{
+        grid-template-columns:minmax(180px,1.3fr) minmax(150px,1fr) minmax(145px,1fr) minmax(95px,.6fr) minmax(95px,.6fr)!important;
+      }
+      #dayDialog .scratch-add-row{
+        grid-template-columns:minmax(230px,1.4fr) minmax(110px,.55fr) auto!important;
+      }
+    }
+    @media (min-width:701px) and (max-width:950px){
+      #dayDialog{width:96vw!important;max-width:96vw!important;}
+      #dayDialog .coupon-add-grid,
+      #dayDialog .collab-add-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+      #dayDialog .coupon-add-grid .field:first-child,
+      #dayDialog .collab-add-grid .field:first-child{grid-column:1/-1;}
+    }
+
   </style>
 </head>
 <body>
@@ -5255,7 +5327,7 @@
               <strong>Versión de Cuenta Clara</strong>
               <span id="updateHelpText">Busca la última versión publicada y recarga la app.</span>
             </div>
-            <span class="version-badge" id="appVersionBadge">v0.52.0</span>
+            <span class="version-badge" id="appVersionBadge">v0.53.0</span>
           </div>
           <button class="btn secondary full" id="updateAppBtn" type="button">↻ Actualizar Cuenta Clara</button>
           <div class="update-status" id="updateStatus" aria-live="polite"></div>
@@ -5281,7 +5353,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const APP_VERSION = "0.52.0";
+const APP_VERSION = "0.53.0";
 const TRAMOS = [
   {pct:2.5, rate:210},
   {pct:6, rate:296},

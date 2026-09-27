@@ -146,3 +146,11 @@ v0.41.0
 - Porcentaje de premios: 65,50 %.
 - Categoría interna: Alto.
 - La categoría se determina por el porcentaje de premios, no por el precio del rasca.
+
+
+## v0.53.0 — Corrección de escritorio
+- Nueva jornada se abre más ancha en ordenador.
+- Se corrige el contenido cortado y el desbordamiento lateral.
+- Los bloques se reorganizan para aprovechar el ancho de pantalla.
+- El diseño móvil se mantiene sin cambios.
+- No se modifica ninguna lógica ni cálculo.
