@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-cuadra-version="0.53.0">
+<html lang="es" data-cuadra-version="0.56.0">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -4293,6 +4293,79 @@
       #dayDialog .collab-add-grid .field:first-child{grid-column:1/-1;}
     }
 
+
+    /* ===== Cuenta Clara v0.54 · venta acumulada + proyección de tramo ===== */
+    .main-sales-content{
+      min-width:0!important;
+      width:100%!important;
+      overflow:hidden!important;
+    }
+    .main-sales-content .month-focus-money{
+      display:block!important;
+      width:100%!important;
+      max-width:100%!important;
+      white-space:nowrap!important;
+      overflow:visible!important;
+      box-sizing:border-box!important;
+      font-variant-numeric:tabular-nums!important;
+    }
+    @media (max-width: 520px){
+      .main-sales-row{
+        grid-template-columns:58px minmax(0,1fr)!important;
+        gap:12px!important;
+      }
+      .main-sales-content .month-focus-money{
+        font-size:clamp(36px,10.5vw,54px)!important;
+        letter-spacing:-.055em!important;
+        line-height:.98!important;
+      }
+    }
+    @media (max-width: 390px){
+      .main-sales-row{
+        grid-template-columns:54px minmax(0,1fr)!important;
+        gap:10px!important;
+      }
+      .main-sales-row .metric-icon-sales{
+        width:54px!important;
+        height:54px!important;
+      }
+      .main-sales-content .month-focus-money{
+        font-size:clamp(34px,10vw,46px)!important;
+        letter-spacing:-.06em!important;
+      }
+    }
+
+
+    /* ===== Cuenta Clara v0.55 · cambiar / crear mes ===== */
+    .month-switch-btn{
+      display:block;
+      width:max-content;
+      max-width:100%;
+      margin:0 auto 16px;
+      border-color:#cfe4dd!important;
+      background:#f8fcfa!important;
+      color:#168f7d!important;
+      font-weight:850!important;
+    }
+    @media(max-width:520px){
+      .month-switch-btn{
+        width:100%;
+        margin-bottom:14px;
+      }
+    }
+
+
+    /* ===== Cuenta Clara v0.56 · festivos ===== */
+    .cal-day.holiday{
+      background:#fff1f2!important;
+      border-color:#fecdd3!important;
+      color:#9f1239!important;
+      box-shadow:inset 0 -4px 0 #e11d48!important;
+    }
+    .cal-day.holiday .amt{color:#be123c!important;font-weight:850!important}
+    .holiday-legend{background:#fff1f2!important;color:#be123c!important}
+    .incident-chip.holiday{background:#fff1f2!important;color:#be123c!important}
+
   </style>
 </head>
 <body>
@@ -4392,6 +4465,7 @@
         <div class="month-top-wrap" id="monthFocusCard">
           <div class="month-period-title" id="heroMonth">MES</div>
           <div class="month-days-standalone" id="daysInfo">0 de 0 jornadas</div>
+          <button class="btn ghost month-switch-btn" id="switchMonthBtn" type="button">↔ Cambiar / crear mes</button>
 
           <div class="month-sales-card">
             <div class="main-sales-row">
@@ -4659,8 +4733,11 @@
           <summary><span class="section-summary-left"><span class="section-summary-icon">🗂️</span><span class="section-summary-text">Incidencias y liquidaciones<small>Ausencias, cierres y comprobaciones</small></span></span><span class="section-chevron">⌄</span></summary>
           <div class="smart-section-body">
         <div class="section-title">
-          <h2>Incidencias del mes</h2>
-          <button class="btn secondary" id="addIncidentBtn">＋ Añadir incidencia</button>
+          <h2>Incidencias y festivos</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn secondary" id="addIncidentBtn">＋ Añadir incidencia</button>
+            <button class="btn secondary" id="addHolidayBtn">🎉 Añadir festivo</button>
+          </div>
         </div>
         <div class="card" id="incidenceSummaryCard">
           <div class="metric-row"><span>Incidencias apuntadas</span><strong id="incidentCount">0</strong></div>
@@ -4694,7 +4771,7 @@
       <div class="card calendar-shell">
         <div class="calendar-head"><div><strong id="calendarMonthTitle">Mes</strong><div class="mini">Pulsa un día para abrir o añadir su jornada.</div></div><span class="tramo-badge" id="calendarMonthStatus">0 días</span></div>
         <div class="calendar-legend">
-          <span class="legend-chip">🔵 Trabajado</span><span class="legend-chip">⚪ Libranza</span><span class="legend-chip">🟡 Pendiente</span><span class="legend-chip">✅ Liquidado</span><span class="legend-chip">⚠️ Diferencia</span><span class="legend-chip">🩺 Incidencia</span>
+          <span class="legend-chip">🔵 Trabajado</span><span class="legend-chip">⚪ Libranza</span><span class="legend-chip holiday-legend">🔴 Festivo</span><span class="legend-chip">🟡 Pendiente</span><span class="legend-chip">✅ Liquidado</span><span class="legend-chip">⚠️ Diferencia</span><span class="legend-chip">🩺 Incidencia</span>
         </div>
         <div class="calendar-weekdays"><div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div></div>
         <div class="calendar-grid" id="calendarGrid"></div>
@@ -4766,6 +4843,7 @@
         <div class="field">
           <label>Mes</label>
           <input type="month" id="monthKey" required>
+          <div class="mini" id="monthKeyHint" style="margin-top:5px">Puedes crear un mes nuevo o abrir uno que ya tengas guardado.</div>
         </div>
         <div class="field">
           <label>Jornadas previstas</label>
@@ -5119,6 +5197,7 @@
         <div class="field"><label>Tipo</label>
           <select id="incidentType">
             <option value="Médico">Médico</option>
+            <option value="Festivo">Festivo</option>
             <option value="Ausencia">Ausencia</option>
             <option value="Vacaciones / permiso">Vacaciones / permiso</option>
             <option value="Avería / problema técnico">Avería / problema técnico</option>
@@ -5284,11 +5363,12 @@
 
       <div class="settings-section">
         <h3>Excepciones del calendario</h3>
-        <div class="mini">Para vacaciones, cambios de turno o una liquidación excepcional.</div>
+        <div class="mini">Para festivos, vacaciones, cambios de turno o una liquidación excepcional.</div>
         <div class="override-row">
           <input type="date" id="overrideDate">
           <select id="overrideType">
             <option value="work">Día de trabajo</option>
+            <option value="holiday">Día festivo</option>
             <option value="off">Día de libranza</option>
             <option value="liquidation">Día de liquidación</option>
             <option value="no_liquidation">Sin liquidación</option>
@@ -5327,7 +5407,7 @@
               <strong>Versión de Cuenta Clara</strong>
               <span id="updateHelpText">Busca la última versión publicada y recarga la app.</span>
             </div>
-            <span class="version-badge" id="appVersionBadge">v0.53.0</span>
+            <span class="version-badge" id="appVersionBadge">v0.56.0</span>
           </div>
           <button class="btn secondary full" id="updateAppBtn" type="button">↻ Actualizar Cuenta Clara</button>
           <div class="update-status" id="updateStatus" aria-live="polite"></div>
@@ -5353,7 +5433,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const APP_VERSION = "0.53.0";
+const APP_VERSION = "0.56.0";
 const TRAMOS = [
   {pct:2.5, rate:210},
   {pct:6, rate:296},
@@ -5494,7 +5574,7 @@ function scheduleForDate(iso){
   let work=(s.workDays||[]).includes(day);
   let liquidation=(s.liquidationDays||[]).includes(day);
   if(ov==="work") work=true;
-  if(ov==="off") work=false;
+  if(ov==="off" || ov==="holiday") work=false;
   if(ov==="liquidation") liquidation=true;
   if(ov==="no_liquidation") liquidation=false;
   return {work,liquidation,override:ov||null};
@@ -5641,7 +5721,7 @@ function renderWeekdaySelector(id,selected){
 function selectedWeekdays(id){ return [...$(id).querySelectorAll('input:checked')].map(x=>Number(x.value)); }
 function renderOverrides(){
   const entries=Object.entries(data.calendarOverrides||{}).sort((a,b)=>a[0].localeCompare(b[0]));
-  const labels={work:"Trabajo",off:"Libranza",liquidation:"Liquidación",no_liquidation:"Sin liquidación"};
+  const labels={work:"Trabajo",holiday:"Festivo",off:"Libranza",liquidation:"Liquidación",no_liquidation:"Sin liquidación"};
   $("overrideList").innerHTML=entries.length?entries.map(([d,t])=>`<div class="override-item"><span>${dateLabelShort(d)} · ${labels[t]||t}</span><button class="small-btn" type="button" onclick="deleteOverride('${d}')">Borrar</button></div>`).join(""):`<div class="mini">Sin excepciones guardadas.</div>`;
 }
 function ensureMonthCollections(month){
@@ -6055,13 +6135,16 @@ function renderSmartControl(month){
 }
 function calendarDayInfo(month,key){
   const ds=(month.days||[]).filter(d=>d.date===key);
-  const incident=(month.incidents||[]).some(i=>i.date===key);
+  const incidentItems=(month.incidents||[]).filter(i=>i.date===key);
+  const holidayIncident=incidentItems.some(i=>i.type==="Festivo");
+  const incident=incidentItems.some(i=>i.type!=="Festivo");
   const diff=false;
   const settled=ds.length>0 && ds.every(d=>!!d.settlementId);
   const pending=ds.some(d=>!d.settlementId);
   const sched=scheduleForDate(key);
+  const holiday=holidayIncident || sched.override==="holiday";
   const sale=ds.reduce((a,d)=>a+Number(d.sale||0),0);
-  return {ds,incident,diff,settled,pending,sched,sale};
+  return {ds,incident,holiday,diff,settled,pending,sched,sale};
 }
 function renderCalendar(){
   const month=getMonth(); const grid=$('calendarGrid'); if(!grid) return;
@@ -6072,9 +6155,9 @@ function renderCalendar(){
   let worked=0;
   for(let d=1;d<=days;d++){
     const key=`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`; const info=calendarDayInfo(month,key); if(info.ds.length) worked++;
-    let cls='cal-day '+(info.sched.work?'work':'off'); if(info.pending) cls+=' pending'; if(info.settled) cls+=' settled'; if(info.diff) cls+=' diff'; if(key===isoToday()) cls+=' today';
-    const icons=[info.settled?'✅':info.pending?'🟡':info.ds.length?'🔵':'',info.incident?'🩺':'',info.diff?'⚠️':''].filter(Boolean).join(' ');
-    html+=`<div class="${cls}" onclick="calendarOpenDate('${key}')"><div class="n">${d}</div><div class="dots">${icons}</div><div class="amt">${info.sale?fmt(info.sale):info.sched.work?'Trabajo':'Libranza'}</div></div>`;
+    let cls='cal-day '+(info.holiday?'holiday':(info.sched.work?'work':'off')); if(info.pending) cls+=' pending'; if(info.settled) cls+=' settled'; if(info.diff) cls+=' diff'; if(key===isoToday()) cls+=' today';
+    const icons=[info.settled?'✅':info.pending?'🟡':info.ds.length?'🔵':'',info.holiday?'🎉':'',info.incident?'🩺':'',info.diff?'⚠️':''].filter(Boolean).join(' ');
+    html+=`<div class="${cls}" onclick="calendarOpenDate('${key}')"><div class="n">${d}</div><div class="dots">${icons}</div><div class="amt">${info.sale?fmt(info.sale):info.holiday?'Festivo':info.sched.work?'Trabajo':'Libranza'}</div></div>`;
   }
   grid.innerHTML=html; $('calendarMonthStatus').textContent=`${worked} día${worked===1?'':'s'} con actividad`;
 }
@@ -6210,7 +6293,17 @@ function render(){
     if(!worked){
       $("homeProjectionMessage").textContent="Añade tu primera jornada y Cuenta Clara te dirá a qué tramo puedes llegar.";
     }else if(projected){
-      $("homeProjectionMessage").textContent=`A este ritmo puedes terminar alrededor de ${fmt(projection)} y alcanzar aproximadamente el ${String(projected.pct).replace(".",",")} %.`;
+      const projectedNext = projectedIdx < TRAMOS.length-1 ? TRAMOS[projectedIdx+1] : null;
+      const projectedNextGoal = projectedNext ? tramoGoal(month.workDays,projectedNext) : null;
+
+      if(projectedNext && projection < projectedNextGoal){
+        const gapToProjectedNext = Math.max(0,projectedNextGoal-projection);
+        $("homeProjectionMessage").textContent=
+          `A este ritmo terminarías alrededor de ${fmt(projection)}, mantendrías el ${String(projected.pct).replace(".",",")} % y te quedarías a solo ${fmt(gapToProjectedNext)} de alcanzar el ${String(projectedNext.pct).replace(".",",")} %.`;
+      }else{
+        $("homeProjectionMessage").textContent=
+          `A este ritmo puedes terminar alrededor de ${fmt(projection)} y alcanzar aproximadamente el ${String(projected.pct).replace(".",",")} %.`;
+      }
     }else{
       $("homeProjectionMessage").textContent=`A este ritmo terminarías alrededor de ${fmt(projection)}. Sigue sumando para alcanzar el primer tramo.`;
     }
@@ -6472,7 +6565,7 @@ function renderIncidents(month){
     list.innerHTML=`<div class="card empty">No tienes ninguna incidencia apuntada este mes.</div>`;
     return;
   }
-  list.innerHTML=sorted.map(x=>`<div class="record-card"><div class="record-top"><div><div class="record-title">📌 ${new Date(x.date+"T12:00:00").toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit",year:"numeric"})}</div><div class="record-meta"><span class="incident-chip">${x.type}</span>${x.absent?' · Día marcado como ausencia':''}</div></div></div><div class="record-note">${x.note}</div><div class="day-actions"><button class="small-btn" onclick="editIncident('${x.id}')">✏️ Editar</button><button class="small-btn danger" onclick="deleteIncident('${x.id}')">🗑️ Borrar</button></div></div>`).join('');
+  list.innerHTML=sorted.map(x=>`<div class="record-card"><div class="record-top"><div><div class="record-title">${x.type==="Festivo"?"🎉":"📌"} ${new Date(x.date+"T12:00:00").toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit",year:"numeric"})}</div><div class="record-meta"><span class="incident-chip ${x.type==="Festivo"?"holiday":""}">${x.type}</span>${x.type==="Festivo"?' · Día festivo':(x.absent?' · Día marcado como ausencia':'')}</div></div></div><div class="record-note">${x.note}</div><div class="day-actions"><button class="small-btn" onclick="editIncident('${x.id}')">✏️ Editar</button><button class="small-btn danger" onclick="deleteIncident('${x.id}')">🗑️ Borrar</button></div></div>`).join('');
 }
 
 function renderSettlementList(){
@@ -6588,14 +6681,26 @@ function openAccountDialog(item=null){
   $("accountExtra").value=item?.extraId||"";
   $("accountDialog").showModal();
 }
-function openIncidentDialog(item=null){
-  $("incidentDialogTitle").textContent=item?"Editar incidencia":"Añadir incidencia";
+function openIncidentDialog(item=null,forcedType=null){
+  const type=forcedType || item?.type || "Médico";
+  $("incidentDialogTitle").textContent=item?"Editar incidencia":(type==="Festivo"?"Añadir festivo":"Añadir incidencia");
   $("editingIncidentId").value=item?.id||"";
   $("incidentDate").value=item?.date||new Date().toISOString().slice(0,10);
-  $("incidentType").value=item?.type||"Médico";
-  $("incidentNote").value=item?.note||"";
-  $("incidentAbsent").checked=!!item?.absent;
+  $("incidentType").value=type;
+  $("incidentNote").value=item?.note||(type==="Festivo"?"Día festivo":"");
+  $("incidentAbsent").checked=type==="Festivo" ? true : !!item?.absent;
+  $("incidentNote").placeholder=type==="Festivo" ? "Ej. Día de la Hispanidad" : "Ej. Fui al médico y no trabajé por la mañana";
   $("incidentDialog").showModal();
+}
+function syncIncidentTypeUI(){
+  const holiday=$("incidentType").value==="Festivo";
+  if(holiday){
+    $("incidentAbsent").checked=true;
+    if(!$("incidentNote").value.trim()) $("incidentNote").value="Día festivo";
+    $("incidentNote").placeholder="Ej. Día de la Hispanidad";
+  }else{
+    $("incidentNote").placeholder="Ej. Fui al médico y no trabajé por la mañana";
+  }
 }
 
 
@@ -6799,9 +6904,54 @@ function openMonthDialog(edit=false){
   $("monthKey").value = edit && currentMonth ? currentMonth : defaultKey;
   $("monthKey").disabled = edit;
   $("workDays").value = edit && m ? m.workDays : 21;
+  if($("monthKeyHint")){
+    $("monthKeyHint").textContent = edit
+      ? "Estás editando las jornadas previstas de este mes."
+      : "Puedes crear un mes nuevo sin borrar los meses anteriores.";
+  }
   updateMonthPreview();
   $("monthDialog").showModal();
 }
+
+function openSwitchMonthDialog(){
+  const today = new Date();
+  const todayKey = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}`;
+
+  $("monthDialogTitle").textContent = "Cambiar / crear mes";
+  $("monthKey").disabled = false;
+
+  // Al cambiar de mes, proponemos primero el mes actual del calendario.
+  // Si ya existe, recuperamos sus jornadas previstas; si no, usamos 21 como punto de partida.
+  const suggestedKey = data.months?.[todayKey] ? todayKey : todayKey;
+  $("monthKey").value = suggestedKey;
+  $("workDays").value = data.months?.[suggestedKey]?.workDays || 21;
+
+  if($("monthKeyHint")){
+    $("monthKeyHint").textContent = data.months?.[suggestedKey]
+      ? "Este mes ya existe. Al guardar, simplemente lo abrirás y podrás ajustar sus jornadas previstas."
+      : "Este mes todavía no existe. Al guardar, se creará sin borrar los meses anteriores.";
+  }
+
+  updateMonthPreview();
+  $("monthDialog").showModal();
+}
+
+function syncMonthDialogToSelectedMonth(){
+  const key = $("monthKey").value;
+  if(!key) return;
+  const existing = data.months?.[key];
+  if(existing){
+    $("workDays").value = existing.workDays || 21;
+    if($("monthKeyHint")) $("monthKeyHint").textContent =
+      "Este mes ya existe. Al guardar, se abrirá y conservará todo lo que ya tenga registrado.";
+  }else{
+    $("workDays").value = 21;
+    if($("monthKeyHint")) $("monthKeyHint").textContent =
+      "Mes nuevo. Indica cuántas jornadas vas a trabajar y se creará al guardar.";
+  }
+  updateMonthPreview();
+}
+
 function populateActiveCatalog(){
   const sel=$("activeProduct"); if(!sel) return;
   sel.innerHTML=ACTIVE_CATALOG.map(x=>`<option value="${x.name}">${x.name}${x.name==="Eurojackpot"?" · importe total":` · ${fmt(x.price)}/apuesta`}</option>`).join("");
@@ -7506,6 +7656,8 @@ function openExtraDialog(extra=null){
 
 $("newMonthBtn").addEventListener("click",()=>openMonthDialog(false));
 $("editMonthBtn").addEventListener("click",()=>openMonthDialog(true));
+$("switchMonthBtn").addEventListener("click",openSwitchMonthDialog);
+$("monthKey").addEventListener("change",syncMonthDialogToSelectedMonth);
 $("workDays").addEventListener("input",updateMonthPreview);
 $("addDayBtn").addEventListener("click",()=>openDayDialog());
 $("quickAddDay")?.addEventListener("click",()=>openDayDialog());
@@ -7564,7 +7716,9 @@ $("monthForm").addEventListener("submit",e=>{
   if(!data.months[key]) data.months[key] = {workDays,days:[],extras:[]};
   else data.months[key].workDays = workDays;
   currentMonth = key;
-  saveData(); $("monthDialog").close(); render(); toast("Mes guardado");
+  const existed = !!data.months[key]?.days?.length || !!data.months[key]?.extras?.length;
+  saveData(); $("monthDialog").close(); render();
+  toast(existed ? `Mes abierto: ${monthLabel(key)}` : `Mes guardado: ${monthLabel(key)}`);
 });
 
 function celebrateCrossing(oldSale,newSale,workDays){
@@ -7611,6 +7765,8 @@ $("extraForm").addEventListener("submit",e=>{
 
 $("addAccountBtn").addEventListener("click",()=>openAccountDialog());
 $("addIncidentBtn").addEventListener("click",()=>openIncidentDialog());
+$("addHolidayBtn").addEventListener("click",()=>openIncidentDialog(null,"Festivo"));
+$("incidentType").addEventListener("change",syncIncidentTypeUI);
 
 $("accountForm").addEventListener("submit",e=>{
   e.preventDefault(); const month=getMonth(); if(!month) return; ensureMonthCollections(month);
@@ -7627,13 +7783,36 @@ $("incidentForm").addEventListener("submit",e=>{
   e.preventDefault(); const month=getMonth(); if(!month) return; ensureMonthCollections(month);
   const id=$("editingIncidentId").value;
   const entry={id:id||("i"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)),date:$("incidentDate").value,type:$("incidentType").value,note:$("incidentNote").value.trim(),absent:$("incidentAbsent").checked};
-  if(id){const i=month.incidents.findIndex(x=>x.id===id); if(i>=0) month.incidents[i]=entry;} else month.incidents.push(entry);
-  saveData(); $("incidentDialog").close(); render(); toast("Incidencia guardada");
+  if(entry.type==="Festivo"){
+    entry.absent=true;
+    data.calendarOverrides=data.calendarOverrides||{};
+    data.calendarOverrides[entry.date]="holiday";
+  }
+  if(id){
+    const i=month.incidents.findIndex(x=>x.id===id);
+    if(i>=0){
+      const previous=month.incidents[i];
+      if(previous?.type==="Festivo" && (entry.type!=="Festivo" || previous.date!==entry.date) && data.calendarOverrides?.[previous.date]==="holiday"){
+        delete data.calendarOverrides[previous.date];
+      }
+      month.incidents[i]=entry;
+    }
+  } else month.incidents.push(entry);
+  saveData(); $("incidentDialog").close(); render(); toast(entry.type==="Festivo"?"Festivo guardado":"Incidencia guardada");
 });
 window.editAccount=id=>{const m=getMonth(); ensureMonthCollections(m); const x=m.accountDeposits.find(x=>x.id===id); if(x) openAccountDialog(x);};
 window.deleteAccount=id=>{const m=getMonth();ensureMonthCollections(m);const x=m.accountDeposits.find(x=>x.id===id);if(!x)return;if(x.settlementId){if(!confirm("Este ingreso ya está incluido en una liquidación cerrada. Si lo borras, esa liquidación se recalculará. ¿Continuar?"))return;}else if(!confirm("¿Borrar este ingreso a cuenta?"))return;m.accountDeposits=m.accountDeposits.filter(x=>x.id!==id);recalcSettlements();saveData();render();toast("Ingreso borrado");};
 window.editIncident=id=>{const m=getMonth(); ensureMonthCollections(m); const x=m.incidents.find(x=>x.id===id); if(x) openIncidentDialog(x);};
-window.deleteIncident=id=>{if(!confirm("¿Borrar esta incidencia?"))return;const m=getMonth();ensureMonthCollections(m);m.incidents=m.incidents.filter(x=>x.id!==id);saveData();render();toast("Incidencia borrada");};
+window.deleteIncident=id=>{
+  const m=getMonth(); ensureMonthCollections(m);
+  const item=m.incidents.find(x=>x.id===id);
+  if(!item || !confirm(item.type==="Festivo"?"¿Borrar este festivo?":"¿Borrar esta incidencia?")) return;
+  m.incidents=m.incidents.filter(x=>x.id!==id);
+  if(item.type==="Festivo" && data.calendarOverrides?.[item.date]==="holiday"){
+    delete data.calendarOverrides[item.date];
+  }
+  saveData();render();toast(item.type==="Festivo"?"Festivo borrado":"Incidencia borrada");
+};
 
 $("collaboratorForm").addEventListener("submit",e=>{
   e.preventDefault();

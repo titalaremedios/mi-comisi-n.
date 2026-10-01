@@ -154,3 +154,28 @@ v0.41.0
 - Los bloques se reorganizan para aprovechar el ancho de pantalla.
 - El diseño móvil se mantiene sin cambios.
 - No se modifica ninguna lógica ni cálculo.
+
+
+## v0.54.0 — Ajuste de venta acumulada y proyección
+- La cifra de “Venta acumulada” se adapta mejor al ancho del móvil y el símbolo € ya no debe salirse de la tarjeta.
+- Se corrige el mensaje de proyección del tramo.
+- Si la proyección todavía no alcanza matemáticamente el siguiente tramo, la app indica cuánto faltaría exactamente.
+- Ejemplo: si proyecta 10.982,49 € y el 15 % empieza en 10.983,00 €, mostrará que faltan solo 0,51 € para el 15 %, en vez de limitarse a decir que llegará al 14 %.
+- No se modifican los umbrales ni los cálculos de comisión: solo se mejora la lectura y la explicación de la proyección.
+
+
+## v0.55.0 — Cambiar / crear mes
+- Nuevo botón visible en Inicio: “Cambiar / crear mes”.
+- Permite pasar fácilmente de septiembre a octubre o volver a cualquier mes ya creado.
+- Si eliges un mes existente, conserva todos sus datos y recupera sus jornadas previstas.
+- Si eliges un mes nuevo, se crea sin borrar el histórico anterior.
+- El formulario explica claramente si estás abriendo un mes existente o creando uno nuevo.
+
+
+## v0.56.0 — Días festivos
+- Nuevo tipo “Festivo”, separado de Médico/Ausencia.
+- Nuevo botón “Añadir festivo” en Incidencias y festivos.
+- Al guardar un festivo, ese día se marca automáticamente como no laborable.
+- En el calendario los festivos aparecen en rojo/rosa con icono 🎉 y texto “Festivo”.
+- También puede añadirse “Día festivo” desde Ajustes > Excepciones del calendario.
+- Un festivo ya no aparece como si hubieras ido al médico.
