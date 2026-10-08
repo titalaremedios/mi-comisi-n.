@@ -179,3 +179,11 @@ v0.41.0
 - En el calendario los festivos aparecen en rojo/rosa con icono 🎉 y texto “Festivo”.
 - También puede añadirse “Día festivo” desde Ajustes > Excepciones del calendario.
 - Un festivo ya no aparece como si hubieras ido al médico.
+
+
+## v0.57.0 — Cierre de liquidaciones negativas o a cero
+- Cuando toca liquidar y el pendiente es 0 € o negativo, aparece “✅ Entendido · cerrar liquidación”.
+- Al cerrar, la jornada queda marcada como liquidada aunque no haya importe positivo que pagar.
+- El saldo negativo no desaparece: queda registrado como saldo a favor para compensar en la siguiente liquidación.
+- En el calendario, una liquidación cerrada con saldo negativo se muestra como liquidada en verde con un indicador rojo 🔴.
+- Amarillo queda reservado para movimientos realmente pendientes de cerrar.

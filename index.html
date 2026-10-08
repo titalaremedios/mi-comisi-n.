@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-cuadra-version="0.56.0">
+<html lang="es" data-cuadra-version="0.57.0">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -4366,6 +4366,37 @@
     .holiday-legend{background:#fff1f2!important;color:#be123c!important}
     .incident-chip.holiday{background:#fff1f2!important;color:#be123c!important}
 
+
+    /* ===== Cuenta Clara v0.57 · cierre de liquidación negativa ===== */
+    .negative-settlement-close{
+      margin:14px 0 4px;
+      padding:14px;
+      border:1px solid #b7e2d8;
+      border-radius:18px;
+      background:#f2fbf8;
+    }
+    .negative-settlement-note strong{
+      display:block;
+      color:#0f5f55;
+      font-size:14px;
+      font-weight:900;
+    }
+    .negative-settlement-note span{
+      display:block;
+      margin-top:5px;
+      color:#52645f;
+      font-size:12px;
+      line-height:1.4;
+      font-weight:650;
+    }
+    .negative-settlement-close .btn{margin-top:11px}
+    .cal-day.settled.negative-carry{
+      background:#eefaf6!important;
+      border-color:#9ed8ca!important;
+      box-shadow:inset 0 -4px 0 #16a085!important;
+    }
+    .cal-day.settled.negative-carry .amt{color:#0f7567!important}
+
   </style>
 </head>
 <body>
@@ -4560,6 +4591,14 @@
             <div class="liquidation-mini"><span>Estado</span><strong id="todayLiquidationText">Configura tu calendario</strong></div>
           </div>
           <div class="liquidation-alert-negative hidden" id="negativeCarryoverNote"><div class="negative-carry-title">🔴 Saldo a compensar</div><div id="negativeCarryoverText">Este saldo negativo se arrastrará y se descontará en la siguiente liquidación.</div></div>
+        <div id="negativeSettlementCloseWrap" class="negative-settlement-close hidden">
+          <div class="negative-settlement-note">
+            <strong>Saldo a tu favor</strong>
+            <span id="negativeSettlementCloseText">Esta liquidación no requiere pago, pero puedes cerrarla para que la jornada quede como liquidada.</span>
+          </div>
+          <button class="btn primary full" id="closeNegativeSettlementBtn" type="button">✅ Entendido · cerrar liquidación</button>
+        </div>
+
           <div class="liquidation-breakdown hidden" id="liquidationBreakdown">
             <div class="liquidation-breakdown-title">Qué incluye esta liquidación</div>
             <div class="liquidation-breakdown-list" id="liquidationBreakdownList"></div>
@@ -4771,7 +4810,7 @@
       <div class="card calendar-shell">
         <div class="calendar-head"><div><strong id="calendarMonthTitle">Mes</strong><div class="mini">Pulsa un día para abrir o añadir su jornada.</div></div><span class="tramo-badge" id="calendarMonthStatus">0 días</span></div>
         <div class="calendar-legend">
-          <span class="legend-chip">🔵 Trabajado</span><span class="legend-chip">⚪ Libranza</span><span class="legend-chip holiday-legend">🔴 Festivo</span><span class="legend-chip">🟡 Pendiente</span><span class="legend-chip">✅ Liquidado</span><span class="legend-chip">⚠️ Diferencia</span><span class="legend-chip">🩺 Incidencia</span>
+          <span class="legend-chip">🔵 Trabajado</span><span class="legend-chip">⚪ Libranza</span><span class="legend-chip holiday-legend">🔴 Festivo</span><span class="legend-chip">🟡 Pendiente</span><span class="legend-chip">✅ Liquidado</span><span class="legend-chip">✅🔴 Liquidado con saldo a favor</span><span class="legend-chip">⚠️ Diferencia</span><span class="legend-chip">🩺 Incidencia</span>
         </div>
         <div class="calendar-weekdays"><div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div></div>
         <div class="calendar-grid" id="calendarGrid"></div>
@@ -5407,7 +5446,7 @@
               <strong>Versión de Cuenta Clara</strong>
               <span id="updateHelpText">Busca la última versión publicada y recarga la app.</span>
             </div>
-            <span class="version-badge" id="appVersionBadge">v0.56.0</span>
+            <span class="version-badge" id="appVersionBadge">v0.57.0</span>
           </div>
           <button class="btn secondary full" id="updateAppBtn" type="button">↻ Actualizar Cuenta Clara</button>
           <div class="update-status" id="updateStatus" aria-live="polite"></div>
@@ -5433,7 +5472,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const APP_VERSION = "0.56.0";
+const APP_VERSION = "0.57.0";
 const TRAMOS = [
   {pct:2.5, rate:210},
   {pct:6, rate:296},
@@ -5669,6 +5708,49 @@ function renderDeferredScratchCard(){
     ? `Tienes ${fmt(due.reduce((s,x)=>s+x.amount,0))} que ya puedes pasar a liquidación.`
     : "Estos importes ya cuentan como venta, tramo y comisión, pero no como liquidación hasta su fecha.";
   card.classList.remove("hidden");
+}
+
+
+function settlementHasNegativeCarry(settlementId){
+  if(!settlementId) return false;
+  const s=(data.settlements||[]).find(x=>x.id===settlementId);
+  return !!s && Number(s.amount||0)<=0;
+}
+function closeNegativeSettlement(){
+  const cutoff=previousIsoDate(isoToday());
+  const stats=pendingLiquidationStats(cutoff);
+  if(stats.amount>0){
+    alert("Esta liquidación tiene un importe positivo. Usa el botón normal de confirmar liquidación.");
+    return;
+  }
+  if(!stats.entries.length){
+    alert("No hay movimientos pendientes para cerrar.");
+    return;
+  }
+  const total=stats.amount;
+  const id="s"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  stats.entries.forEach(x=>{
+    if(x.kind==='deposit') x.deposit.settlementId=id;
+    else if(x.kind==='deferredScratch') x.pack.deferredSettlementId=id;
+    else x.day.settlementId=id;
+  });
+  data.settlements.push({
+    id,
+    confirmedAt:isoToday(),
+    from:stats.from,
+    to:stats.to,
+    dayCount:stats.dayCount,
+    depositCount:stats.depositCount,
+    deferredCount:stats.deferredCount||0,
+    amount:total,
+    status:"liquidated",
+    negativeCarry:total<=0
+  });
+  saveData();
+  render();
+  toast(total<0
+    ? `Liquidación cerrada. ${fmt(Math.abs(total))} quedan a tu favor para compensar.`
+    : "Liquidación cerrada sin importe a pagar.");
 }
 
 function pendingEntries(cutoffDate=null){
@@ -6141,10 +6223,11 @@ function calendarDayInfo(month,key){
   const diff=false;
   const settled=ds.length>0 && ds.every(d=>!!d.settlementId);
   const pending=ds.some(d=>!d.settlementId);
+  const negativeCarry=settled && ds.some(d=>settlementHasNegativeCarry(d.settlementId));
   const sched=scheduleForDate(key);
   const holiday=holidayIncident || sched.override==="holiday";
   const sale=ds.reduce((a,d)=>a+Number(d.sale||0),0);
-  return {ds,incident,holiday,diff,settled,pending,sched,sale};
+  return {ds,incident,holiday,diff,settled,pending,negativeCarry,sched,sale};
 }
 function renderCalendar(){
   const month=getMonth(); const grid=$('calendarGrid'); if(!grid) return;
@@ -6155,8 +6238,8 @@ function renderCalendar(){
   let worked=0;
   for(let d=1;d<=days;d++){
     const key=`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`; const info=calendarDayInfo(month,key); if(info.ds.length) worked++;
-    let cls='cal-day '+(info.holiday?'holiday':(info.sched.work?'work':'off')); if(info.pending) cls+=' pending'; if(info.settled) cls+=' settled'; if(info.diff) cls+=' diff'; if(key===isoToday()) cls+=' today';
-    const icons=[info.settled?'✅':info.pending?'🟡':info.ds.length?'🔵':'',info.holiday?'🎉':'',info.incident?'🩺':'',info.diff?'⚠️':''].filter(Boolean).join(' ');
+    let cls='cal-day '+(info.holiday?'holiday':(info.sched.work?'work':'off')); if(info.pending) cls+=' pending'; if(info.settled) cls+=' settled'; if(info.negativeCarry) cls+=' negative-carry'; if(info.diff) cls+=' diff'; if(key===isoToday()) cls+=' today';
+    const icons=[info.settled?'✅':info.pending?'🟡':info.ds.length?'🔵':'',info.negativeCarry?'🔴':'',info.holiday?'🎉':'',info.incident?'🩺':'',info.diff?'⚠️':''].filter(Boolean).join(' ');
     html+=`<div class="${cls}" onclick="calendarOpenDate('${key}')"><div class="n">${d}</div><div class="dots">${icons}</div><div class="amt">${info.sale?fmt(info.sale):info.holiday?'Festivo':info.sched.work?'Trabajo':'Libranza'}</div></div>`;
   }
   grid.innerHTML=html; $('calendarMonthStatus').textContent=`${worked} día${worked===1?'':'s'} con actividad`;
@@ -6204,6 +6287,19 @@ function render(){
   }
   renderLiquidationBreakdown(pstats);
   renderDeferredScratchCard();
+
+  const negWrap=$("negativeSettlementCloseWrap");
+  const negBtn=$("closeNegativeSettlementBtn");
+  const negText=$("negativeSettlementCloseText");
+  const canCloseNegative = !!todaySchedule.liquidation && pstats.entries.length>0 && pstats.amount<=0;
+  if(negWrap){
+    negWrap.classList.toggle("hidden",!canCloseNegative);
+    if(canCloseNegative && negText){
+      negText.textContent = pstats.amount<0
+        ? `${fmt(Math.abs(pstats.amount))} quedan a tu favor. Al cerrar, la jornada quedará liquidada y ese saldo se compensará en la siguiente liquidación.`
+        : "No hay importe que pagar. Al cerrar, la jornada quedará marcada como liquidada.";
+    }
+  }
   setMoneyText("todayResult", todayResult);
   const nextLiq=nextLiquidationFrom(today);
   $("nextLiquidationDate").textContent=nextLiq?dateLabelShort(nextLiq):"Sin configurar";
@@ -8093,6 +8189,7 @@ $("addOverrideBtn").addEventListener("click",()=>{
 });
 window.deleteOverride=d=>{ delete data.calendarOverrides[d]; saveData(); renderOverrides(); };
 $("confirmLiquidationBtn").addEventListener("click",confirmCurrentLiquidation);
+$("closeNegativeSettlementBtn").addEventListener("click",closeNegativeSettlement);
 
 $("exportBtn").addEventListener("click",()=>{
   const blob = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
