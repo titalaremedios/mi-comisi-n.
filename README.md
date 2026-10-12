@@ -225,3 +225,20 @@ v0.41.0
 - Cuando se abre la jornada de esa fecha, el TPV aparece ya precargado en Control de cupones.
 - Se evita volver a guardar exactamente la misma línea OCR si ya estaba pendiente o guardada.
 - Los activos EUJ/TRI/MID/DUP/SUP continúan funcionando como antes.
+
+
+## v0.63.0 — Pasivos futuros dentro de la jornada real de venta
+- La fecha de jornada y la fecha de sorteo son independientes.
+- Si el viernes se venden cupones del viernes, sábado, domingo o lunes, todos pueden quedar dentro de la jornada del viernes.
+- ORD y VIE leídos por foto se añaden directamente a la jornada abierta, conservando su fecha de sorteo.
+- Si después se añade manualmente el mismo cupón (misma fecha + mismo tipo), se junta con el TPV ya detectado en vez de duplicarse.
+- BON/BONO se reconoce como Bono semanal, a 15 € por unidad, y conserva la fecha que aparece en el ticket.
+- El bono detectado por OCR también se suma al Pasivo de la jornada en la que realmente se vendió, aunque su sorteo sea posterior.
+- Los activos EUJ/TRI/MID/DUP/SUP continúan funcionando igual.
+
+
+## v0.64.0 — Bono manual en cualquier jornada
+- El bono semanal ya se puede añadir manualmente en cualquier jornada.
+- Esto permite registrarlo, por ejemplo, en la jornada del viernes aunque el sorteo corresponda al lunes.
+- Sigue contando 15 € por unidad y se suma automáticamente al Pasivo de esa jornada.
+- La lectura por foto sigue funcionando igual.
