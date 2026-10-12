@@ -215,3 +215,11 @@ v0.41.0
 - Si el saldo nace dentro de Cuenta Clara, se arrastra automáticamente entre meses y vacaciones.
 - El saldo a favor se descuenta de siguientes liquidaciones.
 - El saldo pendiente de pagar se suma a la siguiente liquidación.
+
+
+## v0.62.0 — Rasca de Navidad
+- Añadido “Rasca de Navidad”.
+- Precio por rasca: 5 €.
+- Porcentaje de premios: 69,5 %.
+- Categoría interna de comisión: Muy Alto.
+- Valor del paquete: 150 €.
