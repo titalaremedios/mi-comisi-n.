@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-cuadra-version="0.65.0">
+<html lang="es" data-cuadra-version="0.66.0">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -5783,7 +5783,7 @@
               <strong>Versión de Cuenta Clara</strong>
               <span id="updateHelpText">Busca la última versión publicada y recarga la app.</span>
             </div>
-            <span class="version-badge" id="appVersionBadge">v0.65.0</span>
+            <span class="version-badge" id="appVersionBadge">v0.66.0</span>
           </div>
           <button class="btn secondary full" id="updateAppBtn" type="button">↻ Actualizar Cuenta Clara</button>
           <div class="update-status" id="updateStatus" aria-live="polite"></div>
@@ -5809,7 +5809,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const APP_VERSION = "0.65.0";
+const APP_VERSION = "0.66.0";
 
 /* ===== Cuenta Clara · licencia online ===== */
 const LICENSE_API_URL="https://sqrabuanhcrddbaemqcv.supabase.co/functions/v1/validate-license";
@@ -7951,7 +7951,7 @@ function renderActiveOcrReview(){
   if(passiveRows.length){
     html+=`<div class="ocr-unknown-note" style="background:#eef9f6;border-color:#cfe8e1">
       <strong>🎫 Pasivos detectados por fecha de sorteo</strong>
-      <span>Los guardaré temporalmente por fecha. No se sumarán todavía. Cuando selecciones esa fecha en Cupón o Bono, el TPV detectado aparecerá automáticamente.</span>
+      <span>Los guardaré internamente por fecha. La foto NO los suma a la venta. Solo cuando tú selecciones la fecha de ese sorteo aparecerán en «TPV vendidos» o en «Bonos vendidos».</span>
     </div>`;
     html+=passiveRows.map((r,i)=>`<div class="active-ocr-row">
       <div class="active-ocr-name">
@@ -7992,6 +7992,7 @@ async function scanActiveReceipt(file){
   const status=$("activeOcrStatus");
   const review=$("activeOcrReview");
   pendingOcrActiveRows=[];
+  pendingOcrPassiveRows=[];
   review.classList.add("hidden");
   status.classList.remove("hidden");
 
@@ -8051,8 +8052,7 @@ function pendingCouponOcrForDate(date,type=""){
   if(!date) return null;
   return pendingOcrPassiveRows.find(r=>
     r.kind==="coupon" &&
-    r.drawDate===date &&
-    (!type || r.type===type)
+    r.drawDate===date
   ) || null;
 }
 function pendingBonoOcrForDate(date){
@@ -8067,22 +8067,29 @@ function consumePendingPassiveRow(row){
 }
 function autofillCouponTpvFromOcr(){
   const date=$("couponDrawDate")?.value||"";
-  const type=$("couponType")?.value||"";
   const input=$("couponTpv");
+  const typeSel=$("couponType");
   if(!input) return;
 
   if(!date){
-    input.dataset.ocrAutofilled="";
+    if(input.dataset.ocrAutofilled){
+      input.value="";
+      input.dataset.ocrAutofilled="";
+      input.dataset.ocrDate="";
+      input.dataset.ocrType="";
+    }
     return;
   }
 
-  const row=pendingCouponOcrForDate(date,type);
+  const row=pendingCouponOcrForDate(date);
   if(row){
+    if(typeSel && row.type) typeSel.value=row.type;
     input.value=Number(row.units||0);
     input.dataset.ocrAutofilled=ocrPassiveFingerprint(row);
     input.dataset.ocrDate=date;
     input.dataset.ocrType=row.type||"";
-    input.dispatchEvent(new Event("input",{bubbles:true}));
+    // OJO: aquí NO se suma nada todavía.
+    // Solo se muestra el TPV detectado para que la usuaria lo revise.
   }else if(input.dataset.ocrAutofilled){
     input.value="";
     input.dataset.ocrAutofilled="";
@@ -8167,13 +8174,11 @@ function confirmActiveOcr(){
   $("activeReceiptPhoto").value="";
   renderActiveSelected();
 
-  // Si ya había una fecha escrita, mostramos su TPV ahora.
-  autofillCouponTpvFromOcr();
-  autofillBonoFromOcr();
-
+  // Los pasivos detectados se quedan SOLO memorizados por fecha.
+  // Hacer la foto NO rellena TPV, NO crea cupones y NO suma esos pasivos a la venta.
   const parts=[];
   if(activeRows.length) parts.push(`${activeRows.length} activo${activeRows.length===1?"":"s"} añadido${activeRows.length===1?"":"s"}`);
-  if(passiveRows.length) parts.push(`${passiveRows.length} pasivo${passiveRows.length===1?" guardado":"s guardados"} por fecha`);
+  if(passiveRows.length) parts.push(`${passiveRows.length} pasivo${passiveRows.length===1?" guardado":"s guardados"} por fecha · todavía no suman`);
   if(parts.length) toast(parts.join(" · "));
 }
 function activeDraftValue(){
@@ -8548,6 +8553,14 @@ function openDayDialog(day=null){
   } else tempActiveBets=[];
   pendingOcrActiveRows=[];
   pendingOcrPassiveRows=[];
+  $("couponType").value="";
+  $("couponDrawDate").value="";
+  $("couponCarried").value="";
+  $("couponReturned").value="";
+  $("couponTpv").value="";
+  $("couponTpv").dataset.ocrAutofilled="";
+  $("couponTpv").dataset.ocrDate="";
+  $("couponTpv").dataset.ocrType="";
   if($("activeOcrReview")) $("activeOcrReview").classList.add("hidden");
   if($("activeOcrStatus")) $("activeOcrStatus").classList.add("hidden");
   if($("activeReceiptPhoto")) $("activeReceiptPhoto").value="";
@@ -8749,7 +8762,6 @@ $("scratchFirstPackFree").addEventListener("change",()=>{
 });
 $("releaseDeferredScratchBtn").addEventListener("click",releaseDeferredScratchDue);
 $("couponDrawDate").addEventListener("change",autofillCouponTpvFromOcr);
-$("couponType").addEventListener("change",autofillCouponTpvFromOcr);
 $("bonoDrawDate").addEventListener("change",autofillBonoFromOcr);
 $("addCouponBtn").addEventListener("click",addCouponTemp);
 $("addCollabEntryBtn").addEventListener("click",addCollaboratorTemp);

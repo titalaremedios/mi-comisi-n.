@@ -252,3 +252,11 @@ v0.41.0
 - El Bono semanal tiene ahora “Fecha del bono”.
 - Si la foto detectó un bono para esa fecha, “Bonos vendidos” se rellena automáticamente.
 - El bono puede introducirse manualmente en cualquier jornada y sigue valiendo 15 € por unidad.
+
+
+## v0.66.0 — TPV solo al elegir la fecha
+- Hacer la foto NO añade ningún cupón TPV al Pasivo ni a la venta.
+- ORD/VIE/BONO quedan memorizados por fecha.
+- Solo al seleccionar “Fecha sorteo” aparece el TPV detectado para esa fecha.
+- Al aparecer en “TPV vendidos” todavía no se suma: entra en la venta únicamente al pulsar “Añadir sorteo”.
+- Se limpian los campos de cupón al abrir la jornada para impedir que una fecha antigua active TPV por accidente.
