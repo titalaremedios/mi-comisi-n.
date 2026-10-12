@@ -242,3 +242,13 @@ v0.41.0
 - Esto permite registrarlo, por ejemplo, en la jornada del viernes aunque el sorteo corresponda al lunes.
 - Sigue contando 15 € por unidad y se suma automáticamente al Pasivo de esa jornada.
 - La lectura por foto sigue funcionando igual.
+
+
+## v0.65.0 — TPV leído por foto, aplicado al seleccionar la fecha
+- La foto puede leer cupones de varias fechas, pero ya NO los suma todos de golpe a la jornada.
+- ORD/VIE quedan temporalmente memorizados por fecha de sorteo.
+- Al seleccionar una “Fecha sorteo” en Control de cupones, la casilla “TPV vendidos” se rellena automáticamente si la foto había detectado ventas para esa fecha.
+- Esto funciona aunque todos esos sorteos (viernes, sábado, domingo, lunes festivo) se guarden dentro de una única jornada del viernes.
+- El Bono semanal tiene ahora “Fecha del bono”.
+- Si la foto detectó un bono para esa fecha, “Bonos vendidos” se rellena automáticamente.
+- El bono puede introducirse manualmente en cualquier jornada y sigue valiendo 15 € por unidad.

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-cuadra-version="0.64.0">
+<html lang="es" data-cuadra-version="0.65.0">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -5170,7 +5170,7 @@
           <div class="active-ocr-head">
             <div>
               <strong>📷 Leer cierre de ventas</strong>
-              <span>Haz una foto del cierre y Cuenta Clara detectará activos, cupones TPV (ORD/VIE) y bonos por la fecha de sorteo. Todo se añade a la jornada que estás registrando.</span>
+              <span>Haz una foto del cierre. Los activos se añaden al confirmar; los cupones y bonos quedan memorizados por fecha y aparecerán cuando selecciones su fecha de sorteo.</span>
             </div>
             <span class="pilot-pill">PILOTO</span>
           </div>
@@ -5278,10 +5278,17 @@
         <div class="bono-box" id="bonoBox">
           <label style="font-size:13px;font-weight:800;color:#475467">Bono semanal</label>
           <div class="mini" style="margin-top:4px">El bono vale 15 €. Si aparece en el cierre fotografiado, Cuenta Clara lo asigna a la fecha que figure en el ticket aunque estés registrando una jornada anterior (por ejemplo, el viernes).</div>
-          <div class="field" style="margin-top:10px">
-            <label>Bonos vendidos</label>
-            <input type="number" id="bonoQty" min="0" step="1" inputmode="numeric">
+          <div class="coupon-add-grid" style="margin-top:10px">
+            <div class="field">
+              <label>Fecha del bono</label>
+              <input type="date" id="bonoDrawDate">
+            </div>
+            <div class="field">
+              <label>Bonos vendidos</label>
+              <input type="number" id="bonoQty" min="0" step="1" inputmode="numeric">
+            </div>
           </div>
+          <div class="mini" id="bonoOcrHint" style="margin-top:6px">Si la foto detectó un bono para esa fecha, aparecerá automáticamente al seleccionar la fecha.</div>
           <div class="bono-summary" id="bonoSummary">No has registrado ningún bono.</div>
         </div>
         <div class="scratch-box">
@@ -5776,7 +5783,7 @@
               <strong>Versión de Cuenta Clara</strong>
               <span id="updateHelpText">Busca la última versión publicada y recarga la app.</span>
             </div>
-            <span class="version-badge" id="appVersionBadge">v0.64.0</span>
+            <span class="version-badge" id="appVersionBadge">v0.65.0</span>
           </div>
           <button class="btn secondary full" id="updateAppBtn" type="button">↻ Actualizar Cuenta Clara</button>
           <div class="update-status" id="updateStatus" aria-live="polite"></div>
@@ -5802,7 +5809,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const APP_VERSION = "0.64.0";
+const APP_VERSION = "0.65.0";
 
 /* ===== Cuenta Clara · licencia online ===== */
 const LICENSE_API_URL="https://sqrabuanhcrddbaemqcv.supabase.co/functions/v1/validate-license";
@@ -6190,6 +6197,7 @@ let tempCoupons = [];
 let tempCollaboratorEntries = [];
 let tempActiveBets = [];
 let pendingOcrActiveRows = [];
+let pendingOcrPassiveRows = [];
 let tempOtherItems = [];
 const ACTIVE_CATALOG = [
   {name:"Mi Día", price:1},
@@ -7468,7 +7476,7 @@ function renderDays(month){
           <span class="pill">Rascas ${fmt(d.rascas)}</span>
           ${(d.scratchPacks||[]).filter(x=>!x.legacy).map(x=>{ const m=scratchCatalogItem(x.product); return `<span class="pill">🎟️ ${x.product}: ${x.qty} paq. · ${scratchGroupLabel(x.group||m?.group)}${x.firstPackFree?' · 🎁 primer paquete no computable':''}${x.deferredLiquidation?` · ⏳ liquida ${dateLabelShort(x.deferredDueDate)}`:''}</span>`; }).join('')}${(d.collaboratorEntries||[]).map(x=>`<span class="pill">🏪 ${x.collaboratorName}: ${Math.max(0,Number(x.carried||0)-Number(x.returned||0))} vendidos · ${x.couponType||'Cupón'}</span>`).join('')}
           ${(d.coupons||[]).length?`<span class="pill">🎫 ${(d.coupons||[]).length} sorteo${(d.coupons||[]).length===1?'':'s'} · ${(d.coupons||[]).reduce((a,c)=>a+couponDerived(c).total,0)} cupones · ${fmt((d.coupons||[]).reduce((a,c)=>a+couponDerived(c).totalValue,0))}</span>`:''}
-          ${Number(d.bonoQty||0)>0?`<span class="pill">🎟️ Bono semanal: ${Number(d.bonoQty||0)} × ${fmt(15)} = ${fmt(Number(d.bonoQty||0)*15)}</span>`:''}
+          ${Number(d.bonoQty||0)>0?`<span class="pill">🎟️ Bono semanal${d.bonoDrawDate?` · ${dateLabelShort(d.bonoDrawDate)}`:""}: ${Number(d.bonoQty||0)} × ${fmt(15)} = ${fmt(Number(d.bonoQty||0)*15)}</span>`:''}
           ${(d.otherItems||[]).length?`<span class="pill">🧾 Otros ${fmt(Number(d.otherTotal||0))}</span>`:''}
           <span class="pill">Pagos ${fmt(d.pagos)}</span>
           <span class="pill">Tarjeta ${fmt(d.tarjeta)}</span>
@@ -7479,7 +7487,7 @@ function renderDays(month){
         ${(d.activeBets||[]).length ? `<div class="mini" style="margin-top:10px"><strong>Juegos activos:</strong> ${(d.activeBets||[]).map(x=>`${x.name} ${x.qty} ap. (${fmt(Number(x.qty)*Number(x.price))})`).join(' · ')}</div>`:''}
         ${(d.scratchPacks||[]).length ? `<div class="mini" style="margin-top:10px"><strong>Rascas:</strong> ${(d.scratchPacks||[]).map(x=>x.legacy?`${x.product} ${fmt(Number(x.packValue||0)*Number(x.qty||0))}`:`${x.product} × ${x.qty}`).join(' · ')}</div>` : ''}
         ${(d.coupons||[]).length?`<div style="margin-top:12px"><strong style="font-size:13px">Control de cupones</strong>${(d.coupons||[]).map(raw=>{const c=couponDerived(raw);const draw=c.drawDate?dateLabelShort(c.drawDate):'Sin fecha';return `<div class="coupon-detail-card"><strong>🎫 ${c.type||'Cupón'} · ${draw}</strong><div class="mini">Precio ${fmt(c.unitPrice)} · Llevados ${c.carried} · Devueltos ${c.returned} · Físicos ${c.physical} (${fmt(c.physicalValue)}) · TPV ${c.tpv} (${fmt(c.tpvValue)}) · Total ${c.total} (${fmt(c.totalValue)})</div></div>`;}).join('')}</div>`:''}
-        ${Number(d.bonoQty||0)>0?`<div class="coupon-detail-card"><strong>🎟️ Bono semanal TPV</strong><div class="mini">${Number(d.bonoQty||0)} bono${Number(d.bonoQty||0)===1?'':'s'} × ${fmt(15)} = <strong>${fmt(Number(d.bonoQty||0)*15)}</strong> · incluido en Pasivo</div></div>`:''}
+        ${Number(d.bonoQty||0)>0?`<div class="coupon-detail-card"><strong>🎟️ Bono semanal${d.bonoDrawDate?` · ${dateLabelShort(d.bonoDrawDate)}`:""}</strong><div class="mini">${Number(d.bonoQty||0)} bono${Number(d.bonoQty||0)===1?'':'s'} × ${fmt(15)} = <strong>${fmt(Number(d.bonoQty||0)*15)}</strong> · incluido en Pasivo</div></div>`:''}
         ${(d.otherItems||[]).length?`<div style="margin-top:12px"><strong style="font-size:13px">Otros · solo liquidación</strong>${(d.otherItems||[]).map(x=>`<div class="coupon-detail-card"><strong>🧾 ${x.product}</strong><div class="mini">${fmt(Number(x.amount||0))} · se suma a liquidación y no a venta ONCE, tramo ni comisión.</div></div>`).join('')}</div>`:''}
         ${d.cashControl?.used ? `<div class="coupon-detail-card"><strong>💶 Control de caja</strong><div class="mini">Cambio inicial ${fmt(Number(d.cashControl.opening||0))} · Venta en efectivo ${fmt(Number(d.cashControl.cashSales||0))} · Pagos ${fmt(Number(d.pagos||0))} · Deberías llevar ${fmt(Number(d.cashControl.expected||0))}${d.cashControl.complete ? ` · Contado ${fmt(Number(d.cashControl.counted||0))} · ${Math.abs(Number(d.cashControl.difference||0))<0.005 ? '<strong>Cuadra ✅</strong>' : `<strong>Diferencia ${fmt(Number(d.cashControl.difference||0))}</strong>`}` : ' · Falta completar el efectivo contado'}</div></div>` : ''}
         <div class="day-actions">
@@ -7943,7 +7951,7 @@ function renderActiveOcrReview(){
   if(passiveRows.length){
     html+=`<div class="ocr-unknown-note" style="background:#eef9f6;border-color:#cfe8e1">
       <strong>🎫 Pasivos detectados por fecha de sorteo</strong>
-      <span>Se añadirán a ESTA jornada, aunque sean del sábado, domingo o lunes. Si luego añades manualmente ese mismo sorteo, Cuenta Clara lo juntará.</span>
+      <span>Los guardaré temporalmente por fecha. No se sumarán todavía. Cuando selecciones esa fecha en Cupón o Bono, el TPV detectado aparecerá automáticamente.</span>
     </div>`;
     html+=passiveRows.map((r,i)=>`<div class="active-ocr-row">
       <div class="active-ocr-name">
@@ -8039,52 +8047,77 @@ async function scanActiveReceipt(file){
 function ocrPassiveFingerprint(r){
   return `${r.kind}|${r.drawDate}|${r.code}|${Number(r.units||0)}|${Number(r.amount||0).toFixed(2)}`;
 }
-function mergeOcrPassiveIntoCurrentDraft(r){
-  if(!r.drawDate || Number(r.units||0)<=0) return {added:false,duplicate:false};
+function pendingCouponOcrForDate(date,type=""){
+  if(!date) return null;
+  return pendingOcrPassiveRows.find(r=>
+    r.kind==="coupon" &&
+    r.drawDate===date &&
+    (!type || r.type===type)
+  ) || null;
+}
+function pendingBonoOcrForDate(date){
+  if(!date) return null;
+  return pendingOcrPassiveRows.find(r=>r.kind==="bono" && r.drawDate===date) || null;
+}
+function consumePendingPassiveRow(row){
+  if(!row) return;
+  const fp=ocrPassiveFingerprint(row);
+  const idx=pendingOcrPassiveRows.findIndex(x=>ocrPassiveFingerprint(x)===fp);
+  if(idx>=0) pendingOcrPassiveRows.splice(idx,1);
+}
+function autofillCouponTpvFromOcr(){
+  const date=$("couponDrawDate")?.value||"";
+  const type=$("couponType")?.value||"";
+  const input=$("couponTpv");
+  if(!input) return;
 
-  const fp=ocrPassiveFingerprint(r);
-  const already=tempCoupons.some(c=>c.ocrFingerprint===fp);
-  if(already) return {added:false,duplicate:true};
-
-  if(r.kind==="bono"){
-    const existing=tempCoupons.find(c=>(c.kind==="bono" || /^Bono/i.test(String(c.type||""))) && c.drawDate===r.drawDate);
-    if(existing){
-      existing.tpv=Math.max(0,Number(existing.tpv||0))+Number(r.units||0);
-      existing.ocrFingerprints=[...(existing.ocrFingerprints||[]),fp];
-    }else{
-      tempCoupons.push({
-        id:"c"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),
-        kind:"bono",
-        type:"Bono semanal",
-        drawDate:r.drawDate,
-        carried:0,
-        returned:0,
-        tpv:Number(r.units||0),
-        unitPrice:15,
-        source:"ocr",
-        ocrFingerprint:fp
-      });
-    }
-    return {added:true,duplicate:false};
+  if(!date){
+    input.dataset.ocrAutofilled="";
+    return;
   }
 
-  const existing=tempCoupons.find(c=>c.kind!=="bono" && c.type===r.type && c.drawDate===r.drawDate);
-  if(existing){
-    existing.tpv=Math.max(0,Number(existing.tpv||0))+Number(r.units||0);
-    existing.ocrFingerprints=[...(existing.ocrFingerprints||[]),fp];
+  const row=pendingCouponOcrForDate(date,type);
+  if(row){
+    input.value=Number(row.units||0);
+    input.dataset.ocrAutofilled=ocrPassiveFingerprint(row);
+    input.dataset.ocrDate=date;
+    input.dataset.ocrType=row.type||"";
+    input.dispatchEvent(new Event("input",{bubbles:true}));
+  }else if(input.dataset.ocrAutofilled){
+    input.value="";
+    input.dataset.ocrAutofilled="";
+    input.dataset.ocrDate="";
+    input.dataset.ocrType="";
+  }
+}
+function autofillBonoFromOcr(){
+  const date=$("bonoDrawDate")?.value||"";
+  const input=$("bonoQty");
+  const hint=$("bonoOcrHint");
+  if(!input) return;
+
+  if(!date){
+    if(hint) hint.textContent="Si la foto detectó un bono para esa fecha, aparecerá automáticamente al seleccionar la fecha.";
+    input.dataset.ocrAutofilled="";
+    return;
+  }
+
+  const row=pendingBonoOcrForDate(date);
+  if(row){
+    input.value=Number(row.units||0);
+    input.dataset.ocrAutofilled=ocrPassiveFingerprint(row);
+    input.dataset.ocrDate=date;
+    if(hint) hint.textContent=`📷 Detectado en la foto: ${Number(row.units||0)} bono${Number(row.units||0)===1?"":"s"} para ${dateLabelShort(date)}.`;
+    syncPasivoFromCoupons(true);
   }else{
-    tempCoupons.push({
-      id:"c"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),
-      type:r.type,
-      drawDate:r.drawDate,
-      carried:0,
-      returned:0,
-      tpv:Number(r.units||0),
-      source:"ocr",
-      ocrFingerprint:fp
-    });
+    if(input.dataset.ocrAutofilled){
+      input.value="";
+      input.dataset.ocrAutofilled="";
+      input.dataset.ocrDate="";
+      syncPasivoFromCoupons(true);
+    }
+    if(hint) hint.textContent="No hay bono detectado en la foto para esta fecha. Puedes introducirlo manualmente.";
   }
-  return {added:true,duplicate:false};
 }
 
 function confirmActiveOcr(){
@@ -8120,29 +8153,29 @@ function confirmActiveOcr(){
     }
   }
 
-  let addedPassive=0, duplicatePassive=0;
+  // Los pasivos NO se suman aún: quedan en memoria temporal por fecha.
   for(const row of passiveRows){
-    const r=mergeOcrPassiveIntoCurrentDraft(row);
-    if(r.added) addedPassive++;
-    if(r.duplicate) duplicatePassive++;
+    const fp=ocrPassiveFingerprint(row);
+    if(!pendingOcrPassiveRows.some(x=>ocrPassiveFingerprint(x)===fp)){
+      pendingOcrPassiveRows.push({...row});
+    }
   }
 
   pendingOcrActiveRows=[];
   $("activeOcrReview").classList.add("hidden");
   $("activeOcrStatus").classList.add("hidden");
   $("activeReceiptPhoto").value="";
-
   renderActiveSelected();
-  renderCouponSelected();
-  syncPasivoFromCoupons();
+
+  // Si ya había una fecha escrita, mostramos su TPV ahora.
+  autofillCouponTpvFromOcr();
+  autofillBonoFromOcr();
 
   const parts=[];
-  if(activeRows.length) parts.push(`${activeRows.length} activo${activeRows.length===1?"":"s"}`);
-  if(addedPassive) parts.push(`${addedPassive} pasivo${addedPassive===1?"":"s"} añadido${addedPassive===1?"":"s"} a esta jornada`);
-  if(duplicatePassive) parts.push(`${duplicatePassive} duplicado${duplicatePassive===1?" evitado":"s evitados"}`);
+  if(activeRows.length) parts.push(`${activeRows.length} activo${activeRows.length===1?"":"s"} añadido${activeRows.length===1?"":"s"}`);
+  if(passiveRows.length) parts.push(`${passiveRows.length} pasivo${passiveRows.length===1?" guardado":"s guardados"} por fecha`);
   if(parts.length) toast(parts.join(" · "));
 }
-
 function activeDraftValue(){
   return tempActiveBets.reduce((sum,x)=>sum+activeItemValue(x),0);
 }
@@ -8285,12 +8318,13 @@ function updateBonoSummary(){
   const el=$("bonoSummary"); if(!el) return;
   const qty=Math.max(0,Number($("bonoQty")?.value||0));
   const price=15;
+  const drawDate=$("bonoDrawDate")?.value||"";
   if(!qty){
     el.textContent="No has registrado ningún bono semanal en esta jornada.";
-  } else if(!price){
-    el.textContent=`Has registrado ${qty} bono${qty===1?'':'s'}. Falta indicar el precio para sumarlo al Pasivo de esta jornada.`;
+  } else if(!drawDate){
+    el.textContent=`Has indicado ${qty} bono${qty===1?'':'s'}. Añade la fecha del bono para dejarlo correctamente identificado.`;
   } else {
-    el.textContent=`${qty} bono${qty===1?'':'s'} × ${fmt(price)} = ${fmt(qty*price)} · Se suma al Pasivo de esta jornada.`;
+    el.textContent=`${qty} bono${qty===1?'':'s'} × ${fmt(price)} = ${fmt(qty*price)} · Fecha ${dateLabelShort(drawDate)} · Se suma al Pasivo de esta jornada.`;
   }
 }
 function automaticPasivoValue(){
@@ -8470,6 +8504,8 @@ function addCouponTemp(){
     alert(`Has seleccionado ${type}, pero la fecha indicada corresponde a ${actualDay}. Revisa uno de los dos datos.`);
     return;
   }
+  const matchedOcr=pendingCouponOcrForDate(drawDate,type);
+  const ocrWasUsed=!!matchedOcr && Number(tpv||0)===Number(matchedOcr.units||0);
   const existing=tempCoupons.find(c=>c.kind!=="bono" && c.type===type && c.drawDate===drawDate);
   if(existing){
     existing.carried=Math.max(0,Number(existing.carried||0))+carried;
@@ -8478,11 +8514,15 @@ function addCouponTemp(){
   }else{
     tempCoupons.push({id:"c"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),type,drawDate,carried,returned,tpv});
   }
+  if(ocrWasUsed) consumePendingPassiveRow(matchedOcr);
   $("couponType").value="";
   $("couponDrawDate").value="";
   $("couponCarried").value="";
   $("couponReturned").value="";
   $("couponTpv").value="";
+  $("couponTpv").dataset.ocrAutofilled="";
+  $("couponTpv").dataset.ocrDate="";
+  $("couponTpv").dataset.ocrType="";
   renderCouponSelected();
   syncPasivoFromCoupons();
 }
@@ -8507,11 +8547,15 @@ function openDayDialog(day=null){
     tempActiveBets = [];
   } else tempActiveBets=[];
   pendingOcrActiveRows=[];
+  pendingOcrPassiveRows=[];
   if($("activeOcrReview")) $("activeOcrReview").classList.add("hidden");
   if($("activeOcrStatus")) $("activeOcrStatus").classList.add("hidden");
   if($("activeReceiptPhoto")) $("activeReceiptPhoto").value="";
   renderActiveSelected();
   $("bonoQty").value = day ? blankIfZero(Number(day.bonoQty||0)) : "";
+  $("bonoDrawDate").value = day?.bonoDrawDate || "";
+  $("bonoQty").dataset.ocrAutofilled="";
+  $("bonoQty").dataset.ocrDate="";
   updateBonoAvailability();
   populateScratchCatalog();
   if(day && Array.isArray(day.scratchPacks) && day.scratchPacks.length){
@@ -8683,6 +8727,7 @@ $("activeReceiptPhoto").addEventListener("change",e=>{
 });
 $("cancelActiveOcrBtn").addEventListener("click",()=>{
   pendingOcrActiveRows=[];
+  pendingOcrPassiveRows=[];
   $("activeOcrReview").classList.add("hidden");
   $("activeOcrStatus").classList.add("hidden");
   $("activeReceiptPhoto").value="";
@@ -8703,6 +8748,9 @@ $("scratchFirstPackFree").addEventListener("change",()=>{
   }
 });
 $("releaseDeferredScratchBtn").addEventListener("click",releaseDeferredScratchDue);
+$("couponDrawDate").addEventListener("change",autofillCouponTpvFromOcr);
+$("couponType").addEventListener("change",autofillCouponTpvFromOcr);
+$("bonoDrawDate").addEventListener("change",autofillBonoFromOcr);
 $("addCouponBtn").addEventListener("click",addCouponTemp);
 $("addCollabEntryBtn").addEventListener("click",addCollaboratorTemp);
 $("newCollaboratorBtn").addEventListener("click",openCollaboratorDialog);
@@ -8712,7 +8760,14 @@ $("otherAmount").addEventListener("input",updateDayPreview);
 $("addExtraBtn").addEventListener("click",()=>openExtraDialog());
 ["extraInitialStock","extraAdditionalStock","extraPhysicalSold","extraTpvSold","extraUnitPrice","extraManualPct"].forEach(id=>$(id).addEventListener("input",updateExtraPreview));
 ["pasivo","activo","pagos","tarjeta","cashOpening","cashCounted"].forEach(id=>$(id).addEventListener("input",updateDayPreview));
-$("bonoQty").addEventListener("input",()=>syncPasivoFromCoupons(true));
+$("bonoQty").addEventListener("input",()=>{
+  const date=$("bonoDrawDate")?.value||"";
+  const row=pendingBonoOcrForDate(date);
+  if(row && Number($("bonoQty").value||0)!==Number(row.units||0)){
+    $("bonoQty").dataset.ocrAutofilled="";
+  }
+  syncPasivoFromCoupons(true);
+});
 $("dayDate").addEventListener("change",()=>{ updateBonoAvailability(); syncPasivoFromCoupons(true); });
 
 $("monthForm").addEventListener("submit",e=>{
@@ -8858,6 +8913,10 @@ $("dayForm").addEventListener("submit",e=>{
     alert("Ya existe una jornada con esa fecha. Ábrela desde Jornadas o Calendario para editarla; dentro de una misma jornada puedes añadir varios sorteos.");
     return;
   }
+  if(Number($("bonoQty").value||0)>0 && !$("bonoDrawDate").value){
+    alert("Indica la fecha del bono antes de guardar la jornada.");
+    return;
+  }
   const entry = {
     id: editingId || (Date.now().toString(36)+Math.random().toString(36).slice(2,7)),
     date,
@@ -8865,6 +8924,7 @@ $("dayForm").addEventListener("submit",e=>{
     activeBets: tempActiveBets.map(x=>({...x})),
     bonoQty:Math.max(0,Number($("bonoQty").value||0)),
     bonoUnitPrice:Number($("bonoQty").value||0)>0?15:0,
+    bonoDrawDate:$("bonoDrawDate").value||null,
     scratchPacks: tempScratchPacks.map(x=>({...x})),
     coupons: tempCoupons.map(x=>({...x})),
     collaboratorEntries: tempCollaboratorEntries.map(x=>({...x})),
@@ -8897,6 +8957,10 @@ $("dayForm").addEventListener("submit",e=>{
     if(idx>=0) month.days[idx]=entry;
   } else {
     month.days.push(entry);
+  }
+  const pendingBono=pendingBonoOcrForDate(entry.bonoDrawDate||"");
+  if(pendingBono && Number(entry.bonoQty||0)===Number(pendingBono.units||0)){
+    consumePendingPassiveRow(pendingBono);
   }
   const newTotalSale = sumDays(month).sale;
   recalcSettlements();
