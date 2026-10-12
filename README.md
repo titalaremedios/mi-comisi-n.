@@ -187,3 +187,30 @@ v0.41.0
 - El saldo negativo no desaparece: queda registrado como saldo a favor para compensar en la siguiente liquidación.
 - En el calendario, una liquidación cerrada con saldo negativo se muestra como liquidada en verde con un indicador rojo 🔴.
 - Amarillo queda reservado para movimientos realmente pendientes de cerrar.
+
+
+## v0.58.0 — Acceso privado por código
+- Cuenta Clara requiere un código personal para entrar.
+- Cada código se valida online mediante Supabase.
+- Los códigos pueden activarse, bloquearse o caducar.
+- Cada licencia puede limitar el número de dispositivos.
+- La primera activación necesita conexión a Internet.
+- Tras una validación correcta, existe una tolerancia de hasta 72 horas sin conexión.
+- Los datos de ventas y liquidaciones siguen almacenados localmente en el dispositivo.
+- El servidor de licencias no recibe las cuentas diarias del vendedor.
+
+
+## v0.59.0 — Código personalizable y control administrativo
+- Cada usuario puede cambiar su propio código desde Ajustes.
+- El nuevo código debe ser único y tener al menos 6 caracteres.
+- Cambiar el código no modifica ni borra los datos de la app.
+- El propietario puede bloquear o reactivar cualquier licencia desde el panel privado.
+- El propietario también puede liberar dispositivos, cambiar caducidad y crear nuevos probadores.
+
+
+## v0.60.0 — Panel de administración integrado
+- El panel privado ya está dentro de Ajustes de Cuenta Clara.
+- Solo aparece para licencias con rol de administradora.
+- Desde la propia app se pueden crear códigos, ver activaciones, dar de baja, reactivar, liberar dispositivos y cambiar caducidad.
+- Los probadores normales no ven esta sección.
+- Ya no hace falta utilizar un archivo de administración separado.
