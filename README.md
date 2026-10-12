@@ -217,9 +217,11 @@ v0.41.0
 - El saldo pendiente de pagar se suma a la siguiente liquidación.
 
 
-## v0.62.0 — Rasca de Navidad
-- Añadido “Rasca de Navidad”.
-- Precio por rasca: 5 €.
-- Porcentaje de premios: 69,5 %.
-- Categoría interna de comisión: Muy Alto.
-- Valor del paquete: 150 €.
+## v0.62.0 — 2 dispositivos + ORD/VIE por fecha
+- El panel de administración permite cambiar una licencia ya creada de 1 a 2 dispositivos (y viceversa) sin liberar el dispositivo existente.
+- El mismo código puede activarse en el segundo dispositivo cuando la licencia tenga límite 2.
+- El lector de cierre reconoce ORD como Cupón Ordinario (lunes-jueves) y VIE como Cupón Viernes.
+- Los cupones TPV leídos se guardan por la fecha que aparece en el ticket.
+- Cuando se abre la jornada de esa fecha, el TPV aparece ya precargado en Control de cupones.
+- Se evita volver a guardar exactamente la misma línea OCR si ya estaba pendiente o guardada.
+- Los activos EUJ/TRI/MID/DUP/SUP continúan funcionando como antes.

@@ -5170,7 +5170,7 @@
           <div class="active-ocr-head">
             <div>
               <strong>📷 Leer cierre de ventas</strong>
-              <span>Prueba piloto: haz una foto del cierre y Cuenta Clara intentará detectar los activos.</span>
+              <span>Haz una foto del cierre y Cuenta Clara intentará detectar activos y cupones TPV (ORD/VIE) por fecha.</span>
             </div>
             <span class="pilot-pill">PILOTO</span>
           </div>
@@ -5182,7 +5182,7 @@
             <div id="activeOcrResults"></div>
             <div class="active-ocr-actions">
               <button class="btn secondary" type="button" id="cancelActiveOcrBtn">Cancelar</button>
-              <button class="btn primary" type="button" id="confirmActiveOcrBtn">Añadir a Activos</button>
+              <button class="btn primary" type="button" id="confirmActiveOcrBtn">Añadir lo detectado</button>
             </div>
           </div>
         </div>
@@ -6049,6 +6049,7 @@ async function loadAdminLicenses(){
           ${status==="active"
             ? `<button class="small-btn danger" onclick="adminSetLicenseStatus('${x.id}','blocked')">Dar de baja</button>`
             : `<button class="small-btn" onclick="adminSetLicenseStatus('${x.id}','active')">Reactivar</button>`}
+          <button class="small-btn" onclick="adminChangeDevices('${x.id}',${Number(x.max_devices||1)})">Cambiar dispositivos</button>
           <button class="small-btn" onclick="adminResetDevices('${x.id}')">Liberar dispositivo</button>
           <button class="small-btn" onclick="adminChangeExpiry('${x.id}','${x.expires_at||""}')">Cambiar caducidad</button>
         </div>
@@ -6088,6 +6089,22 @@ window.adminSetLicenseStatus=async(id,status)=>{
     toast(status==="blocked"?"Acceso dado de baja":"Acceso reactivado");
     await loadAdminLicenses();
   }catch(err){alert(adminLicenseErrorText(err.licenseCode||"server_error"))}
+};
+window.adminChangeDevices=async(id,current)=>{
+  const value=prompt("¿Cuántos dispositivos puede usar esta licencia?\n\nEscribe 1 o 2.",String(current||1));
+  if(value===null) return;
+  const maxDevices=Number(value);
+  if(![1,2].includes(maxDevices)){
+    alert("Escribe 1 o 2.");
+    return;
+  }
+  try{
+    await adminLicenseCall("update",{licenseId:id,maxDevices});
+    toast(`Licencia actualizada a ${maxDevices} dispositivo${maxDevices===1?"":"s"}`);
+    await loadAdminLicenses();
+  }catch(err){
+    alert(adminLicenseErrorText(err.licenseCode||"server_error"));
+  }
 };
 window.adminResetDevices=async(id)=>{
   if(!confirm("¿Liberar el dispositivo? La persona tendrá que activar de nuevo su código.")) return;
@@ -6157,7 +6174,6 @@ const SCRATCH_CATALOG = [
   {name:"X20 2026", price:5, prizePct:69.59, group:"muy_alto", status:"obligatorio", voluntaryFrom:"2026-09-15"},
   {name:"5 años para ti", price:5, prizePct:69.59, group:"muy_alto", status:"obligatorio"},
   {name:"Millonario 2026", price:5, prizePct:69.5, group:"muy_alto", status:"voluntario"},
-  {id:"rasca-navidad-2026",name:"Rasca de Navidad",price:5,prizePct:69.5,category:"muy_alto"},
   {name:"X50 2026", price:10, prizePct:74, group:"muy_alto", status:"obligatorio", voluntaryFrom:"2026-09-15"},
   {name:"Rasca Platinum 2026", price:10, prizePct:74, group:"muy_alto", status:"voluntario"},
   {name:"Mega Millonario 2026", price:10, prizePct:74, group:"muy_alto", status:"voluntario"}
@@ -6230,6 +6246,7 @@ if(!data.profile.schedule) data.profile.schedule={workDays:[],liquidationDays:[]
 if(!data.calendarOverrides) data.calendarOverrides={};
 if(!data.settlements) data.settlements=[];
 if(!Array.isArray(data.collaborators)) data.collaborators=[];
+if(!Array.isArray(data.pendingCouponTpv)) data.pendingCouponTpv=[];
 if(!Number.isFinite(Number(data.carryBalance))){
   const legacyCredit=Number(data.creditBalance||0);
   data.carryBalance=Number.isFinite(legacyCredit) && legacyCredit>0 ? legacyCredit : 0;
@@ -7794,15 +7811,68 @@ function normalizeOcrLine(s){
     .trim();
 }
 
+function ocrReceiptDateToIso(dd,mm){
+  const day=Number(dd), month=Number(mm);
+  if(!day || !month || month<1 || month>12 || day<1 || day>31) return null;
+  const base=$("dayDate")?.value || isoToday();
+  let year=Number(String(base).slice(0,4)) || new Date().getFullYear();
+
+  // Si estamos cerca de cambio de año, elegimos el año más lógico respecto a la fecha de la jornada.
+  const baseDate=new Date(base+"T12:00:00");
+  const sameYear=new Date(year,month-1,day,12);
+  const prevYear=new Date(year-1,month-1,day,12);
+  const nextYear=new Date(year+1,month-1,day,12);
+  const candidates=[sameYear,prevYear,nextYear].sort((a,b)=>Math.abs(a-baseDate)-Math.abs(b-baseDate));
+  const chosen=candidates[0];
+  return `${chosen.getFullYear()}-${String(month).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+}
+function couponTypeForOcr(code,dateIso){
+  const d=new Date(dateIso+"T12:00:00");
+  const names=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+  const weekday=d.getDay();
+  if(code==="VIE" && weekday===5) return "Cupón viernes";
+  if(code==="ORD" && weekday>=1 && weekday<=4) return `Cupón ${names[weekday]}`;
+  // Si OCR leyó ORD/VIE pero la fecha manda, priorizamos la fecha para no asignar un día incorrecto.
+  return `Cupón ${names[weekday]}`;
+}
 function parseActiveReceiptText(raw){
   const rows=[];
+  const coupons=[];
   const unknown=[];
   const lines=String(raw||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
 
   for(const line of lines){
     const clean=normalizeOcrLine(line).toUpperCase();
-    const code=Object.keys(OCR_ACTIVE_CODE_MAP).find(c=>new RegExp(`\\b${c}\\b`).test(clean));
 
+    // Cupones pasivos del TPV: DD-MM ORD/VIE unidades importe.
+    const passiveCode=/\b(ORD|VIE)\b/.exec(clean)?.[1]||null;
+    if(passiveCode){
+      const dateMatch=clean.match(/\b(\d{1,2})-(\d{1,2})\b/);
+      const after=clean.split(new RegExp(`\\b${passiveCode}\\b`))[1]||"";
+      const nums=[...after.matchAll(/(\d+(?:\.\d+)?)/g)]
+        .map(m=>Number(m[1])).filter(Number.isFinite);
+      if(dateMatch && nums.length){
+        const drawDate=ocrReceiptDateToIso(dateMatch[1],dateMatch[2]);
+        const units=Math.max(0,Math.round(nums[0]||0));
+        const amount=nums.length>=2?Number(nums[1]):0;
+        if(drawDate && units>0){
+          coupons.push({
+            kind:"coupon",
+            code:passiveCode,
+            drawDate,
+            type:couponTypeForOcr(passiveCode,drawDate),
+            units,
+            amount,
+            line
+          });
+          continue;
+        }
+      }
+      unknown.push({code:passiveCode,line,amount:nums.length?nums[nums.length-1]:0});
+      continue;
+    }
+
+    const code=Object.keys(OCR_ACTIVE_CODE_MAP).find(c=>new RegExp(`\\b${c}\\b`).test(clean));
     if(code){
       const after=clean.split(new RegExp(`\\b${code}\\b`))[1]||"";
       const nums=[...after.matchAll(/(\d+(?:\.\d+)?)/g)]
@@ -7813,20 +7883,9 @@ function parseActiveReceiptText(raw){
       let units=nums.length>=2 ? Math.max(0,Math.round(nums[0])) : null;
       let amount=nums.length>=2 ? Number(nums[1]) : Number(nums[0]);
 
-      if(meta.price && units!=null){
-        amount=Number((units*meta.price).toFixed(2));
-      }
-      if(meta.mode==="amount" && nums.length>=2){
-        amount=Number(nums[1]);
-      }
-      if(amount>0) rows.push({code,name:meta.name,units,amount});
-      continue;
-    }
-
-    if(/\bORD\b/.test(clean)){
-      const nums=[...clean.matchAll(/(\d+(?:\.\d+)?)/g)]
-        .map(m=>Number(m[1])).filter(Number.isFinite);
-      unknown.push({code:"ORD",line,amount:nums.length?nums[nums.length-1]:0});
+      if(meta.price && units!=null) amount=Number((units*meta.price).toFixed(2));
+      if(meta.mode==="amount" && nums.length>=2) amount=Number(nums[1]);
+      if(amount>0) rows.push({kind:"active",code,name:meta.name,units,amount});
     }
   }
 
@@ -7838,13 +7897,15 @@ function parseActiveReceiptText(raw){
       if(r.units!=null) merged[r.code].units=(merged[r.code].units||0)+r.units;
     }
   }
-  return {rows:Object.values(merged),unknown};
+
+  return {rows:Object.values(merged),coupons,unknown};
 }
 
 function renderActiveOcrReview(){
   const wrap=$("activeOcrResults");
   if(!wrap) return;
-  const known=pendingOcrActiveRows.filter(x=>!x.unknown);
+  const known=pendingOcrActiveRows.filter(x=>x.kind==="active" && !x.unknown);
+  const couponRows=pendingOcrActiveRows.filter(x=>x.kind==="coupon" && !x.unknown);
   const unknown=pendingOcrActiveRows.filter(x=>x.unknown);
 
   let html=known.map((r,i)=>`<div class="active-ocr-row">
@@ -7852,16 +7913,38 @@ function renderActiveOcrReview(){
     <div class="active-ocr-edit"><label>Importe (€)</label><input type="number" min="0" step="0.01" inputmode="decimal" value="${Number(r.amount||0)}" data-ocr-index="${i}"></div>
   </div>`).join("");
 
+  if(couponRows.length){
+    html+=`<div class="ocr-unknown-note" style="background:#eef9f6;border-color:#cfe8e1">
+      <strong>🎫 Cupones TPV detectados por fecha</strong>
+      <span>Se guardarán para el día de su sorteo y aparecerán automáticamente cuando abras esa jornada.</span>
+    </div>`;
+    html+=couponRows.map(r=>`<div class="active-ocr-row">
+      <div class="active-ocr-name">
+        <strong>${r.type}</strong>
+        <span>${dateLabelShort(r.drawDate)} · ${r.code} · TPV ${r.units} · ${fmt(r.amount||0)}</span>
+      </div>
+      <div class="active-ocr-edit"><label>TPV unidades</label><input type="number" min="0" step="1" inputmode="numeric" value="${Number(r.units||0)}" data-ocr-coupon="${r.drawDate}|${r.code}"></div>
+    </div>`).join("");
+  }
+
   if(unknown.length){
-    html+=`<div class="ocr-unknown-note"><strong>⚠️ Línea pendiente de identificar</strong><span>He detectado “ORD”, pero todavía no sabemos qué producto representa. No se añadirá automáticamente.</span></div>`;
+    html+=`<div class="ocr-unknown-note"><strong>⚠️ Alguna línea no se ha podido identificar</strong><span>No se guardará automáticamente. Revisa el ticket antes de confirmar.</span></div>`;
   }
   wrap.innerHTML=html;
 
   wrap.querySelectorAll("[data-ocr-index]").forEach(inp=>{
     inp.addEventListener("input",()=>{
-      const knownRows=pendingOcrActiveRows.filter(x=>!x.unknown);
+      const knownRows=pendingOcrActiveRows.filter(x=>x.kind==="active" && !x.unknown);
       const target=knownRows[Number(inp.dataset.ocrIndex)];
       if(target) target.amount=Math.max(0,Number(inp.value||0));
+    });
+  });
+
+  wrap.querySelectorAll("[data-ocr-coupon]").forEach(inp=>{
+    inp.addEventListener("input",()=>{
+      const [date,code]=String(inp.dataset.ocrCoupon||"").split("|");
+      const target=pendingOcrActiveRows.find(x=>x.kind==="coupon" && x.drawDate===date && x.code===code);
+      if(target) target.units=Math.max(0,Math.round(Number(inp.value||0)));
     });
   });
 }
@@ -7899,11 +7982,13 @@ async function scanActiveReceipt(file){
     const parsed=parseActiveReceiptText(result?.data?.text||"");
     pendingOcrActiveRows=[
       ...parsed.rows,
+      ...parsed.coupons,
       ...parsed.unknown.map(x=>({...x,unknown:true}))
     ];
 
-    if(!parsed.rows.length){
-      status.innerHTML="<strong>No he podido reconocer activos con seguridad.</strong><span>Prueba con la foto recta, cercana y con buena luz. No se ha guardado nada.</span>";
+    const detectedCount=parsed.rows.length+parsed.coupons.length;
+    if(!detectedCount){
+      status.innerHTML="<strong>No he podido reconocer productos con seguridad.</strong><span>Prueba con la foto recta, cercana y con buena luz. No se ha guardado nada.</span>";
       if(parsed.unknown.length){
         renderActiveOcrReview();
         review.classList.remove("hidden");
@@ -7911,7 +7996,7 @@ async function scanActiveReceipt(file){
       return;
     }
 
-    status.innerHTML=`<strong>${parsed.rows.length} producto${parsed.rows.length===1?'':'s'} detectado${parsed.rows.length===1?'':'s'}.</strong><span>Revisa los importes antes de confirmar.</span>`;
+    status.innerHTML=`<strong>${detectedCount} línea${detectedCount===1?'':'s'} detectada${detectedCount===1?'':'s'}.</strong><span>Revisa activos y cupones TPV antes de confirmar.</span>`;
     renderActiveOcrReview();
     review.classList.remove("hidden");
   }catch(err){
@@ -7920,11 +8005,74 @@ async function scanActiveReceipt(file){
   }
 }
 
-function confirmActiveOcr(){
-  const rows=pendingOcrActiveRows.filter(x=>!x.unknown && Number(x.amount||0)>0);
-  if(!rows.length){alert("No hay activos válidos para añadir.");return;}
 
-  for(const row of rows){
+function ocrCouponFingerprint(r){
+  return `${r.drawDate}|${r.code}|${Number(r.units||0)}|${Number(r.amount||0).toFixed(2)}`;
+}
+function savePendingOcrCoupons(rows){
+  data.pendingCouponTpv=data.pendingCouponTpv||[];
+  let added=0, skipped=0;
+  for(const r of rows){
+    if(!r.drawDate || Number(r.units||0)<=0) continue;
+    const fp=ocrCouponFingerprint(r);
+    const alreadyPending=data.pendingCouponTpv.some(x=>x.fingerprint===fp && !x.appliedAt);
+    const alreadySaved=allDays().some(x=>(x.day.coupons||[]).some(c=>c.ocrFingerprint===fp));
+    if(alreadyPending || alreadySaved){ skipped++; continue; }
+
+    data.pendingCouponTpv.push({
+      id:"tpv"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+      drawDate:r.drawDate,
+      type:r.type,
+      code:r.code,
+      units:Number(r.units||0),
+      amount:Number(r.amount||0),
+      fingerprint:fp,
+      createdAt:isoToday(),
+      appliedAt:null
+    });
+    added++;
+  }
+  return {added,skipped};
+}
+function pendingOcrCouponsForDate(date){
+  return (data.pendingCouponTpv||[]).filter(x=>x.drawDate===date && !x.appliedAt);
+}
+function mergePendingOcrCouponsIntoDraft(date){
+  // Quita solo los TPV inyectados automáticamente de otra fecha.
+  tempCoupons=tempCoupons.filter(c=>c.source!=="ocr-pending");
+  const pendings=pendingOcrCouponsForDate(date);
+  for(const x of pendings){
+    if(tempCoupons.some(c=>c.ocrPendingId===x.id || c.ocrFingerprint===x.fingerprint)) continue;
+    tempCoupons.push({
+      id:"c"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),
+      type:x.type,
+      drawDate:x.drawDate,
+      carried:0,
+      returned:0,
+      tpv:Number(x.units||0),
+      source:"ocr-pending",
+      ocrPendingId:x.id,
+      ocrFingerprint:x.fingerprint
+    });
+  }
+}
+function markOcrCouponPendingsApplied(coupons,date){
+  const ids=new Set((coupons||[]).map(c=>c.ocrPendingId).filter(Boolean));
+  if(!ids.size) return;
+  (data.pendingCouponTpv||[]).forEach(x=>{
+    if(ids.has(x.id)) x.appliedAt=date;
+  });
+}
+
+function confirmActiveOcr(){
+  const activeRows=pendingOcrActiveRows.filter(x=>x.kind==="active" && !x.unknown && Number(x.amount||0)>0);
+  const couponRows=pendingOcrActiveRows.filter(x=>x.kind==="coupon" && !x.unknown && Number(x.units||0)>0);
+  if(!activeRows.length && !couponRows.length){
+    alert("No hay productos válidos para añadir.");
+    return;
+  }
+
+  for(const row of activeRows){
     const item=activeCatalogItem(row.name);
     if(!item) continue;
 
@@ -7948,11 +8096,28 @@ function confirmActiveOcr(){
     }
   }
 
+  const couponSave=savePendingOcrCoupons(couponRows);
+  saveData();
+
+  // Si alguno corresponde a la fecha que estamos editando ahora, lo cargamos ya.
+  const currentDate=$("dayDate")?.value||"";
+  if(currentDate){
+    mergePendingOcrCouponsIntoDraft(currentDate);
+    renderCouponSelected();
+    syncPasivoFromCoupons();
+  }
+
   pendingOcrActiveRows=[];
   $("activeOcrReview").classList.add("hidden");
   $("activeOcrStatus").classList.add("hidden");
   $("activeReceiptPhoto").value="";
   renderActiveSelected();
+
+  const parts=[];
+  if(activeRows.length) parts.push(`${activeRows.length} activo${activeRows.length===1?"":"s"}`);
+  if(couponSave.added) parts.push(`${couponSave.added} cupón${couponSave.added===1?"":"es"} TPV guardado${couponSave.added===1?"":"s"} por fecha`);
+  if(couponSave.skipped) parts.push(`${couponSave.skipped} duplicado${couponSave.skipped===1?" evitado":"s evitados"}`);
+  if(parts.length) toast(parts.join(" · "));
 }
 
 function activeDraftValue(){
@@ -8320,6 +8485,7 @@ function openDayDialog(day=null){
     tempScratchPacks = [{product:"Rascas anteriores",packValue:Number(day.rascas||0),qty:1,legacy:true}];
   } else tempScratchPacks=[];
   tempCoupons = day && Array.isArray(day.coupons) ? day.coupons.map(x=>({...x})) : [];
+  mergePendingOcrCouponsIntoDraft($("dayDate").value);
   tempCollaboratorEntries = day && Array.isArray(day.collaboratorEntries) ? day.collaboratorEntries.map(x=>({...x})) : [];
   tempOtherItems = day && Array.isArray(day.otherItems) ? day.otherItems.map(x=>({...x})) : [];
   $("scratchFirstPackFree").checked=false;
@@ -8639,6 +8805,13 @@ $("collaboratorForm").addEventListener("submit",e=>{
   toast("Punto colaborador guardado");
 });
 
+$("dayDate").addEventListener("change",()=>{
+  mergePendingOcrCouponsIntoDraft($("dayDate").value);
+  updateBonoAvailability();
+  renderCouponSelected();
+  syncPasivoFromCoupons(true);
+});
+
 $("dayForm").addEventListener("submit",e=>{
   e.preventDefault();
   const month = getMonth();
@@ -8692,6 +8865,7 @@ $("dayForm").addEventListener("submit",e=>{
   } else {
     month.days.push(entry);
   }
+  markOcrCouponPendingsApplied(entry.coupons,entry.date);
   const newTotalSale = sumDays(month).sale;
   recalcSettlements();
   saveData(); $("dayDialog").close(); render();
@@ -8938,6 +9112,7 @@ $("importInput").addEventListener("change", async e=>{
       data.carryBalance=Number.isFinite(legacyCredit) && legacyCredit>0 ? legacyCredit : 0;
     }
     delete data.creditBalance;
+    if(!Array.isArray(data.pendingCouponTpv)) data.pendingCouponTpv=[];
     saveData(); $("settingsDialog").close(); render(); toast("Copia importada");
   }catch{ alert("Ese archivo no parece una copia válida de Cuenta Clara."); }
   e.target.value="";
@@ -8945,7 +9120,7 @@ $("importInput").addEventListener("change", async e=>{
 $("clearBtn").addEventListener("click",()=>{
   if(!confirm("Esto borrará todos los meses y jornadas guardados en este dispositivo. ¿Continuar?")) return;
   const n=new Date();
-  data={months:{},currentMonth:null,profile:{name:"Azucena",schedule:{workDays:[],liquidationDays:[]}},calendarOverrides:{},settlements:[],collaborators:[],carryBalance:0,liquidationTrackingStart:`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-01`}; currentMonth=null; saveData(); $("settingsDialog").close(); render(); toast("Datos borrados");
+  data={months:{},currentMonth:null,profile:{name:"Azucena",schedule:{workDays:[],liquidationDays:[]}},calendarOverrides:{},settlements:[],collaborators:[],pendingCouponTpv:[],carryBalance:0,liquidationTrackingStart:`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-01`}; currentMonth=null; saveData(); $("settingsDialog").close(); render(); toast("Datos borrados");
 });
 
 
