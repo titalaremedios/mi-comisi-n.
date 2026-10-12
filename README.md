@@ -189,28 +189,29 @@ v0.41.0
 - Amarillo queda reservado para movimientos realmente pendientes de cerrar.
 
 
-## v0.58.0 — Acceso privado por código
-- Cuenta Clara requiere un código personal para entrar.
-- Cada código se valida online mediante Supabase.
-- Los códigos pueden activarse, bloquearse o caducar.
-- Cada licencia puede limitar el número de dispositivos.
-- La primera activación necesita conexión a Internet.
-- Tras una validación correcta, existe una tolerancia de hasta 72 horas sin conexión.
-- Los datos de ventas y liquidaciones siguen almacenados localmente en el dispositivo.
-- El servidor de licencias no recibe las cuentas diarias del vendedor.
+## v0.58.0 — Saldo a favor anterior
+- Nuevo campo en Ajustes para introducir un saldo a favor que ya existía antes de empezar a usar Cuenta Clara.
+- El saldo se muestra claramente en Inicio.
+- Se descuenta automáticamente de las siguientes liquidaciones.
+- Si una liquidación queda totalmente cubierta por ese saldo, puede cerrarse y el resto continúa guardado.
+- Si una jornada genera un nuevo saldo negativo, se suma al saldo a favor existente.
+- El histórico de liquidaciones indica cuánto saldo se aplicó y cuánto queda pendiente de compensar.
 
 
-## v0.59.0 — Código personalizable y control administrativo
-- Cada usuario puede cambiar su propio código desde Ajustes.
-- El nuevo código debe ser único y tener al menos 6 caracteres.
-- Cambiar el código no modifica ni borra los datos de la app.
-- El propietario puede bloquear o reactivar cualquier licencia desde el panel privado.
-- El propietario también puede liberar dispositivos, cambiar caducidad y crear nuevos probadores.
+## v0.59.0 — Saldo pendiente permanente
+- El saldo ya no es solo “inicial” ni solo a favor.
+- En Ajustes puedes introducir un saldo anterior “A mi favor” o “Pendiente de pagar” al empezar a usar la app.
+- Si el saldo se genera dentro de Cuenta Clara, se arrastra automáticamente aunque cambies de mes o estés de vacaciones.
+- Saldo a favor: se descuenta de las siguientes liquidaciones.
+- Saldo pendiente de pagar: se añade a la siguiente liquidación.
+- Cuando el saldo queda compensado, vuelve automáticamente a 0 €.
+- La tarjeta de Inicio cambia de color y texto según sea saldo a favor o saldo pendiente de pagar.
 
 
-## v0.60.0 — Panel de administración integrado
-- El panel privado ya está dentro de Ajustes de Cuenta Clara.
-- Solo aparece para licencias con rol de administradora.
-- Desde la propia app se pueden crear códigos, ver activaciones, dar de baja, reactivar, liberar dispositivos y cambiar caducidad.
-- Los probadores normales no ven esta sección.
-- Ya no hace falta utilizar un archivo de administración separado.
+## v0.61.0 — Saldo pendiente permanente sobre la v60
+- Mantiene el acceso por código y el panel de administración de la v60.
+- Nuevo “Saldo pendiente anterior” en Ajustes.
+- Permite saldo 💚 a favor o 🔴 pendiente de pagar.
+- Si el saldo nace dentro de Cuenta Clara, se arrastra automáticamente entre meses y vacaciones.
+- El saldo a favor se descuenta de siguientes liquidaciones.
+- El saldo pendiente de pagar se suma a la siguiente liquidación.

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-cuadra-version="0.60.0">
+<html lang="es" data-cuadra-version="0.61.0">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -4582,6 +4582,24 @@
       .admin-license-actions .small-btn{flex:1 1 calc(50% - 8px)}
     }
 
+
+    /* ===== Cuenta Clara v0.61 · saldo pendiente permanente ===== */
+    .carry-balance-card{
+      display:flex;align-items:center;justify-content:space-between;gap:14px;
+      margin:14px 0;padding:16px;border-radius:20px;border:1px solid #b7e2d8;
+      background:linear-gradient(180deg,#f2fbf8,#eaf8f4);
+    }
+    .carry-balance-card h3{margin:3px 0 4px;color:#0f5f55;font-size:17px}
+    .carry-balance-card p{margin:0;color:#5a6d67;font-size:12px;line-height:1.35}
+    .carry-balance-card strong{flex:0 0 auto;color:#0f7567;font-size:24px;font-weight:950;white-space:nowrap}
+    .carry-balance-card.debt{border-color:#fecdd3;background:linear-gradient(180deg,#fff7f8,#fff1f2)}
+    .carry-balance-card.debt h3,.carry-balance-card.debt strong{color:#be123c!important}
+    .carry-balance-card.debt p{color:#7f1d1d}
+    @media(max-width:520px){
+      .carry-balance-card{align-items:flex-start;flex-direction:column}
+      .carry-balance-card strong{font-size:27px}
+    }
+
   </style>
 </head>
 <body>
@@ -4792,6 +4810,15 @@
           <div id="deferredScratchList" class="deferred-scratch-list"></div>
           <div id="deferredScratchNote" class="deferred-scratch-note"></div>
           <button class="btn primary full hidden" id="releaseDeferredScratchBtn" type="button">Añadir los vencidos a la liquidación</button>
+        </div>
+
+        <div class="carry-balance-card hidden" id="carryBalanceCard">
+          <div>
+            <span class="eyebrow" id="carryBalanceEyebrow">SALDO PENDIENTE</span>
+            <h3 id="carryBalanceTitle">—</h3>
+            <p id="carryBalanceText">—</p>
+          </div>
+          <strong id="carryBalanceAmount">0 €</strong>
         </div>
 
         <div class="liquidation-hero" id="liquidationHero">
@@ -5619,6 +5646,26 @@
       </div>
 
       <div class="settings-section">
+        <h3>↔️ Saldo pendiente anterior</h3>
+        <div class="mini">Úsalo si empiezas a utilizar Cuenta Clara y ya traes un saldo de antes. Si el saldo se genera dentro de la app, se arrastrará solo aunque cambies de mes o estés de vacaciones.</div>
+
+        <div class="field" style="margin-top:10px">
+          <label>Tipo de saldo</label>
+          <select id="carryBalanceType">
+            <option value="favor">💚 A mi favor</option>
+            <option value="debt">🔴 Pendiente de pagar</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Importe pendiente</label>
+          <input type="text" inputmode="decimal" id="carryBalanceInput" placeholder="Ej. 325,00">
+        </div>
+
+        <div class="mini">Si ya no tienes saldo pendiente, deja el importe en blanco o pon 0.</div>
+      </div>
+
+      <div class="settings-section">
         <h3>Excepciones del calendario</h3>
         <div class="mini">Para festivos, vacaciones, cambios de turno o una liquidación excepcional.</div>
         <div class="override-row">
@@ -5729,7 +5776,7 @@
               <strong>Versión de Cuenta Clara</strong>
               <span id="updateHelpText">Busca la última versión publicada y recarga la app.</span>
             </div>
-            <span class="version-badge" id="appVersionBadge">v0.60.0</span>
+            <span class="version-badge" id="appVersionBadge">v0.61.0</span>
           </div>
           <button class="btn secondary full" id="updateAppBtn" type="button">↻ Actualizar Cuenta Clara</button>
           <div class="update-status" id="updateStatus" aria-live="polite"></div>
@@ -5755,7 +5802,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const APP_VERSION = "0.60.0";
+const APP_VERSION = "0.61.0";
 
 /* ===== Cuenta Clara · licencia online ===== */
 const LICENSE_API_URL="https://sqrabuanhcrddbaemqcv.supabase.co/functions/v1/validate-license";
@@ -6182,6 +6229,11 @@ if(!data.profile.schedule) data.profile.schedule={workDays:[],liquidationDays:[]
 if(!data.calendarOverrides) data.calendarOverrides={};
 if(!data.settlements) data.settlements=[];
 if(!Array.isArray(data.collaborators)) data.collaborators=[];
+if(!Number.isFinite(Number(data.carryBalance))){
+  const legacyCredit=Number(data.creditBalance||0);
+  data.carryBalance=Number.isFinite(legacyCredit) && legacyCredit>0 ? legacyCredit : 0;
+}
+delete data.creditBalance;
 if(!data.liquidationTrackingStart){
   const n=new Date();
   data.liquidationTrackingStart=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-01`;
@@ -6324,10 +6376,45 @@ function renderDeferredScratchCard(){
 }
 
 
+
+function parseCarryMoney(v){
+  const cleaned=String(v??"").trim().replace(/\s/g,"").replace(",",".");
+  const n=Number(cleaned);
+  return Number.isFinite(n) ? Math.max(0,n) : 0;
+}
+function currentCarryBalance(){
+  const n=Number(data.carryBalance||0);
+  return Number.isFinite(n) ? n : 0;
+}
+function renderCarryBalance(){
+  const card=$("carryBalanceCard");
+  if(!card) return;
+  const balance=currentCarryBalance();
+  card.classList.toggle("hidden",balance===0);
+  card.classList.toggle("debt",balance<0);
+  if(balance>0){
+    $("carryBalanceEyebrow").textContent="SALDO A TU FAVOR";
+    $("carryBalanceTitle").textContent="Pendiente de compensar";
+    $("carryBalanceText").textContent="Se descontará automáticamente de tus próximas liquidaciones, aunque cambies de mes o estés de vacaciones.";
+    setMoneyText("carryBalanceAmount",balance);
+  }else if(balance<0){
+    $("carryBalanceEyebrow").textContent="SALDO PENDIENTE";
+    $("carryBalanceTitle").textContent="Pendiente de pagar";
+    $("carryBalanceText").textContent="Se añadirá automáticamente a tu próxima liquidación hasta quedar compensado.";
+    setMoneyText("carryBalanceAmount",Math.abs(balance));
+  }
+}
+function settleCarryAfterClose(stats){
+  const before=currentCarryBalance();
+  const net=Number(stats.amount||0);
+  data.carryBalance = net < 0 ? Math.abs(net) : 0;
+  return {before,after:currentCarryBalance()};
+}
+
 function settlementHasNegativeCarry(settlementId){
   if(!settlementId) return false;
   const s=(data.settlements||[]).find(x=>x.id===settlementId);
-  return !!s && Number(s.amount||0)<=0;
+  return !!s && (!!s.negativeCarry || Number(s.netAmount??s.amount??0)<0);
 }
 function closeNegativeSettlement(){
   const cutoff=previousIsoDate(isoToday());
@@ -6340,7 +6427,7 @@ function closeNegativeSettlement(){
     alert("No hay movimientos pendientes para cerrar.");
     return;
   }
-  const total=stats.amount;
+  const carryResult=settleCarryAfterClose(stats);
   const id="s"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
   stats.entries.forEach(x=>{
     if(x.kind==='deposit') x.deposit.settlementId=id;
@@ -6348,22 +6435,15 @@ function closeNegativeSettlement(){
     else x.day.settlementId=id;
   });
   data.settlements.push({
-    id,
-    confirmedAt:isoToday(),
-    from:stats.from,
-    to:stats.to,
-    dayCount:stats.dayCount,
-    depositCount:stats.depositCount,
-    deferredCount:stats.deferredCount||0,
-    amount:total,
-    status:"liquidated",
-    negativeCarry:total<=0
+    id,confirmedAt:isoToday(),from:stats.from,to:stats.to,
+    dayCount:stats.dayCount,depositCount:stats.depositCount,deferredCount:stats.deferredCount||0,
+    grossAmount:stats.grossAmount,carryBefore:carryResult.before,carryAfter:carryResult.after,
+    netAmount:stats.amount,amount:0,status:"liquidated",negativeCarry:carryResult.after>0
   });
-  saveData();
-  render();
-  toast(total<0
-    ? `Liquidación cerrada. ${fmt(Math.abs(total))} quedan a tu favor para compensar.`
-    : "Liquidación cerrada sin importe a pagar.");
+  saveData();render();
+  toast(carryResult.after>0
+    ? `Liquidación cerrada. Quedan ${fmt(carryResult.after)} a tu favor.`
+    : "Liquidación cerrada.");
 }
 
 function pendingEntries(cutoffDate=null){
@@ -6375,15 +6455,17 @@ function pendingEntries(cutoffDate=null){
 }
 function pendingLiquidationStats(cutoffDate=null){
   const entries=pendingEntries(cutoffDate);
-  const amount=entries.reduce((a,x)=>{
+  const grossAmount=entries.reduce((a,x)=>{
     if(x.kind==='deposit') return a+Number(x.deposit.amount||0);
     if(x.kind==='deferredScratch') return a+Number(x.amount||0);
     return a+Number(x.day.liq||0);
   },0);
+  const carryBalance=currentCarryBalance();
+  const amount=entries.length ? grossAmount-carryBalance : 0;
   const dayCount=entries.filter(x=>x.kind==='day').length;
   const depositCount=entries.filter(x=>x.kind==='deposit').length;
   const deferredCount=entries.filter(x=>x.kind==='deferredScratch').length;
-  return {entries,amount,dayCount,depositCount,deferredCount,from:entries[0]?.date||null,to:entries[entries.length-1]?.date||null};
+  return {entries,amount,grossAmount,carryBalance,dayCount,depositCount,deferredCount,from:entries[0]?.date||null,to:entries[entries.length-1]?.date||null};
 }
 function recalcSettlements(){
   (data.settlements||[]).forEach(s=>{
@@ -6391,9 +6473,16 @@ function recalcSettlements(){
     const linkedDeposits=allAccountDeposits().filter(x=>x.deposit.settlementId===s.id);
     const linkedDeferred=allDeferredScratch().filter(x=>x.pack.deferredSettlementId===s.id);
     const linked=[...linkedDays,...linkedDeposits,...linkedDeferred].sort((a,b)=>a.date.localeCompare(b.date));
-    s.amount=linkedDays.reduce((a,x)=>a+Number(x.day.liq||0),0)
+    const gross=linkedDays.reduce((a,x)=>a+Number(x.day.liq||0),0)
       +linkedDeposits.reduce((a,x)=>a+Number(x.deposit.amount||0),0)
       +linkedDeferred.reduce((a,x)=>a+Number(x.amount||0),0);
+    s.grossAmount=gross;
+    if(s.carryBefore!==undefined){
+      s.netAmount=gross-Number(s.carryBefore||0);
+      s.amount=Math.max(0,s.netAmount);
+    }else{
+      s.amount=gross;
+    }
     s.dayCount=linkedDays.length;
     s.depositCount=linkedDeposits.length;
     s.deferredCount=linkedDeferred.length;
@@ -6900,6 +6989,7 @@ function render(){
   }
   renderLiquidationBreakdown(pstats);
   renderDeferredScratchCard();
+  renderCarryBalance();
 
   const negWrap=$("negativeSettlementCloseWrap");
   const negBtn=$("closeNegativeSettlementBtn");
@@ -6909,7 +6999,7 @@ function render(){
     negWrap.classList.toggle("hidden",!canCloseNegative);
     if(canCloseNegative && negText){
       negText.textContent = pstats.amount<0
-        ? `${fmt(Math.abs(pstats.amount))} quedan a tu favor. Al cerrar, la jornada quedará liquidada y ese saldo se compensará en la siguiente liquidación.`
+        ? `${fmt(Math.abs(pstats.amount))} quedarían a tu favor después de cerrar. La app conservará ese saldo aunque cambies de mes o estés de vacaciones.`
         : "No hay importe que pagar. Al cerrar, la jornada quedará marcada como liquidada.";
     }
   }
@@ -6925,7 +7015,7 @@ function render(){
     liquidationHero?.classList.add("negative-state");
     $("todayLiquidationText").textContent = "Saldo negativo a compensar";
     $("negativeCarryoverNote").classList.remove("hidden");
-    $("negativeCarryoverText").textContent = `${fmt(Math.abs(pstats.amount))} quedan a tu favor y se descontarán automáticamente de la siguiente liquidación hasta quedar compensados.`;
+    $("negativeCarryoverText").textContent = `${fmt(Math.abs(pstats.amount))} quedarían a tu favor y se irán compensando automáticamente en las siguientes liquidaciones.`;
   } else {
     liquidationHero?.classList.remove("negative-state");
     if(pstats.entries.length){
@@ -7304,14 +7394,21 @@ function confirmCurrentLiquidation(){
   const periodo=stats.from&&stats.to?`${dateLabelShort(stats.from)}–${dateLabelShort(stats.to)}`:"periodo pendiente";
   if(!confirm(`Liquidación: ${fmt(stats.amount)}\nPeriodo: ${periodo}\nIncluye: ${detail}\n\n¿Confirmar liquidación?`)) return;
   const id="liq"+Date.now().toString(36);
+  const carryResult=settleCarryAfterClose(stats);
   stats.entries.forEach(x=>{
     if(x.kind==='deposit') x.deposit.settlementId=id;
     else if(x.kind==='deferredScratch') x.pack.deferredSettlementId=id;
     else x.day.settlementId=id;
   });
   data.settlements=data.settlements||[];
-  data.settlements.push({id,confirmedAt:isoToday(),from:stats.from,to:stats.to,dayCount:stats.dayCount,depositCount:stats.depositCount,deferredCount:stats.deferredCount||0,amount:stats.amount,status:"liquidated"});
-  saveData(); render(); toast("✅ Liquidación realizada");
+  data.settlements.push({
+    id,confirmedAt:isoToday(),from:stats.from,to:stats.to,
+    dayCount:stats.dayCount,depositCount:stats.depositCount,deferredCount:stats.deferredCount||0,
+    grossAmount:stats.grossAmount,carryBefore:carryResult.before,carryAfter:carryResult.after,
+    netAmount:stats.amount,amount:stats.amount,status:"liquidated",negativeCarry:carryResult.after>0
+  });
+  saveData(); render();
+  toast(carryResult.before!==0?"✅ Liquidación realizada · saldo pendiente aplicado":"✅ Liquidación realizada");
 }
 
 function renderDays(month){
@@ -8782,6 +8879,9 @@ $("settingsBtn").addEventListener("click",()=>{
   renderWeekdaySelector("workWeekdays",s.workDays||[]);
   renderWeekdaySelector("liquidationWeekdays",s.liquidationDays||[]);
   $("liquidationTrackingStart").value=data.liquidationTrackingStart||"";
+  const carry=currentCarryBalance();
+  $("carryBalanceType").value=carry<0?"debt":"favor";
+  $("carryBalanceInput").value=carry?String(Math.abs(carry)).replace(".",","):"";
   $("overrideDate").value=isoToday();
   renderOverrides();
   renderCollaboratorSettings();
@@ -8792,7 +8892,15 @@ $("saveSettingsBtn").addEventListener("click",()=>{
   data.profile.name=$("userName").value.trim()||"Azucena";
   data.profile.schedule={workDays:selectedWeekdays("workWeekdays"),liquidationDays:selectedWeekdays("liquidationWeekdays")};
   data.liquidationTrackingStart=$("liquidationTrackingStart").value||data.liquidationTrackingStart||isoToday();
-  saveData(); render(); toast("Configuración guardada");
+  const carryAmount=parseCarryMoney($("carryBalanceInput").value);
+  data.carryBalance=carryAmount===0?0:($("carryBalanceType").value==="debt"?-carryAmount:carryAmount);
+  saveData(); render();
+  toast(data.carryBalance>0
+    ? `Configuración guardada · ${fmt(data.carryBalance)} a tu favor`
+    : data.carryBalance<0
+      ? `Configuración guardada · ${fmt(Math.abs(data.carryBalance))} pendientes de pagar`
+      : "Configuración guardada");
+
   $("settingsDialog").close();
 });
 $("addOverrideBtn").addEventListener("click",()=>{
@@ -8824,6 +8932,11 @@ $("importInput").addEventListener("change", async e=>{
     if(!data.settlements) data.settlements=[];
     if(!Array.isArray(data.collaborators)) data.collaborators=[];
     if(!data.liquidationTrackingStart){const n=new Date();data.liquidationTrackingStart=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-01`;}
+    if(!Number.isFinite(Number(data.carryBalance))){
+      const legacyCredit=Number(data.creditBalance||0);
+      data.carryBalance=Number.isFinite(legacyCredit) && legacyCredit>0 ? legacyCredit : 0;
+    }
+    delete data.creditBalance;
     saveData(); $("settingsDialog").close(); render(); toast("Copia importada");
   }catch{ alert("Ese archivo no parece una copia válida de Cuenta Clara."); }
   e.target.value="";
@@ -8831,7 +8944,7 @@ $("importInput").addEventListener("change", async e=>{
 $("clearBtn").addEventListener("click",()=>{
   if(!confirm("Esto borrará todos los meses y jornadas guardados en este dispositivo. ¿Continuar?")) return;
   const n=new Date();
-  data={months:{},currentMonth:null,profile:{name:"Azucena",schedule:{workDays:[],liquidationDays:[]}},calendarOverrides:{},settlements:[],collaborators:[],liquidationTrackingStart:`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-01`}; currentMonth=null; saveData(); $("settingsDialog").close(); render(); toast("Datos borrados");
+  data={months:{},currentMonth:null,profile:{name:"Azucena",schedule:{workDays:[],liquidationDays:[]}},calendarOverrides:{},settlements:[],collaborators:[],carryBalance:0,liquidationTrackingStart:`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-01`}; currentMonth=null; saveData(); $("settingsDialog").close(); render(); toast("Datos borrados");
 });
 
 
