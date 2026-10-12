@@ -260,3 +260,11 @@ v0.41.0
 - Solo al seleccionar “Fecha sorteo” aparece el TPV detectado para esa fecha.
 - Al aparecer en “TPV vendidos” todavía no se suma: entra en la venta únicamente al pulsar “Añadir sorteo”.
 - Se limpian los campos de cupón al abrir la jornada para impedir que una fecha antigua active TPV por accidente.
+
+
+## v0.67.0 — Rasca de Navidad
+- Añadido “Rasca de Navidad”.
+- Precio: 5 €.
+- Porcentaje de premios: 69,5 %.
+- Clasificación de comisión: Muy Alto.
+- Valor de paquete: 150 € según la regla de rascas de 5 €.
