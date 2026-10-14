@@ -227,44 +227,16 @@ v0.41.0
 - Los activos EUJ/TRI/MID/DUP/SUP continúan funcionando como antes.
 
 
-## v0.63.0 — Pasivos futuros dentro de la jornada real de venta
-- La fecha de jornada y la fecha de sorteo son independientes.
-- Si el viernes se venden cupones del viernes, sábado, domingo o lunes, todos pueden quedar dentro de la jornada del viernes.
-- ORD y VIE leídos por foto se añaden directamente a la jornada abierta, conservando su fecha de sorteo.
-- Si después se añade manualmente el mismo cupón (misma fecha + mismo tipo), se junta con el TPV ya detectado en vez de duplicarse.
-- BON/BONO se reconoce como Bono semanal, a 15 € por unidad, y conserva la fecha que aparece en el ticket.
-- El bono detectado por OCR también se suma al Pasivo de la jornada en la que realmente se vendió, aunque su sorteo sea posterior.
-- Los activos EUJ/TRI/MID/DUP/SUP continúan funcionando igual.
+## v0.63.0 — Acumulación real de cupones TPV por fecha
+- Parte de la v0.62.0 sin cambiar el resto.
+- ORD/VIE siguen leyéndose desde la foto.
+- Si lunes vendes 2 del miércoles y martes vendes otros 3, el miércoles aparecerá TPV 5.
+- Ya no se descarta una venta válida solo porque tenga las mismas unidades e importe que otra anterior.
+- Se evita contar dos veces la misma foto completa si se vuelve a escanear por error.
 
 
-## v0.64.0 — Bono manual en cualquier jornada
-- El bono semanal ya se puede añadir manualmente en cualquier jornada.
-- Esto permite registrarlo, por ejemplo, en la jornada del viernes aunque el sorteo corresponda al lunes.
-- Sigue contando 15 € por unidad y se suma automáticamente al Pasivo de esa jornada.
-- La lectura por foto sigue funcionando igual.
-
-
-## v0.65.0 — TPV leído por foto, aplicado al seleccionar la fecha
-- La foto puede leer cupones de varias fechas, pero ya NO los suma todos de golpe a la jornada.
-- ORD/VIE quedan temporalmente memorizados por fecha de sorteo.
-- Al seleccionar una “Fecha sorteo” en Control de cupones, la casilla “TPV vendidos” se rellena automáticamente si la foto había detectado ventas para esa fecha.
-- Esto funciona aunque todos esos sorteos (viernes, sábado, domingo, lunes festivo) se guarden dentro de una única jornada del viernes.
-- El Bono semanal tiene ahora “Fecha del bono”.
-- Si la foto detectó un bono para esa fecha, “Bonos vendidos” se rellena automáticamente.
-- El bono puede introducirse manualmente en cualquier jornada y sigue valiendo 15 € por unidad.
-
-
-## v0.66.0 — TPV solo al elegir la fecha
-- Hacer la foto NO añade ningún cupón TPV al Pasivo ni a la venta.
-- ORD/VIE/BONO quedan memorizados por fecha.
-- Solo al seleccionar “Fecha sorteo” aparece el TPV detectado para esa fecha.
-- Al aparecer en “TPV vendidos” todavía no se suma: entra en la venta únicamente al pulsar “Añadir sorteo”.
-- Se limpian los campos de cupón al abrir la jornada para impedir que una fecha antigua active TPV por accidente.
-
-
-## v0.67.0 — Rasca de Navidad
-- Añadido “Rasca de Navidad”.
-- Precio: 5 €.
-- Porcentaje de premios: 69,5 %.
-- Clasificación de comisión: Muy Alto.
-- Valor de paquete: 150 € según la regla de rascas de 5 €.
+## v0.64.0 — Saldo a favor actualizado en tiempo real
+- Parte de la v0.63.0 sin cambiar el resto de funciones.
+- La tarjeta de saldo ya refleja las jornadas pendientes antes de cerrar la liquidación.
+- Ejemplo: 243 € a favor + 70 € nuevos a favor = 313 € mostrados.
+- Al cerrar la liquidación se conserva la lógica anterior y no se duplica ningún importe.
