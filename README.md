@@ -240,3 +240,11 @@ v0.41.0
 - La tarjeta de saldo ya refleja las jornadas pendientes antes de cerrar la liquidación.
 - Ejemplo: 243 € a favor + 70 € nuevos a favor = 313 € mostrados.
 - Al cerrar la liquidación se conserva la lógica anterior y no se duplica ningún importe.
+
+
+## v0.65.0 — Restaurado Rasca de Navidad
+- Parte de la v0.64.0 sin cambiar ninguna otra función.
+- Se restaura “Rasca de Navidad”.
+- Precio: 5 €.
+- Porcentaje de premios: 69,5 %.
+- Categoría interna: Muy alto % de premios.
