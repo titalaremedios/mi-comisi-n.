@@ -248,3 +248,39 @@ v0.41.0
 - Precio: 5 €.
 - Porcentaje de premios: 69,5 %.
 - Categoría interna: Muy alto % de premios.
+
+
+## v0.66.0 — Extras más seguros + desplegable + tarjeta sin bloqueo
+- Parte de la v0.65.0 y conserva el resto de funciones.
+- “Nombre del extra” pasa a ser un desplegable:
+  - Extra Navidad
+  - 11/11
+  - Día del Padre
+  - Día de la Madre
+  - Extra Verano
+- Se refuerza el guardado de Extras y se verifica que queden realmente persistidos antes de cerrar la ventana.
+- Se conservan nombres de extras antiguos si ya estaban guardados.
+- La jornada ya no se bloquea cuando Tarjeta supera la venta ONCE del día.
+- Tarjeta sigue restando normalmente en la liquidación, ya que puede incluir ventas de cupones para fechas futuras.
+
+
+## v0.67.0 — Sumar ventas de Extras + dinero pendiente visible
+- Parte de la v0.66.0 y conserva el resto de funciones.
+- Nuevo botón “➕ Sumar ventas” en cada extra.
+- Permite sumar físicos vendidos y TPV vendidos sin recalcular manualmente el total.
+- Ejemplo: 15 vendidos + 5 nuevos = 20 automáticamente.
+- La tarjeta del extra muestra claramente:
+  - Venta acumulada del extra.
+  - Ingresado a cuenta.
+  - Te queda por ingresar.
+  - Comisión estimada.
+- Los ingresos a cuenta asociados a un extra reducen automáticamente “Te queda por ingresar” sin afectar la comisión estimada.
+
+
+## v0.68.0 — Ingresos a cuenta asociados obligatoriamente a Extras
+- Parte de la v0.67.0 y conserva el resto de funciones.
+- Se elimina “General / sin asociar”.
+- El desplegable muestra los Extras que ya existen en el mes.
+- Es obligatorio elegir un Extra para guardar el ingreso.
+- Si no hay Extras creados, Cuenta Clara avisa antes de abrir el ingreso.
+- El importe ingresado sigue descontando automáticamente del dinero pendiente de ese Extra.

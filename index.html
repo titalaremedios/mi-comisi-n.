@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-cuadra-version="0.65.0">
+<html lang="es" data-cuadra-version="0.68.0">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -5399,7 +5399,7 @@
   </dialog>
 
   <dialog id="extraDialog">
-    <form method="dialog" class="modal" id="extraForm">
+    <form class="modal" id="extraForm">
       <div class="modal-head">
         <h2 id="extraDialogTitle" class="help-label">Añadir extra <button class="help-btn" type="button" data-help="extras" aria-label="Ayuda sobre extras">?</button></h2>
         <button class="close" value="cancel" type="button" onclick="extraDialog.close()">×</button>
@@ -5408,7 +5408,14 @@
       <div class="form-grid">
         <div class="field">
           <label>Nombre del extra</label>
-          <input type="text" id="extraName" placeholder="Navidad, Madre, Padre, Verano, 11/11…" required>
+          <select id="extraName" required>
+            <option value="">Selecciona un extra</option>
+            <option value="Extra Navidad">Extra Navidad</option>
+            <option value="11/11">11/11</option>
+            <option value="Día del Padre">Día del Padre</option>
+            <option value="Día de la Madre">Día de la Madre</option>
+            <option value="Extra Verano">Extra Verano</option>
+          </select>
         </div>
         <div class="field">
           <label>Extras físicos con los que empiezas</label>
@@ -5451,6 +5458,40 @@
     </form>
   </dialog>
 
+
+  <dialog id="extraSalesDialog">
+    <form class="modal" id="extraSalesForm">
+      <div class="modal-head">
+        <h2>➕ Sumar ventas del extra</h2>
+        <button class="close" type="button" onclick="extraSalesDialog.close()">×</button>
+      </div>
+      <input type="hidden" id="extraSalesId">
+      <div class="form-grid">
+        <div class="field">
+          <label>Extra</label>
+          <input type="text" id="extraSalesName" readonly>
+        </div>
+        <div class="field">
+          <label>Físicos vendidos ahora</label>
+          <input type="number" id="extraSalesPhysicalAdd" min="0" step="1" inputmode="numeric" placeholder="Ej. 5">
+        </div>
+        <div class="field">
+          <label>Vendidos por TPV ahora</label>
+          <input type="number" id="extraSalesTpvAdd" min="0" step="1" inputmode="numeric" placeholder="Ej. 2">
+        </div>
+      </div>
+      <div class="calc-preview">
+        <div class="preview-line"><span>Físicos vendidos acumulados</span><strong id="extraSalesPhysicalTotal">0</strong></div>
+        <div class="preview-line"><span>TPV vendido acumulado</span><strong id="extraSalesTpvTotal">0</strong></div>
+        <div class="preview-line"><span>Total vendido acumulado</span><strong id="extraSalesGrandTotal">0</strong></div>
+        <div class="preview-line"><span>Venta acumulada del extra</span><strong id="extraSalesMoneyTotal">0 €</strong></div>
+      </div>
+      <div class="actions" style="margin-top:16px">
+        <button class="btn primary full" type="submit">Sumar ventas</button>
+      </div>
+    </form>
+  </dialog>
+
   <dialog id="accountDialog">
     <form method="dialog" class="modal" id="accountForm">
       <div class="modal-head">
@@ -5461,7 +5502,7 @@
       <div class="form-grid">
         <div class="field"><label>Fecha</label><input type="date" id="accountDate" required></div>
         <div class="field"><label>Importe ingresado (€)</label><input type="number" id="accountAmount" min="0" step="0.01" inputmode="decimal" required></div>
-        <div class="field"><label>¿A qué extra corresponde?</label><select id="accountExtra"><option value="">General / sin asociar</option></select><div class="mini" style="margin-top:5px">Si eliges un extra, este ingreso descontará automáticamente lo pendiente de ese extra.</div></div>
+        <div class="field"><label>¿A qué extra corresponde?</label><select id="accountExtra" required><option value="">Selecciona el extra</option></select><div class="mini" style="margin-top:5px">El ingreso a cuenta debe quedar asociado a uno de tus extras para descontarlo automáticamente del dinero pendiente de ingresar. La comisión estimada no cambia.</div></div>
         <div class="field"><label>Referencia (opcional)</label><input type="text" id="accountReference" placeholder="Ej. ingreso 1 Navidad"></div>
       </div>
       <div class="field" style="margin-top:12px"><label>Nota (opcional)</label><input type="text" id="accountNote" placeholder="Cualquier detalle que quieras recordar"></div>
@@ -5776,7 +5817,7 @@
               <strong>Versión de Cuenta Clara</strong>
               <span id="updateHelpText">Busca la última versión publicada y recarga la app.</span>
             </div>
-            <span class="version-badge" id="appVersionBadge">v0.65.0</span>
+            <span class="version-badge" id="appVersionBadge">v0.68.0</span>
           </div>
           <button class="btn secondary full" id="updateAppBtn" type="button">↻ Actualizar Cuenta Clara</button>
           <div class="update-status" id="updateStatus" aria-live="polite"></div>
@@ -5802,7 +5843,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const APP_VERSION = "0.65.0";
+const APP_VERSION = "0.68.0";
 
 /* ===== Cuenta Clara · licencia online ===== */
 const LICENSE_API_URL="https://sqrabuanhcrddbaemqcv.supabase.co/functions/v1/validate-license";
@@ -7368,9 +7409,10 @@ function renderExtras(month){
         <div class="extra-stock-bar"><div class="extra-stock-fill" style="width:${stockPct}%"></div></div>
         <div class="extra-inventory-note"><span>Inicio: ${e.initialStock}</span><span>Pedidos después: +${e.additionalStock}</span><span>Quedan: ${e.remaining}</span></div>
       </div>
-      ${(()=>{const fin=extraPendingMoney(month,e); const cls=fin.pending<0?'negative':''; const label=fin.pending<0?'Saldo a favor':'Pendiente del extra'; return `<div class="extra-finance"><div class="extra-finance-row"><span>Venta acumulada del extra</span><strong>${fmt(fin.sales)}</strong></div><div class="extra-finance-row"><span>Ingresado a cuenta</span><strong>${fmt(fin.deposited)}</strong></div><div class="extra-finance-row"><span>${label}</span><strong class="extra-pending ${cls}">${fmt(Math.abs(fin.pending))}</strong></div></div>`;})()}
+      ${(()=>{const fin=extraPendingMoney(month,e); const cls=fin.pending<0?'negative':''; const label=fin.pending<0?'Saldo a favor':'Te queda por ingresar'; return `<div class="extra-finance"><div class="extra-finance-row"><span>💶 Venta acumulada del extra</span><strong>${fmt(fin.sales)}</strong></div><div class="extra-finance-row"><span>🏦 Ingresado a cuenta</span><strong>${fmt(fin.deposited)}</strong></div><div class="extra-finance-row"><span>⏳ ${label}</span><strong class="extra-pending ${cls}">${fmt(Math.abs(fin.pending))}</strong></div><div class="extra-finance-row"><span>⭐ Comisión estimada</span><strong>${fmt(e.commission)}</strong></div></div>`;})()}
       ${warning}
       <div class="day-actions">
+        <button class="small-btn" onclick="openExtraSalesDialog('${e.id}')">➕ Sumar ventas</button>
         <button class="small-btn" onclick="addExtraStock('${e.id}')">➕ Sumar recibidos</button>
         <button class="small-btn" onclick="editExtra('${e.id}')">✏️ Actualizar / Editar</button>
         <button class="small-btn danger" onclick="deleteExtra('${e.id}')">🗑️ Borrar</button>
@@ -7521,13 +7563,17 @@ window.toggleDayDetails = (id, btn) => {
 
 function openAccountDialog(item=null){
   const month=getMonth(); if(!month) return; ensureMonthCollections(month);
+  if(!(month.extras||[]).length){
+    alert("Primero añade un extra. Los ingresos a cuenta siempre deben quedar asociados a un extra.");
+    return;
+  }
   $("accountDialogTitle").textContent=item?"Editar ingreso a cuenta":"Añadir ingreso a cuenta";
   $("editingAccountId").value=item?.id||"";
   $("accountDate").value=item?.date||new Date().toISOString().slice(0,10);
   $("accountAmount").value=(item && Number(item.amount||0)!==0)?item.amount:"";
   $("accountReference").value=item?.reference||"";
   $("accountNote").value=item?.note||"";
-  $("accountExtra").innerHTML='<option value="">General / sin asociar</option>'+month.extras.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+  $("accountExtra").innerHTML='<option value="">Selecciona el extra</option>'+month.extras.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
   $("accountExtra").value=item?.extraId||"";
   $("accountDialog").showModal();
 }
@@ -8701,7 +8747,18 @@ function openExtraDialog(extra=null){
   const e=extra ? normalizeExtra(extra) : null;
   $("extraDialogTitle").textContent = e ? "Actualizar extra" : "Añadir extra";
   $("editingExtraId").value = e ? e.id : "";
-  $("extraName").value = e ? e.name : "";
+
+  const nameSelect=$("extraName");
+  [...nameSelect.querySelectorAll("option[data-legacy-extra]")].forEach(o=>o.remove());
+  if(e?.name && ![...nameSelect.options].some(o=>o.value===e.name)){
+    const legacy=document.createElement("option");
+    legacy.value=e.name;
+    legacy.textContent=e.name+" · guardado anteriormente";
+    legacy.dataset.legacyExtra="1";
+    nameSelect.appendChild(legacy);
+  }
+  nameSelect.value = e ? e.name : "";
+
   $("extraInitialStock").value = e ? blankIfZero(e.initialStock) : "";
   $("extraAdditionalStock").value = e ? blankIfZero(e.additionalStock) : "";
   $("extraPhysicalSold").value = e ? blankIfZero(e.physicalSold) : "";
@@ -8719,7 +8776,7 @@ $("monthKey").addEventListener("change",syncMonthDialogToSelectedMonth);
 $("workDays").addEventListener("input",updateMonthPreview);
 $("addDayBtn").addEventListener("click",()=>openDayDialog());
 $("quickAddDay")?.addEventListener("click",()=>openDayDialog());
-$("quickAccount")?.addEventListener("click",()=>$("accountDialog").showModal());
+$("quickAccount")?.addEventListener("click",()=>openAccountDialog());
 document.querySelectorAll("[data-open-section]").forEach(btn=>btn.addEventListener("click",()=>{
   const section=$(btn.dataset.openSection);
   if(section){ section.open=true; section.scrollIntoView({behavior:"smooth",block:"start"}); }
@@ -8792,35 +8849,75 @@ function celebrateCrossing(oldSale,newSale,workDays){
 
 $("extraForm").addEventListener("submit",e=>{
   e.preventDefault();
-  const month=getMonth(); if(!month) return;
-  if(!month.extras) month.extras=[];
+  const month=getMonth();
+  if(!month){
+    alert("Primero abre o crea el mes en el que quieres guardar el extra.");
+    return;
+  }
+  ensureMonthCollections(month);
+
   const editingId=$("editingExtraId").value;
+  const name=$("extraName").value||"";
+  if(!name){
+    alert("Selecciona el nombre del extra.");
+    return;
+  }
+
   const initialStock=Number($("extraInitialStock").value||0);
   const additionalStock=Number($("extraAdditionalStock").value||0);
   const physicalSold=Number($("extraPhysicalSold").value||0);
   const tpvSold=Number($("extraTpvSold").value||0);
   const unitPrice=Number($("extraUnitPrice").value||0);
   const manualPct=$("extraManualPct").value;
+
+  if(unitPrice<=0){
+    alert("Indica el precio de cada cupón.");
+    return;
+  }
+
   const derived=extraDerived(physicalSold,tpvSold,unitPrice,manualPct);
   const entry={
     id: editingId || ("x"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)),
-    name: $("extraName").value.trim(),
+    name,
     initialStock, additionalStock, physicalSold, tpvSold,
-    units: derived.units, // se conserva por compatibilidad con históricos y copias anteriores
+    units: derived.units,
     unitPrice,
     manualPct: manualPct === "" ? "" : Number(manualPct),
     pct:derived.pct, sales:derived.sales, commission:derived.commission
   };
+
   if(physicalSold > initialStock+additionalStock){
     alert(`Has puesto ${physicalSold} extras físicos vendidos, pero solo ${initialStock+additionalStock} recibidos. Revisa las existencias antes de guardar.`);
     return;
   }
-  if(editingId){
-    const idx=month.extras.findIndex(x=>x.id===editingId); if(idx>=0) month.extras[idx]=entry;
-  } else month.extras.push(entry);
-  saveData(); $("extraDialog").close(); render(); toast(editingId?"Extra actualizado":"Extra guardado");
-});
 
+  if(editingId){
+    const idx=month.extras.findIndex(x=>x.id===editingId);
+    if(idx>=0) month.extras[idx]=entry;
+    else month.extras.push(entry);
+  }else{
+    month.extras.push(entry);
+  }
+
+  saveData();
+
+  // Verificación inmediata: el extra debe seguir presente tanto en memoria como en la copia local.
+  const memoryOk=(month.extras||[]).some(x=>x.id===entry.id);
+  let storageOk=false;
+  try{
+    const stored=JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}");
+    storageOk=!!stored?.months?.[currentMonth]?.extras?.some(x=>x.id===entry.id);
+  }catch{}
+
+  if(!memoryOk || !storageOk){
+    alert("No se ha podido confirmar el guardado del extra. No se ha cerrado la ventana para que puedas intentarlo de nuevo.");
+    return;
+  }
+
+  $("extraDialog").close();
+  render();
+  toast(editingId?"Extra actualizado y guardado":"Extra guardado correctamente");
+});
 $("addAccountBtn").addEventListener("click",()=>openAccountDialog());
 $("addIncidentBtn").addEventListener("click",()=>openIncidentDialog());
 $("addHolidayBtn").addEventListener("click",()=>openIncidentDialog(null,"Festivo"));
@@ -8830,12 +8927,17 @@ $("accountForm").addEventListener("submit",e=>{
   e.preventDefault(); const month=getMonth(); if(!month) return; ensureMonthCollections(month);
   const id=$("editingAccountId").value;
   const previous=id?month.accountDeposits.find(x=>x.id===id):null;
+  const extraId=$("accountExtra").value;
+  if(!extraId){
+    alert("Selecciona el extra al que corresponde este ingreso.");
+    return;
+  }
   if(previous?.settlementId && !confirm("Este ingreso ya está incluido en una liquidación cerrada. Si lo modificas, esa liquidación se recalculará. ¿Continuar?")) return;
   const amount=Number($("accountAmount").value||0);
   if(amount<=0){alert("El importe ingresado debe ser mayor que 0.");return;}
-  const entry={id:id||("a"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)),date:$("accountDate").value,amount,extraId:$("accountExtra").value,reference:$("accountReference").value.trim(),note:$("accountNote").value.trim(),settlementId:previous?.settlementId||null};
+  const entry={id:id||("a"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)),date:$("accountDate").value,amount,extraId,reference:$("accountReference").value.trim(),note:$("accountNote").value.trim(),settlementId:previous?.settlementId||null};
   if(id){const i=month.accountDeposits.findIndex(x=>x.id===id); if(i>=0) month.accountDeposits[i]=entry;} else month.accountDeposits.push(entry);
-  recalcSettlements(); saveData(); $("accountDialog").close(); render(); toast(entry.extraId?"Ingreso del extra guardado · pendiente actualizado":"Ingreso a cuenta guardado · se sumará a la liquidación del día siguiente");
+  recalcSettlements(); saveData(); $("accountDialog").close(); render(); toast("Ingreso del extra guardado · pendiente actualizado");
 });
 $("incidentForm").addEventListener("submit",e=>{
   e.preventDefault(); const month=getMonth(); if(!month) return; ensureMonthCollections(month);
@@ -8928,10 +9030,8 @@ $("dayForm").addEventListener("submit",e=>{
   entry.sale = entry.pasivo+entry.activo+entry.rascas;
   entry.deferredScratchTotal=(entry.scratchPacks||[]).reduce((sum,x)=>sum+(x.deferredLiquidation && !x.firstPackFree?Number(x.packValue||0)*Number(x.qty||0):0),0);
   const liquidableBase = entry.sale - entry.deferredScratchTotal + Number(entry.otherTotal||0);
-  if(entry.tarjeta > liquidableBase){
-    alert("El importe cobrado con tarjeta no puede ser mayor que la venta ONCE más los productos de Otros.");
-    return;
-  }
+  // La tarjeta puede superar la venta ONCE del día porque puede incluir cobros
+  // de cupones correspondientes a sorteos de fechas futuras.
   entry.liq = liquidableBase-entry.pagos-entry.tarjeta;
   const cashNow=cashControlValues();
   entry.cashControl = cashNow.used ? {
@@ -8956,6 +9056,76 @@ $("dayForm").addEventListener("submit",e=>{
   saveData(); $("dayDialog").close(); render();
   celebrateCrossing(oldTotalSale,newTotalSale,month.workDays);
   setTimeout(()=>toast("Jornada guardada"),1100);
+});
+
+
+function updateExtraSalesAddPreview(){
+  const m=getMonth(); if(!m) return;
+  const id=$("extraSalesId")?.value||"";
+  const raw=(m.extras||[]).find(x=>x.id===id); if(!raw) return;
+  const e=normalizeExtra(raw);
+  const addPhysical=Math.max(0,Math.round(Number($("extraSalesPhysicalAdd")?.value||0)));
+  const addTpv=Math.max(0,Math.round(Number($("extraSalesTpvAdd")?.value||0)));
+  const physical=e.physicalSold+addPhysical;
+  const tpv=e.tpvSold+addTpv;
+  const d=extraDerived(physical,tpv,e.unitPrice,e.manualPct);
+  $("extraSalesPhysicalTotal").textContent=physical;
+  $("extraSalesTpvTotal").textContent=tpv;
+  $("extraSalesGrandTotal").textContent=d.units;
+  $("extraSalesMoneyTotal").textContent=fmt(d.sales);
+}
+window.openExtraSalesDialog=id=>{
+  const m=getMonth(); if(!m) return;
+  const raw=(m.extras||[]).find(x=>x.id===id); if(!raw) return;
+  const e=normalizeExtra(raw);
+  $("extraSalesId").value=id;
+  $("extraSalesName").value=e.name;
+  $("extraSalesPhysicalAdd").value="";
+  $("extraSalesTpvAdd").value="";
+  updateExtraSalesAddPreview();
+  $("extraSalesDialog").showModal();
+};
+
+$("extraSalesPhysicalAdd").addEventListener("input",updateExtraSalesAddPreview);
+$("extraSalesTpvAdd").addEventListener("input",updateExtraSalesAddPreview);
+
+$("extraSalesForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const m=getMonth(); if(!m) return;
+  const id=$("extraSalesId").value;
+  const idx=(m.extras||[]).findIndex(x=>x.id===id);
+  if(idx<0) return;
+  const raw=m.extras[idx];
+  const current=normalizeExtra(raw);
+  const addPhysical=Math.max(0,Math.round(Number($("extraSalesPhysicalAdd").value||0)));
+  const addTpv=Math.max(0,Math.round(Number($("extraSalesTpvAdd").value||0)));
+  if(addPhysical===0 && addTpv===0){
+    alert("Indica cuántos físicos o TPV quieres sumar.");
+    return;
+  }
+  const physicalSold=current.physicalSold+addPhysical;
+  const tpvSold=current.tpvSold+addTpv;
+  const totalStock=current.initialStock+current.additionalStock;
+  if(physicalSold>totalStock){
+    alert(`Con esta suma tendrías ${physicalSold} físicos vendidos, pero solo ${totalStock} recibidos. Revisa existencias o suma primero los recibidos.`);
+    return;
+  }
+  const d=extraDerived(physicalSold,tpvSold,current.unitPrice,current.manualPct);
+  raw.initialStock=current.initialStock;
+  raw.additionalStock=current.additionalStock;
+  raw.physicalSold=physicalSold;
+  raw.tpvSold=tpvSold;
+  raw.units=d.units;
+  raw.unitPrice=current.unitPrice;
+  raw.manualPct=current.manualPct===null||current.manualPct===undefined?"":current.manualPct;
+  raw.pct=d.pct;
+  raw.sales=d.sales;
+  raw.commission=d.commission;
+  m.extras[idx]=raw;
+  saveData();
+  $("extraSalesDialog").close();
+  render();
+  toast(`Ventas sumadas · ${addPhysical?`+${addPhysical} físicos`:''}${addPhysical&&addTpv?' · ':''}${addTpv?`+${addTpv} TPV`:''}`);
 });
 
 window.addExtraStock = id => {
