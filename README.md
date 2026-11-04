@@ -284,3 +284,13 @@ v0.41.0
 - Es obligatorio elegir un Extra para guardar el ingreso.
 - Si no hay Extras creados, Cuenta Clara avisa antes de abrir el ingreso.
 - El importe ingresado sigue descontando automáticamente del dinero pendiente de ese Extra.
+
+
+## v0.69.0 — Extras continuos entre meses
+- Los Extras pasan a tratarse como campañas que pueden durar varios meses.
+- Al cambiar de mes, un Extra activo continúa automáticamente con existencias, ventas físicas, TPV, precio, comisión e ingresos acumulados.
+- No hay que volver a introducir los datos al crear o abrir el mes siguiente.
+- Nuevo botón “✅ Finalizar extra”: cierra la campaña al terminar su venta y evita que pase a meses posteriores, conservando todo el historial.
+- “Borrar” queda reservado para eliminar definitivamente la campaña de todos los meses.
+- Los ingresos a cuenta se acumulan durante toda la vida del Extra, aunque se hayan hecho en meses distintos.
+- Migración automática de los Extras ya existentes de versiones anteriores.

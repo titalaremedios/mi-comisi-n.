@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-cuadra-version="0.68.0">
+<html lang="es" data-cuadra-version="0.69.0">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -5817,7 +5817,7 @@
               <strong>Versión de Cuenta Clara</strong>
               <span id="updateHelpText">Busca la última versión publicada y recarga la app.</span>
             </div>
-            <span class="version-badge" id="appVersionBadge">v0.68.0</span>
+            <span class="version-badge" id="appVersionBadge">v0.69.0</span>
           </div>
           <button class="btn secondary full" id="updateAppBtn" type="button">↻ Actualizar Cuenta Clara</button>
           <div class="update-status" id="updateStatus" aria-live="polite"></div>
@@ -5843,7 +5843,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const APP_VERSION = "0.68.0";
+const APP_VERSION = "0.69.0";
 
 /* ===== Cuenta Clara · licencia online ===== */
 const LICENSE_API_URL="https://sqrabuanhcrddbaemqcv.supabase.co/functions/v1/validate-license";
@@ -6300,6 +6300,7 @@ if(!data.liquidationTrackingStart){
   data.liquidationTrackingStart=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-01`;
 }
 let currentMonth = data.currentMonth || null;
+// La migración real de Extras se ejecuta al primer acceso a un mes/render y se conserva en la siguiente escritura.
 
 function loadData(){
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {months:{},currentMonth:null,profile:{name:"Azucena"}}; }
@@ -6327,6 +6328,7 @@ function toast(msg){
   setTimeout(()=>$("toast").classList.remove("show"),1800);
 }
 function getMonth(){
+  ensureExtraCampaignRegistry();
   return currentMonth ? data.months[currentMonth] : null;
 }
 const WEEKDAYS=[{v:1,l:"L"},{v:2,l:"M"},{v:3,l:"X"},{v:4,l:"J"},{v:5,l:"V"},{v:6,l:"S"},{v:0,l:"D"}];
@@ -6599,11 +6601,83 @@ function ensureMonthCollections(month){
   if(!month.accountDeposits) month.accountDeposits=[];
   if(!month.incidents) month.incidents=[];
 }
+
+// v69 · Los Extras son campañas continuas, no datos que empiezan de cero cada mes.
+function ensureExtraCampaignRegistry(){
+  if(!Array.isArray(data.extraCampaigns)) data.extraCampaigns=[];
+  const byId=new Map(data.extraCampaigns.filter(Boolean).map(x=>[x.id,x]));
+  const months=Object.entries(data.months||{}).sort((a,b)=>a[0].localeCompare(b[0]));
+  months.forEach(([monthKey,month])=>{
+    ensureMonthCollections(month);
+    (month.extras||[]).forEach(raw=>{
+      if(!raw?.id) return;
+      const existing=byId.get(raw.id);
+      if(!existing){
+        const migrated={...raw,startMonth:raw.startMonth||monthKey,endedMonth:raw.endedMonth||null,endedAt:raw.endedAt||null};
+        byId.set(raw.id,migrated);
+      }else{
+        if(!existing.startMonth || monthKey<existing.startMonth) existing.startMonth=monthKey;
+        // Si una copia mensual contiene datos más avanzados, conservamos esa versión.
+        const score=x=>Number(x?.physicalSold||x?.units||0)+Number(x?.tpvSold||0)+Number(x?.additionalStock||0)/100000;
+        if(score(raw)>score(existing)){
+          const startMonth=existing.startMonth;
+          const endedMonth=existing.endedMonth||raw.endedMonth||null;
+          const endedAt=existing.endedAt||raw.endedAt||null;
+          Object.assign(existing,raw,{startMonth,endedMonth,endedAt});
+        }
+      }
+    });
+  });
+  data.extraCampaigns=[...byId.values()];
+}
+function monthKeyForObject(month){
+  for(const [key,value] of Object.entries(data.months||{})) if(value===month) return key;
+  return currentMonth;
+}
+function extraCampaignsForMonth(monthKey=currentMonth){
+  ensureExtraCampaignRegistry();
+  if(!monthKey) return [];
+  return (data.extraCampaigns||[]).filter(e=>{
+    const start=e.startMonth||monthKey;
+    const end=e.endedMonth||null;
+    return start<=monthKey && (!end || monthKey<=end);
+  });
+}
+function extraCampaignById(id){
+  ensureExtraCampaignRegistry();
+  return (data.extraCampaigns||[]).find(e=>e.id===id)||null;
+}
+function storeExtraCampaign(entry){
+  ensureExtraCampaignRegistry();
+  const idx=data.extraCampaigns.findIndex(x=>x.id===entry.id);
+  if(idx>=0) data.extraCampaigns[idx]={...data.extraCampaigns[idx],...entry};
+  else data.extraCampaigns.push(entry);
+  // Mantener las copias antiguas sincronizadas para compatibilidad con copias y versiones anteriores.
+  Object.entries(data.months||{}).forEach(([key,month])=>{
+    ensureMonthCollections(month);
+    const visible=(entry.startMonth||key)<=key && (!entry.endedMonth || key<=entry.endedMonth);
+    const i=month.extras.findIndex(x=>x.id===entry.id);
+    if(i>=0) month.extras[i]={...entry};
+    else if(visible) month.extras.push({...entry});
+  });
+}
+function removeExtraCampaign(id){
+  ensureExtraCampaignRegistry();
+  data.extraCampaigns=data.extraCampaigns.filter(x=>x.id!==id);
+  Object.values(data.months||{}).forEach(month=>{
+    ensureMonthCollections(month);
+    month.extras=month.extras.filter(x=>x.id!==id);
+  });
+}
+function allExtraDeposits(extraId){
+  return allAccountDeposits().filter(x=>x.deposit.extraId===extraId);
+}
 function sumAccountDeposits(month){
   return (month.accountDeposits||[]).reduce((a,x)=>a+Number(x.amount||0),0);
 }
 function extraDepositStats(month, extraId){
-  const items=(month.accountDeposits||[]).filter(x=>x.extraId===extraId);
+  const wrapped=allExtraDeposits(extraId);
+  const items=wrapped.map(x=>x.deposit);
   const total=items.reduce((a,x)=>a+Number(x.amount||0),0);
   return {items,total};
 }
@@ -6731,7 +6805,7 @@ function renderHomeFocus(month){
   const extraTotal=sumExtras(month).commission;
   const extraCard=$('homeExtraCommissionCard');
   if(extraCard){
-    const hasExtras=(month.extras||[]).length>0;
+    const hasExtras=extraCampaignsForMonth(monthKeyForObject(month)).length>0;
     extraCard.classList.toggle('hidden',!hasExtras);
     if(hasExtras) setMoneyText('homeExtraCommission',extraTotal);
   }
@@ -6936,7 +7010,7 @@ function normalizeExtra(e){
   return {...e,initialStock,additionalStock,physicalSold,tpvSold,totalStock,remaining,totalSold};
 }
 function sumExtras(month){
-  const extras = (month.extras || []).map(normalizeExtra);
+  const extras = extraCampaignsForMonth(monthKeyForObject(month)).map(normalizeExtra);
   return extras.reduce((a,e)=>({
     campaigns:a.campaigns+1,
     units:a.units+Number(e.totalSold||0),
@@ -6984,7 +7058,7 @@ function smartMonthDiagnostics(month){
   const p=pendingLiquidationStats();
   if(p.amount<0) alerts.push({type:'bad',text:`🔴 Tienes ${fmt(Math.abs(p.amount))} a favor para compensar en la próxima liquidación.`});
   else if(p.amount>0) alerts.push({type:'warn',text:`💰 Hay ${fmt(p.amount)} pendientes de liquidar.`});
-  const extras=(month.extras||[]).map(normalizeExtra);
+  const extras=extraCampaignsForMonth(monthKeyForObject(month)).map(normalizeExtra);
   extras.forEach(e=>{ if(e.totalStock>0 && e.remaining>=0 && e.remaining<=20) alerts.push({type:'warn',text:`🎟️ ${e.name}: quedan ${e.remaining} físicos.`}); });
   const sums=sumDays(month); const idx=tramoIndexFor(sums.sale,month.workDays); const nextT=idx<TRAMOS.length-1?TRAMOS[idx+1]:null;
   if(nextT){ const gap=tramoGoal(month.workDays,nextT)-sums.sale; if(gap>0 && gap<=500) alerts.push({type:'good',text:`🔥 Estás a ${fmt(gap)} del ${String(nextT.pct).replace('.',',')} %.`}); }
@@ -7147,7 +7221,7 @@ function render(){
   }
   const monthExtras=sumExtras(month);
   if($("homeMonthExtraCommissionWrap")){
-    const showExtraCommission=(month.extras||[]).length>0;
+    const showExtraCommission=extraCampaignsForMonth(monthKeyForObject(month)).length>0;
     $("homeMonthExtraCommissionWrap").classList.toggle("hidden",!showExtraCommission);
     if(showExtraCommission) setMoneyText("homeMonthExtraCommission",monthExtras.commission||0);
   }
@@ -7372,7 +7446,8 @@ function render(){
 }
 
 function renderExtras(month){
-  if(!month.extras) month.extras=[];
+  ensureMonthCollections(month);
+  const campaignExtras=extraCampaignsForMonth(monthKeyForObject(month));
   const sums=sumExtras(month);
   $("extraCampaignCount").textContent = sums.campaigns;
   $("extraUnitsTotal").textContent = sums.units;
@@ -7380,11 +7455,11 @@ function renderExtras(month){
   $("extraSalesTotal").textContent = fmt(sums.sales);
   $("extraCommissionTotal").textContent = fmt(sums.commission);
   const list=$("extrasList");
-  if(!month.extras.length){
-    list.innerHTML = `<div class="card empty">Todavía no has añadido ningún sorteo extra este mes.</div>`;
+  if(!campaignExtras.length){
+    list.innerHTML = `<div class="card empty">No tienes ningún sorteo extra activo en este periodo.</div>`;
     return;
   }
-  list.innerHTML = month.extras.map(raw=>{
+  list.innerHTML = campaignExtras.map(raw=>{
     const e=normalizeExtra(raw);
     const stockPct=e.totalStock>0 ? Math.min(100,Math.max(0,e.physicalSold/e.totalStock*100)) : 0;
     const warning=e.remaining<0 ? `<div class="extra-warning">⚠️ Has registrado ${Math.abs(e.remaining)} físicos vendidos más de los recibidos. Revisa las existencias o añade los extras que pediste después.</div>` : '';
@@ -7412,9 +7487,7 @@ function renderExtras(month){
       ${(()=>{const fin=extraPendingMoney(month,e); const cls=fin.pending<0?'negative':''; const label=fin.pending<0?'Saldo a favor':'Te queda por ingresar'; return `<div class="extra-finance"><div class="extra-finance-row"><span>💶 Venta acumulada del extra</span><strong>${fmt(fin.sales)}</strong></div><div class="extra-finance-row"><span>🏦 Ingresado a cuenta</span><strong>${fmt(fin.deposited)}</strong></div><div class="extra-finance-row"><span>⏳ ${label}</span><strong class="extra-pending ${cls}">${fmt(Math.abs(fin.pending))}</strong></div><div class="extra-finance-row"><span>⭐ Comisión estimada</span><strong>${fmt(e.commission)}</strong></div></div>`;})()}
       ${warning}
       <div class="day-actions">
-        <button class="small-btn" onclick="openExtraSalesDialog('${e.id}')">➕ Sumar ventas</button>
-        <button class="small-btn" onclick="addExtraStock('${e.id}')">➕ Sumar recibidos</button>
-        <button class="small-btn" onclick="editExtra('${e.id}')">✏️ Actualizar / Editar</button>
+        ${e.endedMonth ? `<span class="small-btn" style="pointer-events:none">✅ Extra finalizado</span>` : `<button class="small-btn" onclick="openExtraSalesDialog('${e.id}')">➕ Sumar ventas</button><button class="small-btn" onclick="addExtraStock('${e.id}')">➕ Sumar recibidos</button><button class="small-btn" onclick="editExtra('${e.id}')">✏️ Actualizar / Editar</button><button class="small-btn" onclick="finishExtra('${e.id}')">✅ Finalizar extra</button>`}
         <button class="small-btn danger" onclick="deleteExtra('${e.id}')">🗑️ Borrar</button>
       </div>
     </div>`;
@@ -7434,7 +7507,7 @@ function renderAccountDeposits(month){
     return;
   }
   list.innerHTML=sorted.map(x=>{
-    const extra=(month.extras||[]).find(e=>e.id===x.extraId);
+    const extra=extraCampaignById(x.extraId);
     const settlementNote=x.settlementId?'✅ Incluido en una liquidación cerrada':'↪ Se suma a la liquidación del día siguiente';
     return `<div class="record-card"><div class="record-top"><div><div class="record-title">🏦 ${new Date(x.date+"T12:00:00").toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit",year:"numeric"})}</div><div class="record-meta">${extra?`Ingreso a cuenta del extra: ${extra.name}`:'Ingreso general'}${x.reference?` · ${x.reference}`:''}<br>${settlementNote}</div></div><div class="record-amount">${fmt(x.amount)}</div></div>${x.note?`<div class="record-note">${x.note}</div>`:''}<div class="day-actions"><button class="small-btn" onclick="editAccount('${x.id}')">✏️ Editar</button><button class="small-btn danger" onclick="deleteAccount('${x.id}')">🗑️ Borrar</button></div></div>`;
   }).join('');
@@ -7460,7 +7533,7 @@ function renderSettlementList(){
   list.innerHTML=items.slice(0,12).map(s=>{
     const linkedDeposits=allAccountDeposits().filter(x=>x.deposit.settlementId===s.id);
     const depositLines=linkedDeposits.map(x=>{
-      const extra=(x.month.extras||[]).find(e=>e.id===x.deposit.extraId);
+      const extra=extraCampaignById(x.deposit.extraId);
       const label=extra?`Ingreso a cuenta del extra ${extra.name}`:'Ingreso a cuenta general';
       return `<div class="settlement-deposit-line">🏦 ${label}: ${fmt(x.deposit.amount)}</div>`;
     }).join('');
@@ -7563,8 +7636,9 @@ window.toggleDayDetails = (id, btn) => {
 
 function openAccountDialog(item=null){
   const month=getMonth(); if(!month) return; ensureMonthCollections(month);
-  if(!(month.extras||[]).length){
-    alert("Primero añade un extra. Los ingresos a cuenta siempre deben quedar asociados a un extra.");
+  const availableExtras=extraCampaignsForMonth(currentMonth).filter(e=>!e.endedMonth);
+  if(!availableExtras.length){
+    alert("Primero añade un extra activo. Los ingresos a cuenta siempre deben quedar asociados a un extra.");
     return;
   }
   $("accountDialogTitle").textContent=item?"Editar ingreso a cuenta":"Añadir ingreso a cuenta";
@@ -7573,7 +7647,7 @@ function openAccountDialog(item=null){
   $("accountAmount").value=(item && Number(item.amount||0)!==0)?item.amount:"";
   $("accountReference").value=item?.reference||"";
   $("accountNote").value=item?.note||"";
-  $("accountExtra").innerHTML='<option value="">Selecciona el extra</option>'+month.extras.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+  $("accountExtra").innerHTML='<option value="">Selecciona el extra</option>'+availableExtras.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
   $("accountExtra").value=item?.extraId||"";
   $("accountDialog").showModal();
 }
@@ -7775,7 +7849,7 @@ function renderHistory(){
     return `<div class="card history-card">
       <div style="min-width:0;flex:1">
         <strong>${monthLabel(key)}</strong>
-        <div class="history-meta">${m.days.length}/${m.workDays} jornadas · ${badge}${m.extras.length?` · ${m.extras.length} extra${m.extras.length===1?'':'s'}`:''}</div>
+        <div class="history-meta">${m.days.length}/${m.workDays} jornadas · ${badge}${extraCampaignsForMonth(key).length?` · ${extraCampaignsForMonth(key).length} extra${extraCampaignsForMonth(key).length===1?'':'s'}`:''}</div>
         <div class="history-road">${road}</div>
         ${summary}
       </div>
@@ -8876,6 +8950,7 @@ $("extraForm").addEventListener("submit",e=>{
   }
 
   const derived=extraDerived(physicalSold,tpvSold,unitPrice,manualPct);
+  const previous=editingId?extraCampaignById(editingId):null;
   const entry={
     id: editingId || ("x"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)),
     name,
@@ -8883,7 +8958,10 @@ $("extraForm").addEventListener("submit",e=>{
     units: derived.units,
     unitPrice,
     manualPct: manualPct === "" ? "" : Number(manualPct),
-    pct:derived.pct, sales:derived.sales, commission:derived.commission
+    pct:derived.pct, sales:derived.sales, commission:derived.commission,
+    startMonth: previous?.startMonth || currentMonth,
+    endedMonth: previous?.endedMonth || null,
+    endedAt: previous?.endedAt || null
   };
 
   if(physicalSold > initialStock+additionalStock){
@@ -8891,22 +8969,15 @@ $("extraForm").addEventListener("submit",e=>{
     return;
   }
 
-  if(editingId){
-    const idx=month.extras.findIndex(x=>x.id===editingId);
-    if(idx>=0) month.extras[idx]=entry;
-    else month.extras.push(entry);
-  }else{
-    month.extras.push(entry);
-  }
-
+  storeExtraCampaign(entry);
   saveData();
 
-  // Verificación inmediata: el extra debe seguir presente tanto en memoria como en la copia local.
-  const memoryOk=(month.extras||[]).some(x=>x.id===entry.id);
+  // Verificación inmediata: la campaña debe quedar guardada de forma global para continuar entre meses.
+  const memoryOk=!!extraCampaignById(entry.id);
   let storageOk=false;
   try{
     const stored=JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}");
-    storageOk=!!stored?.months?.[currentMonth]?.extras?.some(x=>x.id===entry.id);
+    storageOk=!!stored?.extraCampaigns?.some(x=>x.id===entry.id);
   }catch{}
 
   if(!memoryOk || !storageOk){
@@ -9062,7 +9133,7 @@ $("dayForm").addEventListener("submit",e=>{
 function updateExtraSalesAddPreview(){
   const m=getMonth(); if(!m) return;
   const id=$("extraSalesId")?.value||"";
-  const raw=(m.extras||[]).find(x=>x.id===id); if(!raw) return;
+  const raw=extraCampaignById(id); if(!raw) return;
   const e=normalizeExtra(raw);
   const addPhysical=Math.max(0,Math.round(Number($("extraSalesPhysicalAdd")?.value||0)));
   const addTpv=Math.max(0,Math.round(Number($("extraSalesTpvAdd")?.value||0)));
@@ -9076,7 +9147,7 @@ function updateExtraSalesAddPreview(){
 }
 window.openExtraSalesDialog=id=>{
   const m=getMonth(); if(!m) return;
-  const raw=(m.extras||[]).find(x=>x.id===id); if(!raw) return;
+  const raw=extraCampaignById(id); if(!raw) return;
   const e=normalizeExtra(raw);
   $("extraSalesId").value=id;
   $("extraSalesName").value=e.name;
@@ -9093,9 +9164,8 @@ $("extraSalesForm").addEventListener("submit",e=>{
   e.preventDefault();
   const m=getMonth(); if(!m) return;
   const id=$("extraSalesId").value;
-  const idx=(m.extras||[]).findIndex(x=>x.id===id);
-  if(idx<0) return;
-  const raw=m.extras[idx];
+  const raw=extraCampaignById(id);
+  if(!raw) return;
   const current=normalizeExtra(raw);
   const addPhysical=Math.max(0,Math.round(Number($("extraSalesPhysicalAdd").value||0)));
   const addTpv=Math.max(0,Math.round(Number($("extraSalesTpvAdd").value||0)));
@@ -9121,7 +9191,7 @@ $("extraSalesForm").addEventListener("submit",e=>{
   raw.pct=d.pct;
   raw.sales=d.sales;
   raw.commission=d.commission;
-  m.extras[idx]=raw;
+  storeExtraCampaign(raw);
   saveData();
   $("extraSalesDialog").close();
   render();
@@ -9129,9 +9199,8 @@ $("extraSalesForm").addEventListener("submit",e=>{
 });
 
 window.addExtraStock = id => {
-  const m=getMonth(); if(!m || !m.extras) return;
-  const idx=m.extras.findIndex(x=>x.id===id); if(idx<0) return;
-  const raw=m.extras[idx];
+  const m=getMonth(); if(!m) return;
+  const raw=extraCampaignById(id); if(!raw) return;
   const e=normalizeExtra(raw);
   const answer=prompt(`¿Cuántos ${e.name} te han dado ahora? Se sumarán a los ${e.totalStock} físicos recibidos que ya tienes registrados.`, "0");
   if(answer===null) return;
@@ -9142,18 +9211,29 @@ window.addExtraStock = id => {
   raw.tpvSold=e.tpvSold;
   raw.additionalStock=e.additionalStock+Math.round(add);
   raw.units=e.totalSold;
-  m.extras[idx]=raw;
+  storeExtraCampaign(raw);
   saveData(); render(); toast(`+${Math.round(add)} ${e.name} recibidos`);
 };
 
 window.editExtra = id => {
-  const m=getMonth(); if(!m || !m.extras) return;
-  const e=m.extras.find(x=>x.id===id); if(e) openExtraDialog(e);
+  const e=extraCampaignById(id); if(e) openExtraDialog(e);
+};
+window.finishExtra = id => {
+  const e=extraCampaignById(id); if(!e) return;
+  if(!confirm(`¿Dar por finalizado ${e.name}?
+
+Seguirá apareciendo en su historial y conservará todos los datos, pero ya no pasará a los meses siguientes.`)) return;
+  e.endedMonth=currentMonth;
+  e.endedAt=isoToday();
+  storeExtraCampaign(e);
+  saveData(); render(); toast(`${e.name} finalizado · historial conservado`);
 };
 window.deleteExtra = id => {
-  if(!confirm("¿Borrar este extra?")) return;
-  const m=getMonth(); if(!m) return;
-  m.extras=(m.extras||[]).filter(x=>x.id!==id);
+  const e=extraCampaignById(id);
+  if(!e || !confirm(`¿Borrar ${e.name} definitivamente?
+
+Esto elimina la campaña de todos los meses. Si solo ha terminado su venta, usa “Finalizar extra”.`)) return;
+  removeExtraCampaign(id);
   saveData(); render(); toast("Extra borrado");
 };
 
