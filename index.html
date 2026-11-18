@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-cuadra-version="0.69.0">
+<html lang="es" data-cuadra-version="0.74.0">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -4635,6 +4635,28 @@
       </div>
     </div>
   </div>
+        <div class="card" id="salesCheckCard" style="margin-top:14px">
+          <div class="record-top">
+            <div>
+              <div class="record-title">🧮 Control TPV vs Cuenta Clara</div>
+              <div class="record-meta">Compara la venta acumulada del TPV con la de la app sin modificar tus ventas.</div>
+            </div>
+            <button class="small-btn" type="button" id="addSalesCheckBtn">➕ Registrar</button>
+          </div>
+          <div id="latestSalesCheck" class="mini" style="margin-top:10px">Todavía no has registrado ninguna comparación.</div>
+        </div>
+        <div class="card" id="monthCloseCard" style="margin-top:14px">
+          <div class="record-top">
+            <div>
+              <div class="record-title">🔒 Cierre mensual con TPV</div>
+              <div class="record-meta">Al cerrar el mes, la cifra oficial será la del TPV, pero Cuenta Clara conservará siempre su propia venta acumulada y la diferencia.</div>
+            </div>
+            <button class="small-btn" type="button" id="closeMonthTpvBtn">Cerrar mes</button>
+          </div>
+          <div id="monthCloseSummary" class="mini" style="margin-top:10px">Este mes todavía no está cerrado con TPV.</div>
+        </div>
+
+
 
 
   <section class="first-run-screen hidden" id="firstRunScreen" aria-label="Introducción a Cuenta Clara">
@@ -5398,7 +5420,95 @@
     </form>
   </dialog>
 
-  <dialog id="extraDialog">
+  
+  
+  <dialog id="monthCloseDialog">
+    <form class="modal" id="monthCloseForm">
+      <div class="modal-head">
+        <h2>Cerrar mes con TPV</h2>
+        <button class="close" type="button" onclick="monthCloseDialog.close()">×</button>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Venta acumulada Cuenta Clara (€)</label>
+          <input type="number" id="monthCloseAppSale" step="0.01" readonly>
+        </div>
+        <div class="field">
+          <label>Venta final oficial TPV (€)</label>
+          <input type="number" id="monthCloseTpvSale" min="0" step="0.01" inputmode="decimal" required>
+        </div>
+        <div class="field">
+          <label>Diferencia de cierre</label>
+          <input type="text" id="monthCloseDifference" readonly>
+        </div>
+      </div>
+      <div class="field" style="margin-top:12px">
+        <label>Nota (opcional)</label>
+        <input type="text" id="monthCloseNote" placeholder="Ej. Cierre oficial según TPV.">
+      </div>
+      <div class="calc-preview" style="margin-top:14px">
+        <div class="preview-line"><span>Venta Cuenta Clara</span><strong id="monthClosePreviewApp">0 €</strong></div>
+        <div class="preview-line"><span>Venta oficial TPV</span><strong id="monthClosePreviewTpv">0 €</strong></div>
+        <div class="preview-line"><span>Diferencia</span><strong id="monthClosePreviewDiff">0 €</strong></div>
+        <div class="preview-line"><span>Venta oficial del mes</span><strong id="monthClosePreviewOfficial">0 €</strong></div>
+      </div>
+      <p class="mini" style="margin-top:10px;line-height:1.5"><strong>Importante:</strong> el cierre no borra ni modifica la venta calculada por Cuenta Clara. Guarda ambas cifras y, para los resúmenes del mes cerrado, toma como oficial la del TPV.</p>
+      <div class="actions" style="margin-top:16px">
+        <button class="btn primary full" type="submit">🔒 Guardar cierre mensual</button>
+      </div>
+    </form>
+  </dialog>
+
+<dialog id="salesCheckDialog">
+    <form class="modal" id="salesCheckForm">
+      <div class="modal-head">
+        <h2>Control de diferencia de venta</h2>
+        <button class="close" type="button" onclick="salesCheckDialog.close()">×</button>
+      </div>
+      <input type="hidden" id="editingSalesCheckId">
+      <div class="form-grid">
+        <div class="field">
+          <label>Fecha</label>
+          <input type="date" id="salesCheckDate" required>
+        </div>
+        <div class="field">
+          <label>Venta acumulada TPV (€)</label>
+          <input type="number" id="salesCheckTpv" min="0" step="0.01" inputmode="decimal" required>
+        </div>
+        <div class="field">
+          <label>Venta acumulada Cuenta Clara (€)</label>
+          <input type="number" id="salesCheckApp" step="0.01" inputmode="decimal" readonly>
+        </div>
+        <div class="field">
+          <label>Diferencia</label>
+          <input type="text" id="salesCheckDifference" readonly>
+        </div>
+        <div class="field">
+          <label>Estado</label>
+          <select id="salesCheckStatus" required>
+            <option value="pending">🔎 Pendiente de revisar</option>
+            <option value="resolved">✅ Diferencia aclarada</option>
+            <option value="ignore">➖ No revisar</option>
+          </select>
+        </div>
+      </div>
+      <div class="field" style="margin-top:12px">
+        <label>Nota (opcional)</label>
+        <input type="text" id="salesCheckNote" placeholder="Ej. 12 € de diferencia. No merece la pena revisar.">
+      </div>
+      <div class="calc-preview" style="margin-top:14px">
+        <div class="preview-line"><span>TPV acumulado</span><strong id="salesCheckPreviewTpv">0 €</strong></div>
+        <div class="preview-line"><span>Cuenta Clara</span><strong id="salesCheckPreviewApp">0 €</strong></div>
+        <div class="preview-line"><span>Diferencia</span><strong id="salesCheckPreviewDiff">0 €</strong></div>
+      </div>
+      <p class="mini" style="margin-top:10px;line-height:1.5">Este control es informativo. Registrar una diferencia no modifica la venta acumulada de Cuenta Clara.</p>
+      <div class="actions" style="margin-top:16px">
+        <button class="btn primary full" type="submit">Guardar control</button>
+      </div>
+    </form>
+  </dialog>
+
+<dialog id="extraDialog">
     <form class="modal" id="extraForm">
       <div class="modal-head">
         <h2 id="extraDialogTitle" class="help-label">Añadir extra <button class="help-btn" type="button" data-help="extras" aria-label="Ayuda sobre extras">?</button></h2>
@@ -5817,7 +5927,7 @@
               <strong>Versión de Cuenta Clara</strong>
               <span id="updateHelpText">Busca la última versión publicada y recarga la app.</span>
             </div>
-            <span class="version-badge" id="appVersionBadge">v0.69.0</span>
+            <span class="version-badge" id="appVersionBadge">v0.74.0</span>
           </div>
           <button class="btn secondary full" id="updateAppBtn" type="button">↻ Actualizar Cuenta Clara</button>
           <div class="update-status" id="updateStatus" aria-live="polite"></div>
@@ -5843,7 +5953,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const APP_VERSION = "0.69.0";
+const APP_VERSION = "0.74.0";
 
 /* ===== Cuenta Clara · licencia online ===== */
 const LICENSE_API_URL="https://sqrabuanhcrddbaemqcv.supabase.co/functions/v1/validate-license";
@@ -6290,6 +6400,24 @@ if(!data.settlements) data.settlements=[];
 if(!Array.isArray(data.collaborators)) data.collaborators=[];
 if(!Array.isArray(data.pendingCouponTpv)) data.pendingCouponTpv=[];
 if(!Array.isArray(data.ocrCouponScans)) data.ocrCouponScans=[];
+if(!Array.isArray(data.extraClosures)) data.extraClosures=[];
+if(!Array.isArray(data.salesChecks)) data.salesChecks=[];
+if(!data.monthClosures) data.monthClosures={};
+if(!data.v71ExtraClosureCleanupDone){
+  // Limpieza única: al pasar desde v70, no arrastramos cierres automáticos de Extras
+  // que ya estaban finalizados antes de instalar v71. El usuario ya pudo haberlos liquidado manualmente.
+  const campaignsById=Object.fromEntries((data.extraCampaigns||[]).map(e=>[e.id,e]));
+  data.extraClosures=(data.extraClosures||[]).filter(c=>{
+    const campaign=campaignsById[c.extraId];
+    // Conservamos cierres ya incluidos en una liquidación cerrada.
+    if(c.settlementId) return true;
+    // Si el Extra ya estaba finalizado antes de v71 y el cierre no fue liquidado,
+    // lo descartamos para evitar duplicarlo mañana.
+    if(campaign && (campaign.endedAt||campaign.endedMonth)) return false;
+    return true;
+  });
+  data.v71ExtraClosureCleanupDone=true;
+}
 if(!Number.isFinite(Number(data.carryBalance))){
   const legacyCredit=Number(data.creditBalance||0);
   data.carryBalance=Number.isFinite(legacyCredit) && legacyCredit>0 ? legacyCredit : 0;
@@ -6519,11 +6647,13 @@ function closeNegativeSettlement(){
   stats.entries.forEach(x=>{
     if(x.kind==='deposit') x.deposit.settlementId=id;
     else if(x.kind==='deferredScratch') x.pack.deferredSettlementId=id;
+    else if(x.kind==='extraClose') x.closure.settlementId=id;
     else x.day.settlementId=id;
   });
   data.settlements.push({
     id,confirmedAt:isoToday(),from:stats.from,to:stats.to,
-    dayCount:stats.dayCount,depositCount:stats.depositCount,deferredCount:stats.deferredCount||0,
+    dayCount:stats.dayCount,depositCount:stats.depositCount,deferredCount:stats.deferredCount||0,extraCloseCount:stats.extraCloseCount||0,
+    ordinaryAmount:stats.ordinaryAmount||0,extraDepositAmount:stats.extraDepositAmount||0,extraCloseAmount:stats.extraCloseAmount||0,extrasAmount:stats.extrasAmount||0,
     grossAmount:stats.grossAmount,carryBefore:carryResult.before,carryAfter:carryResult.after,
     netAmount:stats.amount,amount:0,status:"liquidated",negativeCarry:carryResult.after>0
   });
@@ -6534,35 +6664,40 @@ function closeNegativeSettlement(){
 }
 
 function pendingEntries(cutoffDate=null){
+  ensureExtraClosureRegistry();
   const start=data.liquidationTrackingStart || "0000-01-01";
   const days=allDays().filter(x=>x.date>=start && !x.day.settlementId && (!cutoffDate || x.date<=cutoffDate));
   const deposits=allAccountDeposits().filter(x=>x.date>=start && !x.deposit.settlementId && (!cutoffDate || x.date<=cutoffDate));
-  const deferred=deferredScratchReleasedPending().filter(x=>x.date>=start);
-  return [...days,...deposits,...deferred].sort((a,b)=>a.date.localeCompare(b.date) || (a.kind==='day'?-1:1));
+  const deferred=deferredScratchReleasedPending().filter(x=>x.date>=start && (!cutoffDate || x.date<=cutoffDate));
+  const extraCloses=allExtraClosures().filter(x=>x.date>=start && !x.closure.settlementId && Number(x.closure.amount||0)>0 && (!cutoffDate || x.date<=cutoffDate));
+  return [...days,...deposits,...deferred,...extraCloses].sort((a,b)=>a.date.localeCompare(b.date) || (a.kind==='day'?-1:1));
 }
 function pendingLiquidationStats(cutoffDate=null){
   const entries=pendingEntries(cutoffDate);
-  const grossAmount=entries.reduce((a,x)=>{
-    if(x.kind==='deposit') return a+Number(x.deposit.amount||0);
-    if(x.kind==='deferredScratch') return a+Number(x.amount||0);
-    return a+Number(x.day.liq||0);
-  },0);
+  const grossAmount=entries.reduce((a,x)=>a+pendingEntryAmount(x),0);
+  const ordinaryAmount=entries.filter(x=>x.kind==='day'||x.kind==='deferredScratch').reduce((a,x)=>a+pendingEntryAmount(x),0);
+  const extraDepositAmount=entries.filter(x=>x.kind==='deposit').reduce((a,x)=>a+pendingEntryAmount(x),0);
+  const extraCloseAmount=entries.filter(x=>x.kind==='extraClose').reduce((a,x)=>a+pendingEntryAmount(x),0);
+  const extrasAmount=extraDepositAmount+extraCloseAmount;
   const carryBalance=currentCarryBalance();
   const amount=entries.length ? grossAmount-carryBalance : 0;
   const dayCount=entries.filter(x=>x.kind==='day').length;
   const depositCount=entries.filter(x=>x.kind==='deposit').length;
   const deferredCount=entries.filter(x=>x.kind==='deferredScratch').length;
-  return {entries,amount,grossAmount,carryBalance,dayCount,depositCount,deferredCount,from:entries[0]?.date||null,to:entries[entries.length-1]?.date||null};
+  const extraCloseCount=entries.filter(x=>x.kind==='extraClose').length;
+  return {entries,amount,grossAmount,ordinaryAmount,extrasAmount,extraDepositAmount,extraCloseAmount,carryBalance,dayCount,depositCount,deferredCount,extraCloseCount,from:entries[0]?.date||null,to:entries[entries.length-1]?.date||null};
 }
 function recalcSettlements(){
   (data.settlements||[]).forEach(s=>{
     const linkedDays=allDays().filter(x=>x.day.settlementId===s.id);
     const linkedDeposits=allAccountDeposits().filter(x=>x.deposit.settlementId===s.id);
     const linkedDeferred=allDeferredScratch().filter(x=>x.pack.deferredSettlementId===s.id);
-    const linked=[...linkedDays,...linkedDeposits,...linkedDeferred].sort((a,b)=>a.date.localeCompare(b.date));
+    const linkedExtraCloses=allExtraClosures().filter(x=>x.closure.settlementId===s.id);
+    const linked=[...linkedDays,...linkedDeposits,...linkedDeferred,...linkedExtraCloses].sort((a,b)=>a.date.localeCompare(b.date));
     const gross=linkedDays.reduce((a,x)=>a+Number(x.day.liq||0),0)
       +linkedDeposits.reduce((a,x)=>a+Number(x.deposit.amount||0),0)
-      +linkedDeferred.reduce((a,x)=>a+Number(x.amount||0),0);
+      +linkedDeferred.reduce((a,x)=>a+Number(x.amount||0),0)
+      +linkedExtraCloses.reduce((a,x)=>a+Number(x.closure.amount||0),0);
     s.grossAmount=gross;
     if(s.carryBefore!==undefined){
       s.netAmount=gross-Number(s.carryBefore||0);
@@ -6573,6 +6708,11 @@ function recalcSettlements(){
     s.dayCount=linkedDays.length;
     s.depositCount=linkedDeposits.length;
     s.deferredCount=linkedDeferred.length;
+    s.extraCloseCount=linkedExtraCloses.length;
+    s.ordinaryAmount=linkedDays.reduce((a,x)=>a+Number(x.day.liq||0),0)+linkedDeferred.reduce((a,x)=>a+Number(x.amount||0),0);
+    s.extraDepositAmount=linkedDeposits.reduce((a,x)=>a+Number(x.deposit.amount||0),0);
+    s.extraCloseAmount=linkedExtraCloses.reduce((a,x)=>a+Number(x.closure.amount||0),0);
+    s.extrasAmount=s.extraDepositAmount+s.extraCloseAmount;
     if(linked.length){s.from=linked[0].date;s.to=linked[linked.length-1].date;}
   });
 }
@@ -6629,6 +6769,7 @@ function ensureExtraCampaignRegistry(){
     });
   });
   data.extraCampaigns=[...byId.values()];
+  ensureExtraClosureRegistry();
 }
 function monthKeyForObject(month){
   for(const [key,value] of Object.entries(data.months||{})) if(value===month) return key;
@@ -6664,6 +6805,7 @@ function storeExtraCampaign(entry){
 function removeExtraCampaign(id){
   ensureExtraCampaignRegistry();
   data.extraCampaigns=data.extraCampaigns.filter(x=>x.id!==id);
+  data.extraClosures=(data.extraClosures||[]).filter(x=>x.extraId!==id);
   Object.values(data.months||{}).forEach(month=>{
     ensureMonthCollections(month);
     month.extras=month.extras.filter(x=>x.id!==id);
@@ -6685,6 +6827,50 @@ function extraPendingMoney(month, extra){
   const e=normalizeExtra(extra);
   const deposited=extraDepositStats(month,e.id).total;
   return {sales:Number(e.sales||0),deposited,pending:Number(e.sales||0)-deposited};
+}
+
+function allExtraClosures(){
+  if(!Array.isArray(data.extraClosures)) data.extraClosures=[];
+  return data.extraClosures.map(c=>({kind:"extraClose",closure:c,date:c.date}));
+}
+function extraClosureByExtraId(extraId){
+  if(!Array.isArray(data.extraClosures)) data.extraClosures=[];
+  return data.extraClosures.find(c=>c.extraId===extraId)||null;
+}
+function createExtraClosureForCampaign(extra, dateOverride=null){
+  if(!extra?.id) return null;
+  if(!Array.isArray(data.extraClosures)) data.extraClosures=[];
+  let existing=data.extraClosures.find(c=>c.extraId===extra.id);
+  if(existing) return existing;
+  const deposited=allExtraDeposits(extra.id).reduce((a,x)=>a+Number(x.deposit.amount||0),0);
+  const sales=Number(extra.sales||0);
+  const pending=Math.max(0,sales-deposited);
+  existing={
+    id:"xc"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+    extraId:extra.id,
+    extraName:extra.name||"Extra",
+    date:dateOverride||extra.endedAt||isoToday(),
+    sales,
+    depositedAtClose:deposited,
+    amount:pending,
+    settlementId:null,
+    closedNoBalance:pending<=0,
+    createdByVersion:"0.71.0"
+  };
+  data.extraClosures.push(existing);
+  return existing;
+}
+function ensureExtraClosureRegistry(){
+  if(!Array.isArray(data.extraClosures)) data.extraClosures=[];
+  // Desde v71 no se crean cierres retroactivos para Extras finalizados antes de esta versión.
+  // Solo los Extras que se finalicen a partir de ahora generan automáticamente un cierre
+  // pendiente de liquidación. Así evitamos duplicar importes que la usuaria ya haya pagado.
+}
+function pendingEntryAmount(x){
+  if(x.kind==="deposit") return Number(x.deposit.amount||0);
+  if(x.kind==="deferredScratch") return Number(x.amount||0);
+  if(x.kind==="extraClose") return Number(x.closure.amount||0);
+  return Number(x.day?.liq||0);
 }
 
 function couponUnitPrice(drawDate){
@@ -6760,11 +6946,13 @@ function returnedValueForDay(day){
 function summaryStats(period){
   const r=rangeForSummary(period);
   const days=allDays().filter(x=>x.date>=r.from && x.date<=r.to);
-  const sold=days.reduce((a,x)=>a+Number(x.day.sale||0),0);
+  const sold=(period==="month" && getMonthClosure(currentMonth))
+    ? officialMonthSale(currentMonth)
+    : days.reduce((a,x)=>a+Number(x.day.sale||0),0);
   const returned=days.reduce((a,x)=>a+returnedValueForDay(x.day),0);
   const settled=(data.settlements||[]).filter(s=>(s.confirmedAt||"")>=r.from && (s.confirmedAt||"")<=r.to).reduce((a,s)=>a+Number(s.amount||0),0);
   const pendingItems=pendingEntries(r.to).filter(x=>x.date>=r.from && x.date<=r.to);
-  const pending=pendingItems.reduce((a,x)=>a+(x.kind==="deposit"?Number(x.deposit.amount||0):Number(x.day.liq||0)),0);
+  const pending=pendingItems.reduce((a,x)=>a+pendingEntryAmount(x),0);
   const commission=ordinaryCommissionEstimateForEntries(days);
   return {...r,sold,returned,settled,pending,commission,dayCount:days.length,pendingCount:pendingItems.length};
 }
@@ -6822,23 +7010,40 @@ function renderLiquidationBreakdown(stats){
   const list=$("liquidationBreakdownList");
   if(!box || !list) return;
   if(!stats?.entries?.length){ box.classList.add("hidden"); list.innerHTML=""; return; }
-  list.innerHTML=stats.entries.map(x=>{
+
+  const carryRow=Number(stats.carryBalance||0)>0
+    ? `<div class="liquidation-breakdown-row"><span>💚 Saldo a tu favor aplicado</span><strong>− ${fmt(Number(stats.carryBalance||0))}</strong></div>`
+    : "";
+
+  const summary=`
+    <div class="liquidation-breakdown-row"><span>🧾 Liquidación normal</span><strong>${fmt(Number(stats.ordinaryAmount||0))}</strong></div>
+    <div class="liquidation-breakdown-row"><span>🎟️ Liquidación por Extras</span><strong>${fmt(Number(stats.extrasAmount||0))}</strong></div>
+    ${stats.extraDepositAmount?`<div class="liquidation-breakdown-row" style="padding-left:14px"><span>↳ Ingresos a cuenta de Extras</span><strong>${fmt(Number(stats.extraDepositAmount||0))}</strong></div>`:""}
+    ${stats.extraCloseAmount?`<div class="liquidation-breakdown-row" style="padding-left:14px"><span>↳ Cierres de Extras</span><strong>${fmt(Number(stats.extraCloseAmount||0))}</strong></div>`:""}
+    ${carryRow}
+    <div class="liquidation-breakdown-row" style="font-weight:800"><span>TOTAL A LIQUIDAR</span><strong>${fmt(Number(stats.amount||0))}</strong></div>
+    <div class="mini" style="margin:10px 0 4px"><strong>Detalle de movimientos</strong></div>`;
+
+  const details=stats.entries.map(x=>{
     if(x.kind==="deposit"){
-      const extra=x.month?.extras?.find(e=>e.id===x.deposit.extraId);
-      const label=extra?`Ingreso a cuenta · ${extra.name}`:"Ingreso a cuenta";
+      const extra=extraCampaignById(x.deposit.extraId);
+      const label=extra?`Ingreso a cuenta Extra ${extra.name}`:"Ingreso a cuenta de Extra";
       return `<div class="liquidation-breakdown-row"><span>${dateLabelShort(x.date)} · ${label}</span><strong>${fmt(Number(x.deposit.amount||0))}</strong></div>`;
+    }
+    if(x.kind==="extraClose"){
+      return `<div class="liquidation-breakdown-row"><span>${dateLabelShort(x.date)} · Cierre Extra ${x.closure.extraName}</span><strong>${fmt(Number(x.closure.amount||0))}</strong></div>`;
     }
     if(x.kind==="deferredScratch"){
       return `<div class="liquidation-breakdown-row"><span>${dateLabelShort(x.date)} · Rasca aplazado · ${x.pack.product}</span><strong>${fmt(Number(x.amount||0))}</strong></div>`;
     }
     const d=x.day;
-    const label=`${dateLabelShort(x.date)} · Jornada`;
-    return `<div class="liquidation-breakdown-row"><span>${label}</span><strong>${fmt(Number(d.liq||0))}</strong></div>`;
+    return `<div class="liquidation-breakdown-row"><span>${dateLabelShort(x.date)} · Jornada normal</span><strong>${fmt(Number(d.liq||0))}</strong></div>`;
   }).join("");
+
+  list.innerHTML=summary+details;
   setMoneyText("liquidationBreakdownTotal",stats.amount);
   box.classList.remove("hidden");
 }
-
 function renderGreeting(){
   const now = new Date();
   const h = now.getHours();
@@ -7110,6 +7315,149 @@ window.calendarOpenDate=key=>{
   switchView('dashboard'); if(found) openDayDialog(found); else {openDayDialog(); $('dayDate').value=key; syncBonoAvailability();}
 };
 
+
+function salesCheckStatusLabel(status){
+  if(status==="resolved") return "✅ Diferencia aclarada";
+  if(status==="ignore") return "➖ No revisar";
+  return "🔎 Pendiente de revisar";
+}
+function salesCheckDifferenceValue(tpv,app){
+  return Number(tpv||0)-Number(app||0);
+}
+function currentMonthAccumulatedSale(){
+  const m=getMonth();
+  return m ? Number(sumDays(m).sale||0) : 0;
+}
+function updateSalesCheckPreview(){
+  const tpv=Number($("salesCheckTpv")?.value||0);
+  const app=Number($("salesCheckApp")?.value||0);
+  const diff=salesCheckDifferenceValue(tpv,app);
+  const display=(diff>0?"+":"")+diff.toFixed(2).replace(".",",")+" €";
+  if($("salesCheckDifference")) $("salesCheckDifference").value=display;
+  if($("salesCheckPreviewTpv")) $("salesCheckPreviewTpv").textContent=fmt(tpv);
+  if($("salesCheckPreviewApp")) $("salesCheckPreviewApp").textContent=fmt(app);
+  if($("salesCheckPreviewDiff")) $("salesCheckPreviewDiff").textContent=(diff>0?"+":"")+fmt(diff);
+}
+function openSalesCheckDialog(item=null){
+  if(!getMonth()){
+    alert("Primero abre o crea el mes.");
+    return;
+  }
+  $("editingSalesCheckId").value=item?.id||"";
+  $("salesCheckDate").value=item?.date||isoToday();
+  $("salesCheckTpv").value=item ? item.tpv : "";
+  $("salesCheckApp").value=item ? item.app : currentMonthAccumulatedSale();
+  $("salesCheckStatus").value=item?.status||"pending";
+  $("salesCheckNote").value=item?.note||"";
+  updateSalesCheckPreview();
+  $("salesCheckDialog").showModal();
+}
+function renderLatestSalesCheck(){
+  const box=$("latestSalesCheck");
+  if(!box) return;
+  const items=(data.salesChecks||[])
+    .filter(x=>x.monthKey===currentMonth)
+    .sort((a,b)=>(b.date||"").localeCompare(a.date||"") || (b.createdAt||"").localeCompare(a.createdAt||""));
+  if(!items.length){
+    box.innerHTML="Todavía no has registrado ninguna comparación.";
+    return;
+  }
+  const x=items[0];
+  const diff=Number(x.difference||0);
+  const sign=diff>0?"+":"";
+  box.innerHTML=`<div class="extra-finance">
+    <div class="extra-finance-row"><span>Fecha</span><strong>${dateLabelShort(x.date)}</strong></div>
+    <div class="extra-finance-row"><span>Venta TPV</span><strong>${fmt(x.tpv)}</strong></div>
+    <div class="extra-finance-row"><span>Cuenta Clara</span><strong>${fmt(x.app)}</strong></div>
+    <div class="extra-finance-row"><span>Diferencia</span><strong>${sign}${fmt(diff)}</strong></div>
+    <div class="extra-finance-row"><span>Estado</span><strong>${salesCheckStatusLabel(x.status)}</strong></div>
+    ${x.note?`<div class="record-note" style="margin-top:8px">${x.note}</div>`:""}
+  </div>
+  <div class="day-actions" style="margin-top:10px">
+    <button class="small-btn" onclick="editSalesCheck('${x.id}')">✏️ Editar</button>
+    <button class="small-btn danger" onclick="deleteSalesCheck('${x.id}')">🗑️ Borrar</button>
+  </div>`;
+}
+window.editSalesCheck=id=>{
+  const x=(data.salesChecks||[]).find(x=>x.id===id);
+  if(x) openSalesCheckDialog(x);
+};
+window.deleteSalesCheck=id=>{
+  if(!confirm("¿Borrar este control de diferencia?")) return;
+  data.salesChecks=(data.salesChecks||[]).filter(x=>x.id!==id);
+  saveData();
+  render();
+  toast("Control borrado");
+};
+
+
+function getMonthClosure(monthKey=currentMonth){
+  if(!data.monthClosures) data.monthClosures={};
+  return data.monthClosures[monthKey]||null;
+}
+function officialMonthSale(monthKey=currentMonth){
+  const closure=getMonthClosure(monthKey);
+  if(closure && Number.isFinite(Number(closure.tpvSale))) return Number(closure.tpvSale);
+  const month=data.months?.[monthKey];
+  return month ? Number(sumDays(month).sale||0) : 0;
+}
+function updateMonthClosePreview(){
+  const app=Number($("monthCloseAppSale")?.value||0);
+  const tpv=Number($("monthCloseTpvSale")?.value||0);
+  const diff=tpv-app;
+  const diffText=(diff>0?"+":"")+diff.toFixed(2).replace(".",",")+" €";
+  if($("monthCloseDifference")) $("monthCloseDifference").value=diffText;
+  if($("monthClosePreviewApp")) $("monthClosePreviewApp").textContent=fmt(app);
+  if($("monthClosePreviewTpv")) $("monthClosePreviewTpv").textContent=fmt(tpv);
+  if($("monthClosePreviewDiff")) $("monthClosePreviewDiff").textContent=(diff>0?"+":"")+fmt(diff);
+  if($("monthClosePreviewOfficial")) $("monthClosePreviewOfficial").textContent=fmt(tpv);
+}
+function openMonthCloseDialog(){
+  const month=getMonth();
+  if(!month){
+    alert("Primero abre o crea el mes.");
+    return;
+  }
+  const closure=getMonthClosure();
+  const app=Number(sumDays(month).sale||0);
+  $("monthCloseAppSale").value=app;
+  $("monthCloseTpvSale").value=closure?.tpvSale ?? "";
+  $("monthCloseNote").value=closure?.note||"";
+  updateMonthClosePreview();
+  $("monthCloseDialog").showModal();
+}
+function renderMonthCloseSummary(){
+  const box=$("monthCloseSummary");
+  const btn=$("closeMonthTpvBtn");
+  if(!box || !btn) return;
+  const closure=getMonthClosure();
+  const month=getMonth();
+  if(!month){
+    box.textContent="Abre un mes para ver su cierre.";
+    btn.disabled=true;
+    return;
+  }
+  btn.disabled=false;
+  if(!closure){
+    box.innerHTML=`<div class="extra-finance">
+      <div class="extra-finance-row"><span>Venta Cuenta Clara</span><strong>${fmt(Number(sumDays(month).sale||0))}</strong></div>
+      <div class="record-note" style="margin-top:8px">Este mes todavía no está cerrado con TPV.</div>
+    </div>`;
+    btn.textContent="Cerrar mes";
+    return;
+  }
+  const diff=Number(closure.difference||0);
+  const sign=diff>0?"+":"";
+  box.innerHTML=`<div class="extra-finance">
+    <div class="extra-finance-row"><span>Venta Cuenta Clara</span><strong>${fmt(closure.appSale)}</strong></div>
+    <div class="extra-finance-row"><span>Venta oficial TPV</span><strong>${fmt(closure.tpvSale)}</strong></div>
+    <div class="extra-finance-row"><span>Diferencia de cierre</span><strong>${sign}${fmt(diff)}</strong></div>
+    <div class="extra-finance-row"><span>Venta oficial del mes</span><strong>${fmt(closure.tpvSale)}</strong></div>
+    <div class="extra-finance-row"><span>Estado</span><strong>🔒 Mes cerrado con TPV</strong></div>
+    ${closure.note?`<div class="record-note" style="margin-top:8px">${closure.note}</div>`:""}
+  </div>`;
+  btn.textContent="Editar cierre";
+}
 function render(){
   renderGreeting();
   updateWelcomeVisibility();
@@ -7127,7 +7475,8 @@ function render(){
   const todaySchedule=scheduleForDate(today);
   const todayEntries=(month.days||[]).filter(d=>d.date===today);
   const todayDeposits=(month.accountDeposits||[]).filter(x=>x.date===today);
-  const todayResult=todayEntries.reduce((a,d)=>a+Number(d.liq||0),0)+todayDeposits.reduce((a,x)=>a+Number(x.amount||0),0);
+  const todayExtraCloses=allExtraClosures().filter(x=>x.date===today && Number(x.closure.amount||0)>0);
+  const todayResult=todayEntries.reduce((a,d)=>a+Number(d.liq||0),0)+todayDeposits.reduce((a,x)=>a+Number(x.amount||0),0)+todayExtraCloses.reduce((a,x)=>a+Number(x.closure.amount||0),0);
   // La actividad de un día se liquida al día siguiente. Si hoy toca liquidar,
   // la cantidad a cerrar incluye como máximo hasta ayer; lo de hoy queda para la próxima.
   const liquidationCutoff=todaySchedule.liquidation ? previousIsoDate(today) : null;
@@ -7135,7 +7484,7 @@ function render(){
   setMoneyText("pendingLiquidation", pstats.amount);
   if(pstats.entries.length){
     const dueDate=nextLiquidationFrom(pstats.to);
-    const movementInfo=`Periodo incluido: ${dateLabelShort(pstats.from)}–${dateLabelShort(pstats.to)} · ${pstats.dayCount} jornada${pstats.dayCount===1?'':'s'}${pstats.depositCount?` + ${pstats.depositCount} ingreso${pstats.depositCount===1?'':'s'} a cuenta`:''}`;
+    const movementInfo=`Periodo incluido: ${dateLabelShort(pstats.from)}–${dateLabelShort(pstats.to)} · ${pstats.dayCount} jornada${pstats.dayCount===1?'':'s'}${pstats.depositCount?` + ${pstats.depositCount} ingreso${pstats.depositCount===1?'':'s'} a cuenta de Extra`:''}${pstats.extraCloseCount?` + ${pstats.extraCloseCount} cierre${pstats.extraCloseCount===1?'':'s'} de Extra`:''}`;
     let dueInfo='Pendiente de liquidar';
     if(dueDate){
       if(dueDate===today) dueInfo=`A liquidar hoy · ${dateLabelShort(dueDate)}`;
@@ -7148,6 +7497,8 @@ function render(){
   }
   renderLiquidationBreakdown(pstats);
   renderDeferredScratchCard();
+  renderLatestSalesCheck();
+  renderMonthCloseSummary();
   renderCarryBalance();
 
   const negWrap=$("negativeSettlementCloseWrap");
@@ -7487,7 +7838,7 @@ function renderExtras(month){
       ${(()=>{const fin=extraPendingMoney(month,e); const cls=fin.pending<0?'negative':''; const label=fin.pending<0?'Saldo a favor':'Te queda por ingresar'; return `<div class="extra-finance"><div class="extra-finance-row"><span>💶 Venta acumulada del extra</span><strong>${fmt(fin.sales)}</strong></div><div class="extra-finance-row"><span>🏦 Ingresado a cuenta</span><strong>${fmt(fin.deposited)}</strong></div><div class="extra-finance-row"><span>⏳ ${label}</span><strong class="extra-pending ${cls}">${fmt(Math.abs(fin.pending))}</strong></div><div class="extra-finance-row"><span>⭐ Comisión estimada</span><strong>${fmt(e.commission)}</strong></div></div>`;})()}
       ${warning}
       <div class="day-actions">
-        ${e.endedMonth ? `<span class="small-btn" style="pointer-events:none">✅ Extra finalizado</span>` : `<button class="small-btn" onclick="openExtraSalesDialog('${e.id}')">➕ Sumar ventas</button><button class="small-btn" onclick="addExtraStock('${e.id}')">➕ Sumar recibidos</button><button class="small-btn" onclick="editExtra('${e.id}')">✏️ Actualizar / Editar</button><button class="small-btn" onclick="finishExtra('${e.id}')">✅ Finalizar extra</button>`}
+        ${e.endedMonth ? `<span class="small-btn" style="pointer-events:none">✅ Extra finalizado · cierre registrado</span>` : `<button class="small-btn" onclick="openExtraSalesDialog('${e.id}')">➕ Sumar ventas</button><button class="small-btn" onclick="addExtraStock('${e.id}')">➕ Sumar recibidos</button><button class="small-btn" onclick="editExtra('${e.id}')">✏️ Actualizar / Editar</button><button class="small-btn" onclick="finishExtra('${e.id}')">✅ Finalizar extra</button>`}
         <button class="small-btn danger" onclick="deleteExtra('${e.id}')">🗑️ Borrar</button>
       </div>
     </div>`;
@@ -7532,12 +7883,17 @@ function renderSettlementList(){
   if(!items.length){list.innerHTML=`<div class="card empty">Todavía no has confirmado ninguna liquidación.</div>`;return;}
   list.innerHTML=items.slice(0,12).map(s=>{
     const linkedDeposits=allAccountDeposits().filter(x=>x.deposit.settlementId===s.id);
+    const linkedExtraCloses=allExtraClosures().filter(x=>x.closure.settlementId===s.id);
     const depositLines=linkedDeposits.map(x=>{
       const extra=extraCampaignById(x.deposit.extraId);
-      const label=extra?`Ingreso a cuenta del extra ${extra.name}`:'Ingreso a cuenta general';
+      const label=extra?`Ingreso a cuenta Extra ${extra.name}`:'Ingreso a cuenta de Extra';
       return `<div class="settlement-deposit-line">🏦 ${label}: ${fmt(x.deposit.amount)}</div>`;
     }).join('');
-    return `<div class="settlement-item"><div class="settlement-head"><div><strong>${dateLabelShort(s.confirmedAt)} · ${fmt(s.amount)}</strong><div class="mini">Periodo ${dateLabelShort(s.from)}–${dateLabelShort(s.to)} · ${s.dayCount||0} jornadas${s.depositCount?` · ${s.depositCount} ingreso${s.depositCount===1?'':'s'} a cuenta`:''}</div></div><span class="settlement-status">Liquidada ✅</span></div>${depositLines?`<div class="settlement-deposit-lines">${depositLines}</div>`:''}</div>`;
+    const closeLines=linkedExtraCloses.map(x=>`<div class="settlement-deposit-line">🎟️ Cierre Extra ${x.closure.extraName}: ${fmt(x.closure.amount)}</div>`).join('');
+    const normal=Number(s.ordinaryAmount??0);
+    const extras=Number(s.extrasAmount??((s.extraDepositAmount||0)+(s.extraCloseAmount||0)));
+    const categoryLines=(normal||extras)?`<div class="settlement-deposit-lines"><div class="settlement-deposit-line">🧾 Liquidación normal: ${fmt(normal)}</div><div class="settlement-deposit-line">🎟️ Liquidación por Extras: ${fmt(extras)}</div><div class="settlement-deposit-line"><strong>Total: ${fmt(s.amount)}</strong></div></div>`:'';
+    return `<div class="settlement-item"><div class="settlement-head"><div><strong>${dateLabelShort(s.confirmedAt)} · ${fmt(s.amount)}</strong><div class="mini">Periodo ${dateLabelShort(s.from)}–${dateLabelShort(s.to)} · ${s.dayCount||0} jornadas${s.depositCount?` · ${s.depositCount} ingreso${s.depositCount===1?'':'s'} a cuenta`:''}${s.extraCloseCount?` · ${s.extraCloseCount} cierre${s.extraCloseCount===1?'':'s'} de Extra`:''}</div></div><span class="settlement-status">Liquidada ✅</span></div>${categoryLines}${(depositLines||closeLines)?`<div class="settlement-deposit-lines">${depositLines}${closeLines}</div>`:''}</div>`;
   }).join("");
 }
 function confirmCurrentLiquidation(){
@@ -7549,20 +7905,23 @@ function confirmCurrentLiquidation(){
     render();
     return;
   }
-  const detail=`${stats.dayCount} jornada${stats.dayCount===1?'':'s'}${stats.depositCount?` · ${stats.depositCount} ingreso${stats.depositCount===1?'':'s'} a cuenta`:''}${stats.deferredCount?` · ${stats.deferredCount} rasca${stats.deferredCount===1?'':'s'} aplazado${stats.deferredCount===1?'':'s'}`:''}`;
+  const detail=`${stats.dayCount} jornada${stats.dayCount===1?'':'s'}${stats.depositCount?` · ${stats.depositCount} ingreso${stats.depositCount===1?'':'s'} a cuenta de Extra`:''}${stats.extraCloseCount?` · ${stats.extraCloseCount} cierre${stats.extraCloseCount===1?'':'s'} de Extra`:''}${stats.deferredCount?` · ${stats.deferredCount} rasca${stats.deferredCount===1?'':'s'} aplazado${stats.deferredCount===1?'':'s'}`:''}`;
   const periodo=stats.from&&stats.to?`${dateLabelShort(stats.from)}–${dateLabelShort(stats.to)}`:"periodo pendiente";
-  if(!confirm(`Liquidación: ${fmt(stats.amount)}\nPeriodo: ${periodo}\nIncluye: ${detail}\n\n¿Confirmar liquidación?`)) return;
+  const resumen=`Liquidación normal: ${fmt(stats.ordinaryAmount)}\nLiquidación por Extras: ${fmt(stats.extrasAmount)}${stats.carryBalance?`\nSaldo a tu favor aplicado: -${fmt(stats.carryBalance)}`:""}\nTOTAL A LIQUIDAR: ${fmt(stats.amount)}`;
+  if(!confirm(`${resumen}\n\nPeriodo: ${periodo}\nIncluye: ${detail}\n\n¿Confirmar liquidación?`)) return;
   const id="liq"+Date.now().toString(36);
   const carryResult=settleCarryAfterClose(stats);
   stats.entries.forEach(x=>{
     if(x.kind==='deposit') x.deposit.settlementId=id;
     else if(x.kind==='deferredScratch') x.pack.deferredSettlementId=id;
+    else if(x.kind==='extraClose') x.closure.settlementId=id;
     else x.day.settlementId=id;
   });
   data.settlements=data.settlements||[];
   data.settlements.push({
     id,confirmedAt:isoToday(),from:stats.from,to:stats.to,
-    dayCount:stats.dayCount,depositCount:stats.depositCount,deferredCount:stats.deferredCount||0,
+    dayCount:stats.dayCount,depositCount:stats.depositCount,deferredCount:stats.deferredCount||0,extraCloseCount:stats.extraCloseCount||0,
+    ordinaryAmount:stats.ordinaryAmount||0,extraDepositAmount:stats.extraDepositAmount||0,extraCloseAmount:stats.extraCloseAmount||0,extrasAmount:stats.extrasAmount||0,
     grossAmount:stats.grossAmount,carryBefore:carryResult.before,carryAfter:carryResult.after,
     netAmount:stats.amount,amount:stats.amount,status:"liquidated",negativeCarry:carryResult.after>0
   });
@@ -8892,6 +9251,57 @@ $("settingsAddCollaboratorBtn").addEventListener("click",openCollaboratorDialog)
 $("addOtherBtn").addEventListener("click",addOtherTemp);
 $("otherAmount").addEventListener("input",updateDayPreview);
 $("addExtraBtn").addEventListener("click",()=>openExtraDialog());
+$("addSalesCheckBtn")?.addEventListener("click",()=>openSalesCheckDialog());
+$("closeMonthTpvBtn")?.addEventListener("click",openMonthCloseDialog);
+$("monthCloseTpvSale")?.addEventListener("input",updateMonthClosePreview);
+$("monthCloseForm")?.addEventListener("submit",e=>{
+  e.preventDefault();
+  if(!data.monthClosures) data.monthClosures={};
+  const appSale=Number($("monthCloseAppSale").value||0);
+  const tpvSale=Number($("monthCloseTpvSale").value||0);
+  const closure={
+    monthKey:currentMonth,
+    appSale,
+    tpvSale,
+    difference:tpvSale-appSale,
+    note:$("monthCloseNote").value.trim(),
+    closedAt:new Date().toISOString()
+  };
+  data.monthClosures[currentMonth]=closure;
+  saveData();
+  $("monthCloseDialog").close();
+  render();
+  toast("Mes cerrado con la venta oficial del TPV");
+});
+$("salesCheckTpv")?.addEventListener("input",updateSalesCheckPreview);
+$("salesCheckForm")?.addEventListener("submit",e=>{
+  e.preventDefault();
+  if(!Array.isArray(data.salesChecks)) data.salesChecks=[];
+  const id=$("editingSalesCheckId").value;
+  const tpv=Number($("salesCheckTpv").value||0);
+  const app=Number($("salesCheckApp").value||0);
+  const item={
+    id:id||("sc"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)),
+    monthKey:currentMonth,
+    date:$("salesCheckDate").value,
+    tpv,
+    app,
+    difference:salesCheckDifferenceValue(tpv,app),
+    status:$("salesCheckStatus").value,
+    note:$("salesCheckNote").value.trim(),
+    createdAt:new Date().toISOString()
+  };
+  if(id){
+    const idx=data.salesChecks.findIndex(x=>x.id===id);
+    if(idx>=0) data.salesChecks[idx]=item;
+  }else{
+    data.salesChecks.push(item);
+  }
+  saveData();
+  $("salesCheckDialog").close();
+  render();
+  toast("Control de diferencia guardado");
+});
 ["extraInitialStock","extraAdditionalStock","extraPhysicalSold","extraTpvSold","extraUnitPrice","extraManualPct"].forEach(id=>$(id).addEventListener("input",updateExtraPreview));
 ["pasivo","activo","pagos","tarjeta","cashOpening","cashCounted"].forEach(id=>$(id).addEventListener("input",updateDayPreview));
 $("bonoQty").addEventListener("input",()=>syncPasivoFromCoupons(true));
@@ -9220,13 +9630,19 @@ window.editExtra = id => {
 };
 window.finishExtra = id => {
   const e=extraCampaignById(id); if(!e) return;
+  const fin=extraPendingMoney(getMonth(),e);
+  const pending=Math.max(0,Number(fin.pending||0));
+  const explanation=pending>0
+    ? `\n\nQuedan ${fmt(pending)} pendientes después de los ingresos a cuenta. Esa cantidad se añadirá a la próxima liquidación como “Cierre Extra ${e.name}”.`
+    : `\n\nEste extra ya no tiene dinero pendiente de ingresar, así que su cierre no añadirá ningún importe a la liquidación.`;
   if(!confirm(`¿Dar por finalizado ${e.name}?
 
-Seguirá apareciendo en su historial y conservará todos los datos, pero ya no pasará a los meses siguientes.`)) return;
+Seguirá apareciendo en su historial y conservará todos los datos, pero ya no pasará a los meses siguientes.${explanation}`)) return;
   e.endedMonth=currentMonth;
   e.endedAt=isoToday();
   storeExtraCampaign(e);
-  saveData(); render(); toast(`${e.name} finalizado · historial conservado`);
+  createExtraClosureForCampaign(e,e.endedAt);
+  saveData(); render(); toast(pending>0?`${e.name} finalizado · ${fmt(pending)} pasan a liquidación`:`${e.name} finalizado · sin saldo pendiente`);
 };
 window.deleteExtra = id => {
   const e=extraCampaignById(id);

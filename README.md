@@ -294,3 +294,60 @@ v0.41.0
 - “Borrar” queda reservado para eliminar definitivamente la campaña de todos los meses.
 - Los ingresos a cuenta se acumulan durante toda la vida del Extra, aunque se hayan hecho en meses distintos.
 - Migración automática de los Extras ya existentes de versiones anteriores.
+
+
+## v0.70.0 — Liquidación normal + liquidación de Extras + total
+- Parte de la v0.69.0 y conserva el resto de funciones.
+- Los ingresos a cuenta de Extras aparecen identificados dentro de la liquidación.
+- Al finalizar un Extra, se calcula automáticamente: venta total del Extra − ingresos a cuenta realizados.
+- Solo la diferencia pendiente se añade como “Cierre Extra [nombre]”.
+- La liquidación muestra por separado:
+  - Liquidación normal.
+  - Liquidación por Extras.
+  - Ingresos a cuenta de Extras.
+  - Cierres de Extras.
+  - Saldo a favor aplicado, cuando proceda.
+  - TOTAL A LIQUIDAR.
+- Los Extras ya finalizados en v69 se migran automáticamente y generan su cierre pendiente si quedaba dinero por ingresar.
+- Las liquidaciones cerradas guardan también el desglose normal/Extras en el histórico.
+
+
+## v0.71.0 — Cierres de Extras solo hacia adelante
+- Parte de la v0.70.0 y conserva el desglose de liquidación normal + Extras + total.
+- No se generan cierres retroactivos para Extras que ya estaban finalizados antes de instalar esta versión.
+- Se evita que un Extra ya liquidado manualmente vuelva a aparecer al día siguiente como pendiente.
+- A partir de ahora, cada Extra que se finalice sí generará automáticamente su cierre pendiente:
+  venta total − ingresos a cuenta realizados.
+- Los cierres ya incluidos en liquidaciones cerradas se conservan en el histórico.
+
+
+## v0.72.0 — Control TPV vs Cuenta Clara
+- Parte de la v0.71.0 y conserva el resto de funciones.
+- Nuevo control junto a Venta acumulada.
+- Introduces la venta acumulada del TPV y Cuenta Clara calcula automáticamente la diferencia.
+- Estados:
+  - 🔎 Pendiente de revisar
+  - ✅ Diferencia aclarada
+  - ➖ No revisar
+- Nota opcional para explicar la diferencia.
+- El control es informativo y no modifica las ventas de la app.
+- Se conserva un histórico por mes.
+
+
+## v0.73.0 — Cierre mensual con venta oficial TPV
+- Parte de la v0.72.0 y conserva el control de diferencias.
+- Nuevo cierre mensual con TPV.
+- La venta calculada por Cuenta Clara nunca se borra ni se sustituye.
+- Al cerrar el mes se guardan:
+  - Venta acumulada Cuenta Clara.
+  - Venta final oficial TPV.
+  - Diferencia de cierre.
+  - Nota opcional.
+- Para los resúmenes mensuales de un mes cerrado, prima la venta oficial del TPV.
+- Sigue mostrándose siempre la venta de Cuenta Clara para poder comparar ambas cifras.
+- El cierre mensual se puede editar si se necesita corregir la cifra oficial.
+
+
+## v0.74.0 — Manifest PWA restaurado
+- Conserva todas las funciones de v0.73.0.
+- Añade `manifest.webmanifest` y su enlace en `index.html`.
