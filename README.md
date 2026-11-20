@@ -348,6 +348,36 @@ v0.41.0
 - El cierre mensual se puede editar si se necesita corregir la cifra oficial.
 
 
-## v0.74.0 — Manifest PWA restaurado
-- Conserva todas las funciones de v0.73.0.
-- Añade `manifest.webmanifest` y su enlace en `index.html`.
+## v0.74.0 — Inicio ordenado
+- Recoloca Control TPV y Cierre mensual debajo de los indicadores principales.
+- Ambos quedan compactos y desplegables.
+- No cambia cálculos ni datos.
+
+
+## v0.75.0 — Controles TPV fuera de la cuadrícula
+- Parte de la v0.74.0.
+- Corrige el problema visual en móvil donde Control TPV y Cierre mensual quedaban comprimidos en columnas estrechas.
+- Ambos controles salen completamente de la cuadrícula de indicadores.
+- Ahora aparecen como tarjetas de ancho completo, una debajo de otra.
+- Se mantiene el formato compacto/desplegable.
+- No cambia ningún cálculo ni dato guardado.
+
+
+## v0.76.0 — Posición definitiva de controles TPV
+- Parte de la v0.75.0.
+- Control TPV y Cierre mensual dejan de aparecer antes del encabezado de Cuenta Clara.
+- Se colocan definitivamente después de los cuatro indicadores principales:
+  Venta acumulada, Comisión estimada, Tramo actual y Proyección fin de mes.
+- Mantienen ancho completo y formato desplegable.
+- No cambia ningún cálculo ni dato.
+
+
+## v0.77.0 — Recalcular saldo al editar jornadas liquidadas
+- Parte de la v0.76.0.
+- Corrige el caso en que una jornada se cerraba con un saldo a favor (ej. 67 €), luego se editaba a un valor correcto (ej. 61 €), pero el saldo anterior seguía guardado.
+- Al editar o borrar una jornada incluida en una liquidación cerrada:
+  - se recalcula la liquidación;
+  - se reconstruye el saldo a favor desde esa liquidación hacia adelante;
+  - se actualiza `carryBalance` con el resultado correcto.
+- La misma protección se aplica a ingresos a cuenta de Extras editados o borrados después de estar liquidados.
+- Incluye una reparación única al abrir v77 para corregir saldos históricos incoherentes de versiones anteriores.
