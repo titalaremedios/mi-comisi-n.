@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-cuadra-version="0.77.0">
+<html lang="es" data-cuadra-version="0.79.0">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -12,7 +12,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
   <link rel="apple-touch-icon" href="icon-192.png" />
-  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="manifest" href="manifest.webmanifest">
   <style>
     :root{
       --bg:#f5f7fb;
@@ -4669,6 +4669,118 @@
     max-width:100% !important;
     clear:both !important;
   }
+
+  #finishedExtrasList .extra-card{
+    border-style:dashed;
+    background:linear-gradient(180deg,#fff,#fbfcfb);
+  }
+  #finishedExtrasList .extra-earned{
+    color:#6b4fb3;
+  }
+
+  /* v79 · panel de licencias compacto */
+  .admin-license-list{display:grid;gap:8px;margin-top:12px}
+  .admin-license-compact{
+    border:1px solid var(--line);
+    border-radius:15px;
+    background:#fff;
+    overflow:hidden;
+  }
+  .admin-license-compact summary{
+    list-style:none;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:11px 12px;
+  }
+  .admin-license-compact summary::-webkit-details-marker{display:none}
+  .admin-license-identity{min-width:0;flex:1}
+  .admin-license-identity strong{
+    display:block;
+    color:var(--text);
+    font-size:14px;
+    font-weight:900;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .admin-license-identity small{
+    display:block;
+    margin-top:2px;
+    color:var(--muted);
+    font-size:11px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .admin-license-mini-meta{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex:0 0 auto;
+  }
+  .admin-device-pill{
+    padding:4px 7px;
+    border-radius:999px;
+    background:#f1f7f5;
+    color:#365c56;
+    font-size:10.5px;
+    font-weight:850;
+    white-space:nowrap;
+  }
+  .admin-license-detail{
+    padding:0 12px 12px;
+    border-top:1px solid #eef3f1;
+  }
+  .admin-license-detail-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:7px;
+    margin-top:10px;
+  }
+  .admin-license-detail-cell{
+    padding:9px 10px;
+    border-radius:11px;
+    background:#f7faf9;
+  }
+  .admin-license-detail-cell span{display:block;color:var(--muted);font-size:10.5px}
+  .admin-license-detail-cell strong{display:block;margin-top:2px;color:var(--text);font-size:12px}
+  .admin-license-actions.compact{margin-top:9px}
+  .admin-license-actions.compact .small-btn{font-size:11px;padding:8px 9px}
+  .admin-inactive-wrap{
+    margin-top:12px;
+    border:1px dashed #d8e3df;
+    border-radius:15px;
+    background:#fbfcfc;
+  }
+  .admin-inactive-wrap>summary{
+    cursor:pointer;
+    list-style:none;
+    padding:11px 12px;
+    font-weight:850;
+    color:#657570;
+    font-size:12px;
+  }
+  .admin-inactive-wrap>summary::-webkit-details-marker{display:none}
+  .admin-inactive-list{display:grid;gap:6px;padding:0 10px 10px}
+  .admin-inactive-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:9px 10px;
+    border-radius:11px;
+    background:#fff;
+    border:1px solid #edf1ef;
+  }
+  .admin-inactive-row strong{display:block;font-size:12px;color:var(--text)}
+  .admin-inactive-row small{display:block;font-size:10.5px;color:var(--muted);margin-top:2px}
+  @media(max-width:560px){
+    .admin-license-detail-grid{grid-template-columns:1fr 1fr}
+    .admin-license-actions.compact .small-btn{flex:1 1 calc(50% - 8px)}
+  }
 </style>
 </head>
 <body>
@@ -4879,7 +4991,12 @@
           <div class="home-main-metrics">
             <div class="home-main-metric primary"><span>Vendido en esa jornada</span><strong id="homeTodaySold">0 €</strong></div>
             <div class="home-main-metric"><span class="help-label">Comisión estimada de esta jornada <button class="help-btn" type="button" data-help="comision" aria-label="Ayuda sobre comisión estimada de esta jornada">?</button></span><strong id="homeCommissionEstimate">0 €</strong><small id="homeCommissionNote">El porcentaje de cada categoría depende del tramo general alcanzado</small></div>
-            <div class="home-main-metric hidden" id="homeExtraCommissionCard"><span>Comisión por extras</span><strong id="homeExtraCommission">0 €</strong><small>Se calcula aparte y no se suma a la comisión ordinaria</small></div>
+            <div class="home-main-metric hidden" id="homeExtraCommissionCard">
+              <span>Comisiones de Extras</span>
+              <div id="homeExtraCommissionList" style="width:100%;margin-top:8px"></div>
+              <div class="extra-finance-row" style="margin-top:8px"><span>Total de referencia</span><strong id="homeExtraCommission">0 €</strong></div>
+              <small>Activos y finalizados se muestran por separado. No se suman a la comisión ordinaria.</small>
+            </div>
             <div class="home-main-metric pending"><span class="help-label">Pendiente de liquidar <button class="help-btn" type="button" data-help="pendiente" aria-label="Ayuda sobre pendiente de liquidar">?</button></span><strong id="homePendingLiquidation">0 €</strong></div>
           </div>
           <button class="btn primary full home-journey-btn" id="homeJourneyBtn" type="button">＋ Registrar jornada anterior</button>
@@ -5078,13 +5195,25 @@
           <button class="btn secondary" id="addExtraBtn">＋ Añadir extra</button>
         </div>
         <div class="card" id="extrasSummaryCard">
-          <div class="metric-row"><span>Extras en seguimiento</span><strong id="extraCampaignCount">0</strong></div>
-          <div class="metric-row"><span>Cupones vendidos (físico + TPV)</span><strong id="extraUnitsTotal">0</strong></div>
-          <div class="metric-row"><span>Vendidos por TPV</span><strong id="extraTpvTotal">0</strong></div>
-          <div class="metric-row"><span>Venta en extras</span><strong id="extraSalesTotal">0 €</strong></div>
-          <div class="metric-row"><span>Comisión estimada extras</span><strong id="extraCommissionTotal">0 €</strong></div>
+          <div class="metric-row"><span>Extras activos</span><strong id="extraCampaignCount">0</strong></div>
+          <div class="metric-row"><span>Cupones vendidos activos (físico + TPV)</span><strong id="extraUnitsTotal">0</strong></div>
+          <div class="metric-row"><span>Vendidos por TPV activos</span><strong id="extraTpvTotal">0</strong></div>
+          <div class="metric-row"><span>Venta en extras activos</span><strong id="extraSalesTotal">0 €</strong></div>
+          <div class="metric-row"><span>Comisión activa estimada</span><strong id="extraCommissionTotal">0 €</strong></div>
+        </div>
+
+        <div class="section-title" style="margin-top:16px">
+          <h2>Extras activos</h2>
         </div>
         <div id="extrasList" class="extra-list"></div>
+
+        <div class="section-title" id="finishedExtrasTitle" style="margin-top:20px">
+          <h2>Extras finalizados</h2>
+        </div>
+        <div class="card" id="finishedExtrasIntro">
+          <div class="mini">Aquí quedan separados los Extras que ya han terminado, con su comisión cerrada pendiente de cobrar en nómina.</div>
+        </div>
+        <div id="finishedExtrasList" class="extra-list"></div>
 
         <div class="section-title">
           <h2>Ingresos a cuenta</h2>
@@ -5992,7 +6121,7 @@
               <strong>Versión de Cuenta Clara</strong>
               <span id="updateHelpText">Busca la última versión publicada y recarga la app.</span>
             </div>
-            <span class="version-badge" id="appVersionBadge">v0.77.0</span>
+            <span class="version-badge" id="appVersionBadge">v0.79.0</span>
           </div>
           <button class="btn secondary full" id="updateAppBtn" type="button">↻ Actualizar Cuenta Clara</button>
           <div class="update-status" id="updateStatus" aria-live="polite"></div>
@@ -6018,7 +6147,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const APP_VERSION = "0.77.0";
+const APP_VERSION = "0.79.0";
 
 /* ===== Cuenta Clara · licencia online ===== */
 const LICENSE_API_URL="https://sqrabuanhcrddbaemqcv.supabase.co/functions/v1/validate-license";
@@ -6243,34 +6372,58 @@ async function loadAdminLicenses(){
   try{
     const payload=await adminLicenseCall("list");
     const rows=payload.licenses||[];
-    list.innerHTML=rows.map(x=>{
+    const activeRows=rows.filter(x=>(x.status||"active")==="active");
+    const inactiveRows=rows.filter(x=>(x.status||"active")!=="active");
+
+    const activeHtml=activeRows.map(x=>{
       const acts=x.activations||[];
       const last=acts.map(a=>a.last_seen_at).filter(Boolean).sort().reverse()[0]||null;
-      const status=x.status||"active";
-      return `<div class="admin-license-item">
-        <div class="admin-license-top">
-          <div>
-            <div class="admin-license-name">${escapeAdminHtml(x.holder_name||"Sin nombre")}${x.role==="admin"?" · Tú":""}</div>
-            <div class="admin-license-code">Código: <strong>${escapeAdminHtml(x.code_display||"—")}</strong></div>
+      const isAdmin=x.role==="admin";
+      return `<details class="admin-license-compact">
+        <summary>
+          <div class="admin-license-identity">
+            <strong>${escapeAdminHtml(x.holder_name||"Sin nombre")}${isAdmin?" · Tú":""}</strong>
+            <small>${escapeAdminHtml(x.code_display||"—")} · última conexión ${escapeAdminHtml(formatAdminDate(last,true))}</small>
           </div>
-          <span class="admin-status ${escapeAdminHtml(status)}">${escapeAdminHtml(status)}</span>
+          <div class="admin-license-mini-meta">
+            <span class="admin-device-pill">${Number(x.device_count||0)}/${Number(x.max_devices||1)} disp.</span>
+            <span class="admin-status active">active</span>
+          </div>
+        </summary>
+        <div class="admin-license-detail">
+          <div class="admin-license-detail-grid">
+            <div class="admin-license-detail-cell"><span>Caducidad</span><strong>${escapeAdminHtml(formatAdminDate(x.expires_at))}</strong></div>
+            <div class="admin-license-detail-cell"><span>Creado</span><strong>${escapeAdminHtml(formatAdminDate(x.created_at))}</strong></div>
+          </div>
+          <div class="admin-license-actions compact">
+            ${isAdmin ? '' : `<button class="small-btn danger" onclick="adminDeleteLicense('${x.id}','${escapeAdminHtml(String(x.holder_name||"esta persona").replace(/'/g,"&#39;"))}')">🗑️ Eliminar acceso</button>
+            <button class="small-btn" onclick="adminSetLicenseStatus('${x.id}','blocked')">Bloquear temporalmente</button>`}
+            <button class="small-btn" onclick="adminChangeDevices('${x.id}',${Number(x.max_devices||1)})">Dispositivos</button>
+            <button class="small-btn" onclick="adminResetDevices('${x.id}')">Liberar dispositivo</button>
+            <button class="small-btn" onclick="adminChangeExpiry('${x.id}','${x.expires_at||""}')">Caducidad</button>
+          </div>
         </div>
-        <div class="admin-license-grid">
-          <div class="admin-license-metric"><span>Dispositivos</span><strong>${Number(x.device_count||0)} / ${Number(x.max_devices||1)}</strong></div>
-          <div class="admin-license-metric"><span>Caducidad</span><strong>${escapeAdminHtml(formatAdminDate(x.expires_at))}</strong></div>
-          <div class="admin-license-metric"><span>Última conexión</span><strong>${escapeAdminHtml(formatAdminDate(last,true))}</strong></div>
-          <div class="admin-license-metric"><span>Creado</span><strong>${escapeAdminHtml(formatAdminDate(x.created_at))}</strong></div>
+      </details>`;
+    }).join("") || '<div class="admin-license-item"><div class="mini">No hay licencias activas.</div></div>';
+
+    const inactiveHtml=inactiveRows.length ? `
+      <details class="admin-inactive-wrap">
+        <summary>Dados de baja / caducados (${inactiveRows.length})</summary>
+        <div class="admin-inactive-list">
+          ${inactiveRows.map(x=>`<div class="admin-inactive-row">
+            <div>
+              <strong>${escapeAdminHtml(x.holder_name||"Sin nombre")}</strong>
+              <small>${escapeAdminHtml(x.code_display||"—")} · ${escapeAdminHtml(x.status||"blocked")}</small>
+            </div>
+            <div class="admin-license-actions compact" style="margin:0">
+              <button class="small-btn" onclick="adminSetLicenseStatus('${x.id}','active')">Reactivar</button>
+              <button class="small-btn danger" onclick="adminDeleteLicense('${x.id}','${escapeAdminHtml(String(x.holder_name||"esta persona").replace(/'/g,"&#39;"))}')">Eliminar</button>
+            </div>
+          </div>`).join("")}
         </div>
-        <div class="admin-license-actions">
-          ${status==="active"
-            ? `<button class="small-btn danger" onclick="adminSetLicenseStatus('${x.id}','blocked')">Dar de baja</button>`
-            : `<button class="small-btn" onclick="adminSetLicenseStatus('${x.id}','active')">Reactivar</button>`}
-          <button class="small-btn" onclick="adminChangeDevices('${x.id}',${Number(x.max_devices||1)})">Cambiar dispositivos</button>
-          <button class="small-btn" onclick="adminResetDevices('${x.id}')">Liberar dispositivo</button>
-          <button class="small-btn" onclick="adminChangeExpiry('${x.id}','${x.expires_at||""}')">Cambiar caducidad</button>
-        </div>
-      </div>`;
-    }).join("") || '<div class="admin-license-item"><div class="mini">Todavía no hay licencias.</div></div>';
+      </details>` : '';
+
+    list.innerHTML=activeHtml+inactiveHtml;
   }catch(err){
     list.innerHTML=`<div class="admin-license-item"><div class="mini">${escapeAdminHtml(adminLicenseErrorText(err.licenseCode||"server_error"))}</div></div>`;
   }
@@ -6299,12 +6452,27 @@ async function adminCreateTester(){
   }
 }
 window.adminSetLicenseStatus=async(id,status)=>{
-  if(status==="blocked" && !confirm("¿Dar de baja este acceso? Esa persona dejará de poder entrar en Cuenta Clara.")) return;
+  if(status==="blocked" && !confirm("¿Bloquear temporalmente este acceso? La persona dejará de poder entrar, pero podrás reactivarla o eliminarla después.")) return;
   try{
     await adminLicenseCall("update",{licenseId:id,status});
-    toast(status==="blocked"?"Acceso dado de baja":"Acceso reactivado");
+    toast(status==="blocked"?"Acceso bloqueado temporalmente":"Acceso reactivado");
     await loadAdminLicenses();
   }catch(err){alert(adminLicenseErrorText(err.licenseCode||"server_error"))}
+};
+window.adminDeleteLicense=async(id,name)=>{
+  const who=name||"esta persona";
+  if(!confirm(`¿Eliminar definitivamente el acceso de ${who}?
+
+Se borrará su licencia y sus dispositivos asociados. Esta acción no se puede deshacer.`)) return;
+  try{
+    await adminLicenseCall("delete",{licenseId:id});
+    toast("Acceso eliminado definitivamente");
+    await loadAdminLicenses();
+  }catch(err){
+    const code=err.licenseCode||"server_error";
+    if(code==="cannot_delete_admin") alert("Tu licencia de administradora no se puede eliminar desde este panel.");
+    else alert(adminLicenseErrorText(code));
+  }
 };
 window.adminChangeDevices=async(id,current)=>{
   const value=prompt("¿Cuántos dispositivos puede usar esta licencia?\n\nEscribe 1 o 2.",String(current||1));
@@ -7098,12 +7266,24 @@ function renderHomeFocus(month){
   const muyAltoTxt=dayCommission.veryHighPct ? `${String(dayCommission.veryHighPct).replace('.',',')} %` : '0 %';
   $('homeCommissionNote').textContent=`Tramo actual: normal ${tramoTxt} · alto ${altoTxt} · muy alto ${muyAltoTxt}`;
 
-  const extraTotal=sumExtras(month).commission;
+  const monthExtras=extraCampaignsForMonth(monthKeyForObject(month)).map(normalizeExtra);
+  const extraTotal=monthExtras.reduce((a,e)=>a+Number(e.commission||0),0);
   const extraCard=$('homeExtraCommissionCard');
   if(extraCard){
-    const hasExtras=extraCampaignsForMonth(monthKeyForObject(month)).length>0;
+    const hasExtras=monthExtras.length>0;
     extraCard.classList.toggle('hidden',!hasExtras);
-    if(hasExtras) setMoneyText('homeExtraCommission',extraTotal);
+    if(hasExtras){
+      setMoneyText('homeExtraCommission',extraTotal);
+      const box=$('homeExtraCommissionList');
+      if(box){
+        box.innerHTML=monthExtras.map(e=>{
+          const status=e.endedMonth
+            ? '✅ Finalizado · pendiente de cobrar'
+            : '🟢 Activo';
+          return `<div class="extra-finance-row"><span>${e.name}<small style="display:block;margin-top:2px">${status}</small></span><strong>${fmt(e.commission)}</strong></div>`;
+        }).join('');
+      }
+    }
   }
 
   $('homeTodayDate').textContent=new Date(targetDate+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'}).replace(/^./,c=>c.toUpperCase());
@@ -7912,53 +8092,96 @@ function render(){
 
 function renderExtras(month){
   ensureMonthCollections(month);
-  const campaignExtras=extraCampaignsForMonth(monthKeyForObject(month));
-  const sums=sumExtras(month);
-  $("extraCampaignCount").textContent = sums.campaigns;
-  $("extraUnitsTotal").textContent = sums.units;
-  $("extraTpvTotal").textContent = sums.tpv;
-  $("extraSalesTotal").textContent = fmt(sums.sales);
-  $("extraCommissionTotal").textContent = fmt(sums.commission);
-  const list=$("extrasList");
-  if(!campaignExtras.length){
-    list.innerHTML = `<div class="card empty">No tienes ningún sorteo extra activo en este periodo.</div>`;
-    return;
-  }
-  list.innerHTML = campaignExtras.map(raw=>{
-    const e=normalizeExtra(raw);
-    const stockPct=e.totalStock>0 ? Math.min(100,Math.max(0,e.physicalSold/e.totalStock*100)) : 0;
-    const warning=e.remaining<0 ? `<div class="extra-warning">⚠️ Has registrado ${Math.abs(e.remaining)} físicos vendidos más de los recibidos. Revisa las existencias o añade los extras que pediste después.</div>` : '';
-    return `<div class="extra-card">
-      <div class="extra-top">
-        <div>
-          <div class="extra-title">🎟️ ${e.name}</div>
-          <div class="extra-meta">${e.totalSold} vendidos en total · ${fmt(e.unitPrice)} cada uno · comisión ${String(e.pct).replace('.',',')} %${e.manualPct!=='' && e.manualPct!==null && e.manualPct!==undefined ? ' (manual)' : ''}</div>
-        </div>
-        <div class="extra-earned">${fmt(e.commission)}<small>ganancia estimada</small></div>
-      </div>
-      <div class="extra-summary">
-        <div class="extra-stat"><span>Físicos recibidos</span><strong>${e.totalStock}</strong></div>
-        <div class="extra-stat"><span>Físicos vendidos</span><strong>${e.physicalSold}</strong></div>
-        <div class="extra-stat"><span>Físicos restantes</span><strong>${e.remaining}</strong></div>
-        <div class="extra-stat"><span>Vendidos TPV</span><strong>${e.tpvSold}</strong></div>
-        <div class="extra-stat"><span>Total vendidos</span><strong>${e.totalSold}</strong></div>
-        <div class="extra-stat"><span>Venta total</span><strong>${fmt(e.sales)}</strong></div>
-      </div>
-      <div class="extra-inventory">
-        <div class="extra-inventory-head"><strong>Control de físicos</strong><span>${e.physicalSold} / ${e.totalStock}</span></div>
-        <div class="extra-stock-bar"><div class="extra-stock-fill" style="width:${stockPct}%"></div></div>
-        <div class="extra-inventory-note"><span>Inicio: ${e.initialStock}</span><span>Pedidos después: +${e.additionalStock}</span><span>Quedan: ${e.remaining}</span></div>
-      </div>
-      ${(()=>{const fin=extraPendingMoney(month,e); const cls=fin.pending<0?'negative':''; const label=fin.pending<0?'Saldo a favor':'Te queda por ingresar'; return `<div class="extra-finance"><div class="extra-finance-row"><span>💶 Venta acumulada del extra</span><strong>${fmt(fin.sales)}</strong></div><div class="extra-finance-row"><span>🏦 Ingresado a cuenta</span><strong>${fmt(fin.deposited)}</strong></div><div class="extra-finance-row"><span>⏳ ${label}</span><strong class="extra-pending ${cls}">${fmt(Math.abs(fin.pending))}</strong></div><div class="extra-finance-row"><span>⭐ Comisión estimada</span><strong>${fmt(e.commission)}</strong></div></div>`;})()}
-      ${warning}
-      <div class="day-actions">
-        ${e.endedMonth ? `<span class="small-btn" style="pointer-events:none">✅ Extra finalizado · cierre registrado</span>` : `<button class="small-btn" onclick="openExtraSalesDialog('${e.id}')">➕ Sumar ventas</button><button class="small-btn" onclick="addExtraStock('${e.id}')">➕ Sumar recibidos</button><button class="small-btn" onclick="editExtra('${e.id}')">✏️ Actualizar / Editar</button><button class="small-btn" onclick="finishExtra('${e.id}')">✅ Finalizar extra</button>`}
-        <button class="small-btn danger" onclick="deleteExtra('${e.id}')">🗑️ Borrar</button>
-      </div>
-    </div>`;
-  }).join('');
-}
+  const monthKey=monthKeyForObject(month);
+  const campaignExtras=extraCampaignsForMonth(monthKey);
+  const activeExtras=campaignExtras.filter(x=>!x.endedMonth);
+  const finishedExtras=campaignExtras.filter(x=>!!x.endedMonth);
 
+  const activeNormalized=activeExtras.map(normalizeExtra);
+  const activeSums=activeNormalized.reduce((a,e)=>({
+    campaigns:a.campaigns+1,
+    units:a.units+Number(e.totalSold||0),
+    tpv:a.tpv+Number(e.tpvSold||0),
+    sales:a.sales+Number(e.sales||0),
+    commission:a.commission+Number(e.commission||0)
+  }),{campaigns:0,units:0,tpv:0,sales:0,commission:0});
+
+  $("extraCampaignCount").textContent = activeSums.campaigns;
+  $("extraUnitsTotal").textContent = activeSums.units;
+  $("extraTpvTotal").textContent = activeSums.tpv;
+  $("extraSalesTotal").textContent = fmt(activeSums.sales);
+  $("extraCommissionTotal").textContent = fmt(activeSums.commission);
+
+  const list=$("extrasList");
+  if(!activeExtras.length){
+    list.innerHTML = `<div class="card empty">No tienes ningún Extra activo en este momento.</div>`;
+  }else{
+    list.innerHTML = activeExtras.map(raw=>{
+      const e=normalizeExtra(raw);
+      const stockPct=e.totalStock>0 ? Math.min(100,Math.max(0,e.physicalSold/e.totalStock*100)) : 0;
+      const warning=e.remaining<0 ? `<div class="extra-warning">⚠️ Has registrado ${Math.abs(e.remaining)} físicos vendidos más de los recibidos. Revisa las existencias o añade los extras que pediste después.</div>` : '';
+      return `<div class="extra-card">
+        <div class="extra-top">
+          <div>
+            <div class="extra-title">🎟️ ${e.name}</div>
+            <div class="extra-meta">${e.totalSold} vendidos en total · ${fmt(e.unitPrice)} cada uno · comisión ${String(e.pct).replace('.',',')} %${e.manualPct!=='' && e.manualPct!==null && e.manualPct!==undefined ? ' (manual)' : ''}</div>
+          </div>
+          <div class="extra-earned">${fmt(e.commission)}<small>comisión estimada</small></div>
+        </div>
+        <div class="extra-summary">
+          <div class="extra-stat"><span>Físicos recibidos</span><strong>${e.totalStock}</strong></div>
+          <div class="extra-stat"><span>Físicos vendidos</span><strong>${e.physicalSold}</strong></div>
+          <div class="extra-stat"><span>Físicos restantes</span><strong>${e.remaining}</strong></div>
+          <div class="extra-stat"><span>Vendidos TPV</span><strong>${e.tpvSold}</strong></div>
+          <div class="extra-stat"><span>Total vendidos</span><strong>${e.totalSold}</strong></div>
+          <div class="extra-stat"><span>Venta total</span><strong>${fmt(e.sales)}</strong></div>
+        </div>
+        <div class="extra-inventory">
+          <div class="extra-inventory-head"><strong>Control de físicos</strong><span>${e.physicalSold} / ${e.totalStock}</span></div>
+          <div class="extra-stock-bar"><div class="extra-stock-fill" style="width:${stockPct}%"></div></div>
+          <div class="extra-inventory-note"><span>Inicio: ${e.initialStock}</span><span>Pedidos después: +${e.additionalStock}</span><span>Quedan: ${e.remaining}</span></div>
+        </div>
+        ${(()=>{const fin=extraPendingMoney(month,e); const cls=fin.pending<0?'negative':''; const label=fin.pending<0?'Saldo a favor':'Te queda por ingresar'; return `<div class="extra-finance"><div class="extra-finance-row"><span>💶 Venta acumulada del extra</span><strong>${fmt(fin.sales)}</strong></div><div class="extra-finance-row"><span>🏦 Ingresado a cuenta</span><strong>${fmt(fin.deposited)}</strong></div><div class="extra-finance-row"><span>⏳ ${label}</span><strong class="extra-pending ${cls}">${fmt(Math.abs(fin.pending))}</strong></div><div class="extra-finance-row"><span>⭐ Comisión estimada</span><strong>${fmt(e.commission)}</strong></div></div>`;})()}
+        ${warning}
+        <div class="day-actions">
+          <button class="small-btn" onclick="openExtraSalesDialog('${e.id}')">➕ Sumar ventas</button>
+          <button class="small-btn" onclick="addExtraStock('${e.id}')">➕ Sumar recibidos</button>
+          <button class="small-btn" onclick="editExtra('${e.id}')">✏️ Actualizar / Editar</button>
+          <button class="small-btn" onclick="finishExtra('${e.id}')">✅ Finalizar extra</button>
+          <button class="small-btn danger" onclick="deleteExtra('${e.id}')">🗑️ Borrar</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  const finishedList=$("finishedExtrasList");
+  if(!finishedExtras.length){
+    finishedList.innerHTML=`<div class="card empty">Todavía no tienes Extras finalizados en este periodo.</div>`;
+  }else{
+    finishedList.innerHTML=finishedExtras.map(raw=>{
+      const e=normalizeExtra(raw);
+      const ended=e.endedAt?dateLabelShort(e.endedAt):monthLabel(e.endedMonth);
+      return `<div class="extra-card">
+        <div class="extra-top">
+          <div>
+            <div class="extra-title">✅ ${e.name}</div>
+            <div class="extra-meta">Finalizado ${ended} · ${e.totalSold} vendidos · venta total ${fmt(e.sales)}</div>
+          </div>
+          <div class="extra-earned">${fmt(e.commission)}<small>comisión cerrada</small></div>
+        </div>
+        <div class="extra-finance">
+          <div class="extra-finance-row"><span>💶 Venta total del Extra</span><strong>${fmt(e.sales)}</strong></div>
+          <div class="extra-finance-row"><span>⭐ Comisión final</span><strong>${fmt(e.commission)}</strong></div>
+          <div class="extra-finance-row"><span>📅 Estado de la comisión</span><strong>Pendiente de cobrar en nómina</strong></div>
+        </div>
+        <div class="day-actions">
+          <span class="small-btn" style="pointer-events:none">✅ Extra finalizado</span>
+          <button class="small-btn danger" onclick="deleteExtra('${e.id}')">🗑️ Borrar</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
 function renderAccountDeposits(month){
   ensureMonthCollections(month);
   const list=$("accountList");

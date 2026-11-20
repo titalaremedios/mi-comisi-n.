@@ -381,3 +381,35 @@ v0.41.0
   - se actualiza `carryBalance` con el resultado correcto.
 - La misma protección se aplica a ingresos a cuenta de Extras editados o borrados después de estar liquidados.
 - Incluye una reparación única al abrir v77 para corregir saldos históricos incoherentes de versiones anteriores.
+
+
+## v0.78.0 — Extras activos y finalizados separados
+- Parte de la v0.77.0.
+- Los Extras finalizados dejan de aparecer mezclados con los activos.
+- La sección Extras se divide en:
+  - Extras activos.
+  - Extras finalizados.
+- Cada Extra muestra su propia comisión por separado.
+- Los finalizados muestran:
+  - Venta total.
+  - Comisión final cerrada.
+  - Estado: pendiente de cobrar en nómina.
+- En Inicio, “Comisiones de Extras” muestra una línea por cada campaña, diferenciando Activo y Finalizado.
+- El total general queda solo como referencia secundaria.
+
+
+## v0.79.0 — Panel de licencias compacto + eliminación real
+- Parte de la v0.78.0.
+- Las licencias activas aparecen en filas compactas.
+- Al tocar una fila se despliegan sus datos y acciones.
+- Los bloqueados/caducados quedan en un apartado plegado y separado.
+- Nuevo “Eliminar acceso”: borra definitivamente la licencia y sus dispositivos asociados.
+- La licencia de administradora está protegida y no puede eliminarse.
+- “Bloquear” pasa a ser explícitamente temporal.
+
+
+## Corrección de paquete PWA
+- Se añade `manifest.webmanifest`.
+- `index.html` enlaza explícitamente el manifiesto.
+- Se mantienen `icon.png`, `icon-192.png` e `icon-512.png`.
+- El paquete sigue siendo instalable como PWA.
