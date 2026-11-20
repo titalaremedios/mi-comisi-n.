@@ -408,8 +408,12 @@ v0.41.0
 - “Bloquear” pasa a ser explícitamente temporal.
 
 
-## Corrección de paquete PWA
-- Se añade `manifest.webmanifest`.
-- `index.html` enlaza explícitamente el manifiesto.
-- Se mantienen `icon.png`, `icon-192.png` e `icon-512.png`.
-- El paquete sigue siendo instalable como PWA.
+## v0.80.0 — Comisión mensual de Extras separada por campaña
+- Parte de la v0.79.0.
+- Corrige el bloque mensual que seguía mostrando una única suma de comisiones de Extras.
+- Ahora muestra una línea por cada Extra:
+  - nombre;
+  - comisión;
+  - estado Activo o Finalizado · pendiente de cobrar en nómina.
+- El total general queda solo como referencia secundaria.
+- No se cambia ningún cálculo.

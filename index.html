@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-cuadra-version="0.79.0">
+<html lang="es" data-cuadra-version="0.80.0">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -12,7 +12,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
   <link rel="apple-touch-icon" href="icon-192.png" />
-  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="manifest" href="manifest.webmanifest" />
   <style>
     :root{
       --bg:#f5f7fb;
@@ -4781,6 +4781,29 @@
     .admin-license-detail-grid{grid-template-columns:1fr 1fr}
     .admin-license-actions.compact .small-btn{flex:1 1 calc(50% - 8px)}
   }
+
+  #homeMonthExtraCommissionWrap .extra-finance-row{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:14px;
+    padding:8px 0;
+  }
+  #homeMonthExtraCommissionWrap .extra-finance-row span{
+    color:#5f6673;
+    font-weight:750;
+    text-align:left;
+  }
+  #homeMonthExtraCommissionWrap .extra-finance-row small{
+    color:#8b8794;
+    font-weight:650;
+    line-height:1.25;
+  }
+  #homeMonthExtraCommissionWrap .extra-finance-row strong{
+    color:#6f3dc1;
+    white-space:nowrap;
+    font-size:20px;
+  }
 </style>
 </head>
 <body>
@@ -4953,8 +4976,12 @@
           </div>
 
           <div class="month-extra-commission hidden" id="homeMonthExtraCommissionWrap">
-            <span>Comisión por extras este mes</span>
-            <strong id="homeMonthExtraCommission">0 €</strong>
+            <span>Comisiones de Extras</span>
+            <div id="homeMonthExtraCommissionList" style="width:100%;margin-top:10px"></div>
+            <div class="extra-finance-row" style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(111,84,170,.15)">
+              <span>Total de referencia</span>
+              <strong id="homeMonthExtraCommission">0 €</strong>
+            </div>
           </div>
           <div class="month-focus-progress">
             <div class="month-focus-progress-head">
@@ -6121,7 +6148,7 @@
               <strong>Versión de Cuenta Clara</strong>
               <span id="updateHelpText">Busca la última versión publicada y recarga la app.</span>
             </div>
-            <span class="version-badge" id="appVersionBadge">v0.79.0</span>
+            <span class="version-badge" id="appVersionBadge">v0.80.0</span>
           </div>
           <button class="btn secondary full" id="updateAppBtn" type="button">↻ Actualizar Cuenta Clara</button>
           <div class="update-status" id="updateStatus" aria-live="polite"></div>
@@ -6147,7 +6174,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const APP_VERSION = "0.79.0";
+const APP_VERSION = "0.80.0";
 
 /* ===== Cuenta Clara · licencia online ===== */
 const LICENSE_API_URL="https://sqrabuanhcrddbaemqcv.supabase.co/functions/v1/validate-license";
@@ -7864,11 +7891,23 @@ function render(){
     const veryHighTxt=String(monthCommission.veryHighPct||0).replace(".",",");
     $("homeMonthCommissionNote").textContent=`Normal ${normalTxt} % · Alto ${highTxt} % · Muy alto ${veryHighTxt} %`;
   }
-  const monthExtras=sumExtras(month);
+  const monthExtraCampaigns=extraCampaignsForMonth(monthKeyForObject(month)).map(normalizeExtra);
   if($("homeMonthExtraCommissionWrap")){
-    const showExtraCommission=extraCampaignsForMonth(monthKeyForObject(month)).length>0;
+    const showExtraCommission=monthExtraCampaigns.length>0;
     $("homeMonthExtraCommissionWrap").classList.toggle("hidden",!showExtraCommission);
-    if(showExtraCommission) setMoneyText("homeMonthExtraCommission",monthExtras.commission||0);
+    if(showExtraCommission){
+      const totalExtraCommission=monthExtraCampaigns.reduce((a,e)=>a+Number(e.commission||0),0);
+      setMoneyText("homeMonthExtraCommission",totalExtraCommission);
+      const list=$("homeMonthExtraCommissionList");
+      if(list){
+        list.innerHTML=monthExtraCampaigns.map(e=>{
+          const status=e.endedMonth
+            ? '✅ Finalizado · pendiente de cobrar en nómina'
+            : '🟢 Activo';
+          return `<div class="extra-finance-row"><span>${e.name}<small style="display:block;margin-top:2px">${status}</small></span><strong>${fmt(e.commission)}</strong></div>`;
+        }).join('');
+      }
+    }
   }
 
   if($("homeCurrentTramo")){
